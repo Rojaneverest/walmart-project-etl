@@ -1,0 +1,22 @@
+[2025-05-27T05:27:53.872+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: walmart_etl_dag.data_quality_checks manual__2025-05-27T05:15:27+00:00 [queued]>
+[2025-05-27T05:27:53.877+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: walmart_etl_dag.data_quality_checks manual__2025-05-27T05:15:27+00:00 [queued]>
+[2025-05-27T05:27:53.877+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T05:27:53.885+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): data_quality_checks> on 2025-05-27 05:15:27+00:00
+[2025-05-27T05:27:53.893+0000] {standard_task_runner.py:57} INFO - Started process 183 to run task
+[2025-05-27T05:27:53.895+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'walmart_etl_dag', 'data_quality_checks', 'manual__2025-05-27T05:15:27+00:00', '--job-id', '41', '--raw', '--subdir', 'DAGS_FOLDER/walmart_etl_dag.py', '--cfg-path', '/tmp/tmpbyxk3y7l']
+[2025-05-27T05:27:53.897+0000] {standard_task_runner.py:85} INFO - Job 41: Subtask data_quality_checks
+[2025-05-27T05:27:53.992+0000] {task_command.py:416} INFO - Running <TaskInstance: walmart_etl_dag.data_quality_checks manual__2025-05-27T05:15:27+00:00 [running]> on host 364c8c3dd6ab
+[2025-05-27T05:27:54.099+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='walmart_etl_dag' AIRFLOW_CTX_TASK_ID='data_quality_checks' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T05:15:27+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T05:15:27+00:00'
+[2025-05-27T05:27:54.128+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/walmart_etl_dag.py", line 151, in run_data_quality_checks
+    raise ValueError("No data in tgt_fact_sales")
+ValueError: No data in tgt_fact_sales
+[2025-05-27T05:27:54.161+0000] {taskinstance.py:1400} INFO - Marking task as UP_FOR_RETRY. dag_id=walmart_etl_dag, task_id=data_quality_checks, execution_date=20250527T051527, start_date=20250527T052753, end_date=20250527T052754
+[2025-05-27T05:27:54.198+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 41 for task data_quality_checks (No data in tgt_fact_sales; 183)
+[2025-05-27T05:27:54.256+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2025-05-27T05:27:54.347+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

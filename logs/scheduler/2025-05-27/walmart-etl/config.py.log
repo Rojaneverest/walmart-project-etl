@@ -1,0 +1,150 @@
+[2025-05-27T04:53:08.637+0000] {processor.py:157} INFO - Started process (PID=63) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:53:08.638+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:53:08.650+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:53:08.647+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:53:08.664+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:53:08.720+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.090 seconds
+[2025-05-27T04:53:39.014+0000] {processor.py:157} INFO - Started process (PID=125) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:53:39.017+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:53:39.027+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:53:39.026+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:53:39.036+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:53:39.069+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.061 seconds
+[2025-05-27T04:54:09.320+0000] {processor.py:157} INFO - Started process (PID=189) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:54:09.321+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:54:09.324+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:54:09.323+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:54:09.335+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:54:09.352+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.038 seconds
+[2025-05-27T04:54:40.198+0000] {processor.py:157} INFO - Started process (PID=254) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:54:40.200+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:54:40.201+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:54:40.201+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:54:40.205+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:54:40.221+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.025 seconds
+[2025-05-27T04:55:11.276+0000] {processor.py:157} INFO - Started process (PID=319) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:55:11.277+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:55:11.279+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:55:11.279+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:55:11.284+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:55:11.301+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.027 seconds
+[2025-05-27T04:55:42.318+0000] {processor.py:157} INFO - Started process (PID=384) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:55:42.319+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:55:42.320+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:55:42.320+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:55:42.322+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:55:42.332+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.016 seconds
+[2025-05-27T04:56:13.912+0000] {processor.py:157} INFO - Started process (PID=449) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:56:13.913+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:56:13.920+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:56:13.920+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:56:13.925+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:56:13.942+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.034 seconds
+[2025-05-27T04:56:44.985+0000] {processor.py:157} INFO - Started process (PID=514) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:56:44.987+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:56:44.988+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:56:44.988+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:56:44.990+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:56:45.000+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.020 seconds
+[2025-05-27T04:58:09.434+0000] {processor.py:157} INFO - Started process (PID=73) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:58:09.437+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:58:09.440+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:58:09.440+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:58:09.446+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:58:09.482+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.060 seconds
+[2025-05-27T04:58:40.214+0000] {processor.py:157} INFO - Started process (PID=138) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:58:40.216+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:58:40.218+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:58:40.217+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:58:40.221+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:58:40.231+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.019 seconds
+[2025-05-27T04:59:11.300+0000] {processor.py:157} INFO - Started process (PID=203) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:59:11.302+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:59:11.304+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:59:11.303+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:59:11.307+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:59:11.315+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.016 seconds
+[2025-05-27T04:59:42.746+0000] {processor.py:157} INFO - Started process (PID=268) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:59:42.746+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T04:59:42.747+0000] {logging_mixin.py:154} INFO - [2025-05-27T04:59:42.747+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:59:42.752+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T04:59:42.762+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.018 seconds
+[2025-05-27T05:00:13.890+0000] {processor.py:157} INFO - Started process (PID=333) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:00:13.891+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:00:13.893+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:00:13.893+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:00:13.896+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:00:13.907+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.019 seconds
+[2025-05-27T05:00:44.700+0000] {processor.py:157} INFO - Started process (PID=398) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:00:44.701+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:00:44.702+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:00:44.702+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:00:44.706+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:00:44.713+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.015 seconds
+[2025-05-27T05:01:15.692+0000] {processor.py:157} INFO - Started process (PID=463) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:01:15.694+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:01:15.696+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:01:15.696+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:01:15.703+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:01:15.717+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.028 seconds
+[2025-05-27T05:01:46.012+0000] {processor.py:157} INFO - Started process (PID=531) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:01:46.013+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:01:46.014+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:01:46.014+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:01:46.016+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:01:46.030+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.023 seconds
+[2025-05-27T05:02:16.879+0000] {processor.py:157} INFO - Started process (PID=595) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:02:16.880+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:02:16.883+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:02:16.883+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:02:16.887+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:02:16.900+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.024 seconds
+[2025-05-27T05:02:47.776+0000] {processor.py:157} INFO - Started process (PID=660) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:02:47.777+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:02:47.778+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:02:47.778+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:02:47.780+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:02:47.794+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.020 seconds
+[2025-05-27T05:03:18.774+0000] {processor.py:157} INFO - Started process (PID=725) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:03:18.775+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:03:18.776+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:03:18.776+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:03:18.778+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:03:18.792+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.022 seconds
+[2025-05-27T05:03:50.270+0000] {processor.py:157} INFO - Started process (PID=792) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:03:50.271+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:03:50.272+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:03:50.272+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:03:50.274+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:03:50.282+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.015 seconds
+[2025-05-27T05:04:20.887+0000] {processor.py:157} INFO - Started process (PID=854) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:04:20.887+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:04:20.889+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:04:20.888+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:04:20.890+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:04:20.900+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.017 seconds
+[2025-05-27T05:04:51.645+0000] {processor.py:157} INFO - Started process (PID=918) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:04:51.648+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:04:51.653+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:04:51.653+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:04:51.662+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:04:51.672+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.031 seconds
+[2025-05-27T05:05:23.167+0000] {processor.py:157} INFO - Started process (PID=987) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:05:23.168+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:05:23.170+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:05:23.170+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:05:23.176+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:05:23.188+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.024 seconds
+[2025-05-27T05:05:54.033+0000] {processor.py:157} INFO - Started process (PID=1052) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:05:54.034+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:05:54.035+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:05:54.035+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:05:54.037+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:05:54.044+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.014 seconds
+[2025-05-27T05:06:26.009+0000] {processor.py:157} INFO - Started process (PID=1121) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:06:26.010+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:06:26.012+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:06:26.012+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:06:26.018+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:06:26.031+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.026 seconds
+[2025-05-27T05:06:56.856+0000] {processor.py:157} INFO - Started process (PID=1186) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:06:56.857+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:06:56.858+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:06:56.858+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:06:56.860+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:06:56.868+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.014 seconds
+[2025-05-27T05:07:28.080+0000] {processor.py:157} INFO - Started process (PID=1251) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:07:28.081+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:07:28.082+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:07:28.082+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:07:28.084+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:07:28.092+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.015 seconds
+[2025-05-27T05:07:59.174+0000] {processor.py:157} INFO - Started process (PID=1316) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:07:59.174+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:07:59.175+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:07:59.175+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:07:59.177+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:07:59.185+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.013 seconds
+[2025-05-27T05:08:30.106+0000] {processor.py:157} INFO - Started process (PID=1381) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:08:30.108+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:08:30.110+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:08:30.110+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:08:30.112+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:08:30.120+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.016 seconds
+[2025-05-27T05:09:00.797+0000] {processor.py:157} INFO - Started process (PID=1446) to work on /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:09:00.800+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart-etl/config.py for tasks to queue
+[2025-05-27T05:09:00.803+0000] {logging_mixin.py:154} INFO - [2025-05-27T05:09:00.802+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:09:00.807+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart-etl/config.py
+[2025-05-27T05:09:00.820+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart-etl/config.py took 0.027 seconds

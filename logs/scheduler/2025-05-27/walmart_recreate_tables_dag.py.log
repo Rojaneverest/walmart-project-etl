@@ -1,0 +1,417 @@
+[2025-05-27T06:38:18.146+0000] {processor.py:157} INFO - Started process (PID=66) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:38:18.155+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:38:18.168+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:38:18.168+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:38:18.319+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:38:18.771+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:38:18.771+0000] {manager.py:499} INFO - Created Permission View: %s
+[2025-05-27T06:38:18.779+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:38:18.779+0000] {manager.py:499} INFO - Created Permission View: %s
+[2025-05-27T06:38:18.783+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:38:18.783+0000] {manager.py:499} INFO - Created Permission View: %s
+[2025-05-27T06:38:18.783+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:38:18.783+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:38:18.803+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:38:18.802+0000] {dag.py:2963} INFO - Creating ORM DAG for walmart_recreate_tables_dag
+[2025-05-27T06:38:18.803+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:38:18.803+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:38:18.845+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.720 seconds
+[2025-05-27T06:38:49.416+0000] {processor.py:157} INFO - Started process (PID=78) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:38:49.418+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:38:49.430+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:38:49.429+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:38:49.487+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:38:49.583+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:38:49.583+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:38:49.612+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:38:49.612+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:38:49.630+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.220 seconds
+[2025-05-27T06:39:19.980+0000] {processor.py:157} INFO - Started process (PID=91) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:39:19.982+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:39:19.985+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:39:19.985+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:39:20.009+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:39:20.041+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:39:20.041+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:39:20.069+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:39:20.069+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:39:20.085+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.111 seconds
+[2025-05-27T06:39:50.918+0000] {processor.py:157} INFO - Started process (PID=104) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:39:50.919+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:39:50.924+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:39:50.924+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:39:50.960+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:39:51.015+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:39:51.014+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:39:51.027+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:39:51.027+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:39:51.043+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.134 seconds
+[2025-05-27T06:40:21.987+0000] {processor.py:157} INFO - Started process (PID=124) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:40:21.988+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:40:21.992+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:40:21.992+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:40:22.021+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:40:22.066+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:40:22.066+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:40:22.082+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:40:22.082+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:40:22.095+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.115 seconds
+[2025-05-27T06:40:53.019+0000] {processor.py:157} INFO - Started process (PID=137) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:40:53.022+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:40:53.026+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:40:53.026+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:40:53.065+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:40:53.110+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:40:53.110+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:40:53.125+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:40:53.124+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:40:53.142+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.146 seconds
+[2025-05-27T06:41:23.354+0000] {processor.py:157} INFO - Started process (PID=150) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:41:23.355+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:41:23.360+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:41:23.360+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:41:23.389+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:41:23.430+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:41:23.429+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:41:23.439+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:41:23.439+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:41:23.454+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.107 seconds
+[2025-05-27T06:41:54.471+0000] {processor.py:157} INFO - Started process (PID=163) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:41:54.473+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:41:54.481+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:41:54.478+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:41:54.516+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:41:54.560+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:41:54.560+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:41:54.573+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:41:54.573+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:41:54.588+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.128 seconds
+[2025-05-27T06:42:25.623+0000] {processor.py:157} INFO - Started process (PID=176) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:42:25.624+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:42:25.630+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:42:25.629+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:42:25.657+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:42:25.687+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:42:25.687+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:42:25.696+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:42:25.696+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:42:25.713+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.099 seconds
+[2025-05-27T06:42:56.742+0000] {processor.py:157} INFO - Started process (PID=188) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:42:56.744+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:42:56.748+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:42:56.748+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:42:56.770+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:42:56.806+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:42:56.805+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:42:56.817+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:42:56.817+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:42:56.831+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.096 seconds
+[2025-05-27T06:43:26.901+0000] {processor.py:157} INFO - Started process (PID=201) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:43:26.902+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:43:26.912+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:43:26.911+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:43:26.942+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:43:26.981+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:43:26.981+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:43:26.997+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:43:26.997+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:43:27.007+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.113 seconds
+[2025-05-27T06:43:57.972+0000] {processor.py:157} INFO - Started process (PID=214) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:43:57.974+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:43:57.979+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:43:57.979+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:43:58.004+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:43:58.044+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:43:58.044+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:43:58.054+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:43:58.054+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:43:58.065+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.105 seconds
+[2025-05-27T06:44:29.052+0000] {processor.py:157} INFO - Started process (PID=227) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:44:29.053+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:44:29.058+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:44:29.057+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:44:29.083+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:44:29.116+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:44:29.116+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:44:29.128+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:44:29.128+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:44:29.138+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.093 seconds
+[2025-05-27T06:45:00.145+0000] {processor.py:157} INFO - Started process (PID=240) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:45:00.147+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:45:00.153+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:45:00.152+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:45:00.184+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:45:00.221+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:45:00.221+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:45:00.236+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:45:00.236+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:45:00.246+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.109 seconds
+[2025-05-27T06:45:31.186+0000] {processor.py:157} INFO - Started process (PID=253) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:45:31.190+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:45:31.197+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:45:31.197+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:45:31.234+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:45:31.274+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:45:31.274+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:45:31.284+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:45:31.284+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:45:31.298+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.123 seconds
+[2025-05-27T06:56:22.927+0000] {processor.py:157} INFO - Started process (PID=266) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:56:22.932+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T06:56:22.991+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:56:22.990+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:56:23.124+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T06:56:23.334+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:56:23.333+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T06:56:23.419+0000] {logging_mixin.py:154} INFO - [2025-05-27T06:56:23.418+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T06:56:23.474+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.560 seconds
+[2025-05-27T07:02:41.408+0000] {processor.py:157} INFO - Started process (PID=279) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:02:41.415+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:02:41.427+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:02:41.425+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:02:41.496+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:02:41.593+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:02:41.593+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:02:41.629+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:02:41.629+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:02:41.666+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.271 seconds
+[2025-05-27T07:03:12.134+0000] {processor.py:157} INFO - Started process (PID=292) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:03:12.136+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:03:12.147+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:03:12.146+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:03:12.177+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:03:12.225+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:03:12.224+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:03:12.239+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:03:12.239+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:03:12.249+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.126 seconds
+[2025-05-27T07:03:43.105+0000] {processor.py:157} INFO - Started process (PID=305) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:03:43.106+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:03:43.119+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:03:43.118+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:03:43.141+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:03:43.177+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:03:43.177+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:03:43.189+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:03:43.188+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:03:43.200+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.101 seconds
+[2025-05-27T07:04:14.118+0000] {processor.py:157} INFO - Started process (PID=318) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:04:14.120+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:04:14.126+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:04:14.125+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:04:14.154+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:04:14.209+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:04:14.209+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:04:14.220+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:04:14.220+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:04:14.231+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.120 seconds
+[2025-05-27T07:04:45.175+0000] {processor.py:157} INFO - Started process (PID=331) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:04:45.177+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:04:45.195+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:04:45.194+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:04:45.232+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:04:45.279+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:04:45.279+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:04:45.288+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:04:45.288+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:04:45.300+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.134 seconds
+[2025-05-27T07:05:16.218+0000] {processor.py:157} INFO - Started process (PID=344) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:05:16.219+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:05:16.223+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:05:16.223+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:05:16.245+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:05:16.272+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:05:16.271+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:05:16.280+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:05:16.280+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:05:16.289+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.082 seconds
+[2025-05-27T07:05:47.231+0000] {processor.py:157} INFO - Started process (PID=357) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:05:47.232+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:05:47.236+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:05:47.236+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:05:47.270+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:05:47.307+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:05:47.307+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:05:47.320+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:05:47.320+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:05:47.330+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.113 seconds
+[2025-05-27T07:06:17.421+0000] {processor.py:157} INFO - Started process (PID=370) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:06:17.427+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:06:17.432+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:06:17.431+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:06:17.461+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:06:17.493+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:06:17.493+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:06:17.505+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:06:17.505+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:06:17.514+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.101 seconds
+[2025-05-27T07:06:48.500+0000] {processor.py:157} INFO - Started process (PID=383) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:06:48.505+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:06:48.510+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:06:48.510+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:06:48.538+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:06:48.569+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:06:48.569+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:06:48.577+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:06:48.577+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:06:48.597+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.107 seconds
+[2025-05-27T07:07:19.482+0000] {processor.py:157} INFO - Started process (PID=396) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:07:19.484+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:07:19.490+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:07:19.490+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:07:19.522+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:07:19.561+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:07:19.561+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:07:19.571+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:07:19.571+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:07:19.584+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.111 seconds
+[2025-05-27T07:07:50.507+0000] {processor.py:157} INFO - Started process (PID=409) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:07:50.510+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:07:50.515+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:07:50.515+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:07:50.547+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:07:50.580+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:07:50.580+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:07:50.590+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:07:50.590+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:07:50.602+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.101 seconds
+[2025-05-27T07:08:21.532+0000] {processor.py:157} INFO - Started process (PID=422) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:08:21.533+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:08:21.542+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:08:21.541+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:08:21.570+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:08:21.606+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:08:21.606+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:08:21.627+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:08:21.627+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:08:21.646+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.121 seconds
+[2025-05-27T07:08:52.607+0000] {processor.py:157} INFO - Started process (PID=435) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:08:52.609+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:08:52.613+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:08:52.612+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:08:52.634+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:08:52.673+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:08:52.672+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:08:52.687+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:08:52.687+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:08:52.702+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.100 seconds
+[2025-05-27T07:09:23.521+0000] {processor.py:157} INFO - Started process (PID=448) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:09:23.523+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:09:23.528+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:09:23.528+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:09:23.557+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:09:23.596+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:09:23.595+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:09:23.608+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:09:23.607+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:09:23.627+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.114 seconds
+[2025-05-27T07:09:54.586+0000] {processor.py:157} INFO - Started process (PID=461) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:09:54.589+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:09:54.595+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:09:54.595+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:09:54.618+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:09:54.660+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:09:54.660+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:09:54.677+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:09:54.676+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:09:54.694+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.113 seconds
+[2025-05-27T07:10:25.473+0000] {processor.py:157} INFO - Started process (PID=474) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:10:25.474+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:10:25.478+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:10:25.478+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:10:25.512+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:10:25.542+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:10:25.542+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:10:25.557+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:10:25.557+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:10:25.572+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.103 seconds
+[2025-05-27T07:10:56.291+0000] {processor.py:157} INFO - Started process (PID=487) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:10:56.292+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:10:56.297+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:10:56.296+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:10:56.330+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:10:56.357+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:10:56.357+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:10:56.370+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:10:56.370+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:10:56.380+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.093 seconds
+[2025-05-27T07:11:27.295+0000] {processor.py:157} INFO - Started process (PID=500) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:11:27.297+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:11:27.301+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:11:27.301+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:11:27.323+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:11:27.354+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:11:27.354+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:11:27.363+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:11:27.363+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:11:27.372+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.085 seconds
+[2025-05-27T07:11:58.284+0000] {processor.py:157} INFO - Started process (PID=513) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:11:58.285+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:11:58.291+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:11:58.290+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:11:58.323+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:11:58.354+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:11:58.354+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:11:58.365+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:11:58.365+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:11:58.376+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.099 seconds
+[2025-05-27T07:12:29.339+0000] {processor.py:157} INFO - Started process (PID=526) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:12:29.340+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:12:29.349+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:12:29.349+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:12:29.369+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:12:29.402+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:12:29.401+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:12:29.411+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:12:29.411+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:12:29.422+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.090 seconds
+[2025-05-27T07:13:00.487+0000] {processor.py:157} INFO - Started process (PID=539) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:13:00.489+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:13:00.494+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:13:00.493+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:13:00.527+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:13:00.559+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:13:00.559+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:13:00.572+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:13:00.572+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:13:00.582+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.101 seconds
+[2025-05-27T07:13:30.646+0000] {processor.py:157} INFO - Started process (PID=552) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:13:30.648+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:13:30.652+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:13:30.651+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:13:30.689+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:13:30.752+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:13:30.752+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:13:30.766+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:13:30.766+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:13:30.783+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.143 seconds
+[2025-05-27T07:14:01.521+0000] {processor.py:157} INFO - Started process (PID=565) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:14:01.522+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:14:01.535+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:14:01.535+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:14:01.609+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:14:01.633+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:14:01.632+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:14:01.647+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:14:01.647+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:14:01.658+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.144 seconds
+[2025-05-27T07:14:32.405+0000] {processor.py:157} INFO - Started process (PID=577) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:14:32.406+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:14:32.410+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:14:32.410+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:14:32.431+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:14:32.467+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:14:32.467+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:14:32.477+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:14:32.477+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:14:32.487+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.087 seconds
+[2025-05-27T07:15:03.247+0000] {processor.py:157} INFO - Started process (PID=590) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:15:03.248+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:15:03.253+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:15:03.252+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:15:03.276+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:15:03.308+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:15:03.308+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:15:03.320+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:15:03.320+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:15:03.332+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.091 seconds
+[2025-05-27T07:15:34.157+0000] {processor.py:157} INFO - Started process (PID=603) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:15:34.158+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:15:34.162+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:15:34.162+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:15:34.186+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:15:34.214+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:15:34.214+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:15:34.231+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:15:34.231+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:15:34.244+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.093 seconds
+[2025-05-27T07:16:05.060+0000] {processor.py:157} INFO - Started process (PID=616) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:16:05.062+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:16:05.073+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:16:05.073+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:16:05.103+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:16:05.130+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:16:05.130+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:16:05.140+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:16:05.140+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:16:05.156+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.103 seconds
+[2025-05-27T07:16:35.993+0000] {processor.py:157} INFO - Started process (PID=629) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:16:35.995+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:16:36.000+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:16:35.999+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:16:36.023+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:16:36.069+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:16:36.069+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:16:36.080+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:16:36.080+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:16:36.096+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.109 seconds
+[2025-05-27T07:17:06.852+0000] {processor.py:157} INFO - Started process (PID=642) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:17:06.853+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:17:06.857+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:17:06.856+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:17:06.890+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:17:06.924+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:17:06.924+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:17:06.940+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:17:06.940+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:17:06.951+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.104 seconds
+[2025-05-27T07:17:37.732+0000] {processor.py:157} INFO - Started process (PID=655) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:17:37.734+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:17:37.739+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:17:37.738+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:17:37.769+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:17:37.799+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:17:37.799+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:17:37.809+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:17:37.808+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:17:37.819+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.094 seconds
+[2025-05-27T07:18:08.704+0000] {processor.py:157} INFO - Started process (PID=668) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:18:08.705+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:18:08.717+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:18:08.715+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:18:08.740+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:18:08.767+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:18:08.767+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:18:08.775+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:18:08.775+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:18:08.786+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.093 seconds
+[2025-05-27T07:18:39.668+0000] {processor.py:157} INFO - Started process (PID=688) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:18:39.669+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:18:39.675+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:18:39.674+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:18:39.694+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:18:39.724+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:18:39.724+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:18:39.736+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:18:39.736+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:18:39.751+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.088 seconds
+[2025-05-27T07:19:10.693+0000] {processor.py:157} INFO - Started process (PID=701) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:19:10.694+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:19:10.698+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:19:10.697+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:19:10.717+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:19:10.761+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:19:10.761+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:19:10.779+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:19:10.779+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:19:10.790+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.102 seconds
+[2025-05-27T07:19:41.571+0000] {processor.py:157} INFO - Started process (PID=714) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:19:41.573+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:19:41.579+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:19:41.578+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:19:41.602+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:19:41.631+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:19:41.631+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:19:41.639+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:19:41.639+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:19:41.652+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.091 seconds
+[2025-05-27T07:20:12.502+0000] {processor.py:157} INFO - Started process (PID=727) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:20:12.504+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:20:12.510+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:20:12.509+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:20:12.531+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:20:12.561+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:20:12.560+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:20:12.569+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:20:12.569+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:20:12.578+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.082 seconds
+[2025-05-27T07:20:42.754+0000] {processor.py:157} INFO - Started process (PID=740) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:20:42.756+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:20:42.762+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:20:42.761+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:20:42.789+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:20:42.820+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:20:42.820+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:20:42.833+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:20:42.833+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:20:42.847+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.104 seconds
+[2025-05-27T07:21:13.075+0000] {processor.py:157} INFO - Started process (PID=753) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:21:13.076+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:21:13.082+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:21:13.081+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:21:13.107+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:21:13.144+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:21:13.144+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:21:13.156+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:21:13.156+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:21:13.168+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.098 seconds
+[2025-05-27T07:21:44.121+0000] {processor.py:157} INFO - Started process (PID=766) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:21:44.123+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:21:44.128+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:21:44.128+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:21:44.161+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:21:44.202+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:21:44.201+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:21:44.217+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:21:44.217+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:21:44.228+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.113 seconds
+[2025-05-27T07:22:15.176+0000] {processor.py:157} INFO - Started process (PID=779) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:22:15.177+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:22:15.181+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:22:15.181+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:22:15.201+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:22:15.239+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:22:15.239+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:22:15.250+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:22:15.250+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:22:15.261+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.096 seconds
+[2025-05-27T07:22:46.188+0000] {processor.py:157} INFO - Started process (PID=792) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:22:46.192+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:22:46.200+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:22:46.199+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:22:46.231+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:22:46.274+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:22:46.274+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:22:46.289+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:22:46.289+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:22:46.304+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.130 seconds
+[2025-05-27T07:23:17.264+0000] {processor.py:157} INFO - Started process (PID=805) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:23:17.266+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:23:17.271+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:23:17.270+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:23:17.299+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:23:17.340+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:23:17.340+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:23:17.350+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:23:17.350+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:23:17.359+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.102 seconds
+[2025-05-27T07:23:48.188+0000] {processor.py:157} INFO - Started process (PID=818) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:23:48.190+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:23:48.195+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:23:48.194+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:23:48.219+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:23:48.249+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:23:48.249+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:23:48.262+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:23:48.262+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:23:48.272+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.093 seconds
+[2025-05-27T07:24:19.228+0000] {processor.py:157} INFO - Started process (PID=831) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:24:19.230+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-27T07:24:19.235+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:24:19.234+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:24:19.256+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_recreate_tables_dag']) retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-27T07:24:19.285+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:24:19.285+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T07:24:19.295+0000] {logging_mixin.py:154} INFO - [2025-05-27T07:24:19.294+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
+[2025-05-27T07:24:19.305+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.084 seconds

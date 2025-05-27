@@ -1,0 +1,23 @@
+[2025-05-27T05:27:49.563+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: walmart_etl_dag.generate_synthetic_data manual__2025-05-27T05:27:47+00:00 [queued]>
+[2025-05-27T05:27:49.568+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: walmart_etl_dag.generate_synthetic_data manual__2025-05-27T05:27:47+00:00 [queued]>
+[2025-05-27T05:27:49.569+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T05:27:49.575+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): generate_synthetic_data> on 2025-05-27 05:27:47+00:00
+[2025-05-27T05:27:49.579+0000] {standard_task_runner.py:57} INFO - Started process 173 to run task
+[2025-05-27T05:27:49.582+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'walmart_etl_dag', 'generate_synthetic_data', 'manual__2025-05-27T05:27:47+00:00', '--job-id', '37', '--raw', '--subdir', 'DAGS_FOLDER/walmart_etl_dag.py', '--cfg-path', '/tmp/tmp9_xa2aeh']
+[2025-05-27T05:27:49.583+0000] {standard_task_runner.py:85} INFO - Job 37: Subtask generate_synthetic_data
+[2025-05-27T05:27:49.622+0000] {task_command.py:416} INFO - Running <TaskInstance: walmart_etl_dag.generate_synthetic_data manual__2025-05-27T05:27:47+00:00 [running]> on host 364c8c3dd6ab
+[2025-05-27T05:27:49.677+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='walmart_etl_dag' AIRFLOW_CTX_TASK_ID='generate_synthetic_data' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T05:27:47+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T05:27:47+00:00'
+[2025-05-27T05:27:49.680+0000] {logging_mixin.py:154} INFO - Starting synthetic data generation process...
+[2025-05-27T05:27:49.680+0000] {logging_mixin.py:154} INFO - Generating supplier data...
+[2025-05-27T05:27:49.689+0000] {logging_mixin.py:154} INFO - Found 50 existing supplier records, skipping generation
+[2025-05-27T05:27:49.691+0000] {logging_mixin.py:154} INFO - Generating return reason data...
+[2025-05-27T05:27:49.693+0000] {logging_mixin.py:154} INFO - Found 10 existing return reason records, skipping generation
+[2025-05-27T05:27:49.696+0000] {logging_mixin.py:154} INFO - Transforming and loading data to staging tables...
+[2025-05-27T05:27:49.700+0000] {logging_mixin.py:154} INFO - Supplier and return reason data successfully loaded to staging tables with batch ID: BATCH_SYNTHETIC_20250527052749
+[2025-05-27T05:27:49.701+0000] {logging_mixin.py:154} INFO - Starting load to target layer for batch BATCH_SYNTHETIC_20250527052749...
+[2025-05-27T05:27:49.705+0000] {logging_mixin.py:154} INFO - Supplier and return reason data successfully loaded to target tables
+[2025-05-27T05:27:49.706+0000] {logging_mixin.py:154} INFO - Synthetic data generation and loading complete!
+[2025-05-27T05:27:49.706+0000] {python.py:194} INFO - Done. Returned value was: None
+[2025-05-27T05:27:49.714+0000] {taskinstance.py:1400} INFO - Marking task as SUCCESS. dag_id=walmart_etl_dag, task_id=generate_synthetic_data, execution_date=20250527T052747, start_date=20250527T052749, end_date=20250527T052749
+[2025-05-27T05:27:49.764+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 0
+[2025-05-27T05:27:49.781+0000] {taskinstance.py:2778} INFO - 1 downstream tasks scheduled from follow-on schedule check
