@@ -1,0 +1,20 @@
+[2025-05-27T18:56:53.330+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: walmart_etl_dag.load_to_ods manual__2025-05-27T18:56:50+00:00 [queued]>
+[2025-05-27T18:56:53.334+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: walmart_etl_dag.load_to_ods manual__2025-05-27T18:56:50+00:00 [queued]>
+[2025-05-27T18:56:53.334+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T18:56:53.340+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): load_to_ods> on 2025-05-27 18:56:50+00:00
+[2025-05-27T18:56:53.343+0000] {standard_task_runner.py:57} INFO - Started process 749 to run task
+[2025-05-27T18:56:53.346+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'walmart_etl_dag', 'load_to_ods', 'manual__2025-05-27T18:56:50+00:00', '--job-id', '264', '--raw', '--subdir', 'DAGS_FOLDER/walmart_etl_dag.py', '--cfg-path', '/tmp/tmpd9bzy0vl']
+[2025-05-27T18:56:53.349+0000] {standard_task_runner.py:85} INFO - Job 264: Subtask load_to_ods
+[2025-05-27T18:56:53.372+0000] {task_command.py:416} INFO - Running <TaskInstance: walmart_etl_dag.load_to_ods manual__2025-05-27T18:56:50+00:00 [running]> on host d80f98a6628f
+[2025-05-27T18:56:53.508+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='walmart_etl_dag' AIRFLOW_CTX_TASK_ID='load_to_ods' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T18:56:50+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T18:56:50+00:00'
+[2025-05-27T18:56:53.533+0000] {logging_mixin.py:154} INFO - Loaded 8399 rows from CSV file.
+[2025-05-27T18:56:53.890+0000] {logging_mixin.py:154} INFO - Loaded 1459 records into ods_date.
+[2025-05-27T18:56:54.519+0000] {logging_mixin.py:154} INFO - Loaded 3011 records into ods_customer.
+[2025-05-27T18:56:54.716+0000] {logging_mixin.py:154} INFO - Loaded 1314 records into ods_product.
+[2025-05-27T18:56:54.949+0000] {logging_mixin.py:154} INFO - Loaded 1636 records into ods_store.
+[2025-05-27T18:56:56.896+0000] {logging_mixin.py:154} INFO - Loaded 8399 records into ods_sales.
+[2025-05-27T18:56:56.912+0000] {logging_mixin.py:154} INFO - ODS layer loading completed.
+[2025-05-27T18:56:56.916+0000] {python.py:194} INFO - Done. Returned value was: ODS layer loading completed
+[2025-05-27T18:56:56.970+0000] {taskinstance.py:1400} INFO - Marking task as SUCCESS. dag_id=walmart_etl_dag, task_id=load_to_ods, execution_date=20250527T185650, start_date=20250527T185653, end_date=20250527T185656
+[2025-05-27T18:56:57.053+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 0
+[2025-05-27T18:56:57.112+0000] {taskinstance.py:2778} INFO - 1 downstream tasks scheduled from follow-on schedule check

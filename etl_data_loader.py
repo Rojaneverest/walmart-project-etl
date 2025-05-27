@@ -10,7 +10,8 @@ the ETL process to move data through the three layers (ODS, staging, target).
 import os
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
+import hashlib
+from datetime import datetime, timedelta, date
 from sqlalchemy import text, select, func, and_
 from etl_tables_setup import get_engine, metadata
 import uuid
@@ -20,6 +21,54 @@ from config import CSV_FILE
 
 # Generate a batch ID for this ETL run
 BATCH_ID = f"BATCH_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+
+def generate_product_id(product_name, category, subcategory):
+    """Generate a deterministic product ID based on product name only.
+    
+    Args:
+        product_name: The name of the product
+        category: The product category (not used for ID generation)
+        subcategory: The product subcategory (not used for ID generation)
+        
+    Returns:
+        A deterministic ID string (max 20 chars)
+    """
+    # Create a consistent string from just the product name
+    key_string = product_name
+    # Generate a deterministic ID using MD5 hash (truncated to 20 chars)
+    return hashlib.md5(key_string.encode()).hexdigest()[:20]
+
+def generate_store_id(store_name, city, state):
+    """Generate a deterministic store ID based on store name only.
+    
+    Args:
+        store_name: The name of the store
+        city: The city where the store is located (not used for ID generation)
+        state: The state where the store is located (not used for ID generation)
+        
+    Returns:
+        A deterministic ID string (max 20 chars)
+    """
+    # Create a consistent string from just the store name
+    key_string = store_name
+    # Generate a deterministic ID using MD5 hash (truncated to 20 chars)
+    return hashlib.md5(key_string.encode()).hexdigest()[:20]
+
+def generate_customer_id(customer_name, city, state):
+    """Generate a deterministic customer ID based on natural business keys.
+    
+    Args:
+        customer_name: The name of the customer
+        city: The city where the customer is located
+        state: The state where the customer is located
+        
+    Returns:
+        A deterministic ID string (max 20 chars)
+    """
+    # Create a consistent string from the business key components
+    key_string = f"{customer_name}|{city}|{state}"
+    # Generate a deterministic ID using MD5 hash (truncated to 20 chars)
+    return hashlib.md5(key_string.encode()).hexdigest()[:20]
 
 def load_csv_to_dataframe():
     """Load CSV file into a pandas DataFrame."""
@@ -118,7 +167,7 @@ def load_ods_customer_dimension(engine, df):
     # Create customer records
     customer_records = []
     for _, row in customers.iterrows():
-        customer_id = str(uuid.uuid4())[:20]  # Generate a unique ID
+        customer_id = generate_customer_id(row['Customer Name'], row['City'], row['State'])  # Generate a deterministic ID
         record = {
             'customer_id': customer_id,
             'customer_name': row['Customer Name'],
@@ -164,7 +213,7 @@ def load_ods_product_dimension(engine, df):
     # Create product records
     product_records = []
     for _, row in products.iterrows():
-        product_id = str(uuid.uuid4())[:20]  # Generate a unique ID
+        product_id = generate_product_id(row['Product Name'], row['Product Category'], row['Product Sub-Category'])
         record = {
             'product_id': product_id,
             'product_name': row['Product Name'],
@@ -174,7 +223,6 @@ def load_ods_product_dimension(engine, df):
             'product_base_margin': row['Product Base Margin'],
             'unit_price': row['Unit Price'],
             'supplier_id': None,  # Not available in the dataset
-            'effective_date': datetime.now().date(),
             'source_system': 'CSV Import',
             'load_timestamp': datetime.now()
         }
@@ -187,11 +235,11 @@ def load_ods_product_dimension(engine, df):
                 INSERT INTO ods_product (
                     product_id, product_name, product_category, product_sub_category,
                     product_container, product_base_margin, unit_price, supplier_id,
-                    effective_date, source_system, load_timestamp
+                    source_system, load_timestamp
                 ) VALUES (
                     :product_id, :product_name, :product_category, :product_sub_category,
                     :product_container, :product_base_margin, :unit_price, :supplier_id,
-                    :effective_date, :source_system, :load_timestamp
+                    :source_system, :load_timestamp
                 )
                 ON CONFLICT (product_id) DO NOTHING
             """), product_records)
@@ -207,7 +255,8 @@ def load_ods_store_dimension(engine, df):
     # Create store records
     store_records = []
     for _, row in stores.iterrows():
-        store_id = f"{row['City']}_{row['State']}_{row['Zip Code']}"
+        store_name = f"{row['City']} Store"
+        store_id = generate_store_id(store_name, row['City'], row['State'])
         record = {
             'store_id': store_id,
             'store_name': f"{row['City']} Store",
@@ -217,7 +266,6 @@ def load_ods_store_dimension(engine, df):
             'zip_code': row['Zip Code'],
             'region': row['Region'],
             'store_size_sqft': None,  # Not available in the dataset
-            'effective_date': datetime.now().date(),
             'source_system': 'CSV Import',
             'load_timestamp': datetime.now()
         }
@@ -229,10 +277,10 @@ def load_ods_store_dimension(engine, df):
             conn.execute(text("""
                 INSERT INTO ods_store (
                     store_id, store_name, location, city, state, zip_code,
-                    region, store_size_sqft, effective_date, source_system, load_timestamp
+                    region, store_size_sqft, source_system, load_timestamp
                 ) VALUES (
                     :store_id, :store_name, :location, :city, :state, :zip_code,
-                    :region, :store_size_sqft, :effective_date, :source_system, :load_timestamp
+                    :region, :store_size_sqft, :source_system, :load_timestamp
                 )
                 ON CONFLICT (store_id) DO NOTHING
             """), store_records)
@@ -331,6 +379,52 @@ def get_dimension_mappings(engine):
     
     return customer_map, product_map, store_map
 
+def load_ods_inventory_fact(engine, df):
+    """Load inventory fact data into ODS layer."""
+    if 'inventory_id' not in df.columns:
+        print("No inventory data found in the input DataFrame.")
+        return
+    
+    # Extract inventory data
+    inventory_df = df[df['inventory_id'].notna()].copy()
+    
+    if inventory_df.empty:
+        print("No inventory data found in the input DataFrame.")
+        return
+    
+    # Clean and prepare data
+    inventory_df = clean_dataframe(inventory_df)
+    
+    # Load to ODS
+    try:
+        inventory_df.to_sql('ods_inventory', engine, if_exists='append', index=False)
+        print(f"Loaded {len(inventory_df)} inventory records to ODS")
+    except Exception as e:
+        print(f"Error loading inventory data to ODS: {e}")
+
+def load_ods_returns_fact(engine, df):
+    """Load returns fact data into ODS layer."""
+    if 'return_id' not in df.columns:
+        print("No returns data found in the input DataFrame.")
+        return
+    
+    # Extract returns data
+    returns_df = df[df['return_id'].notna()].copy()
+    
+    if returns_df.empty:
+        print("No returns data found in the input DataFrame.")
+        return
+    
+    # Clean and prepare data
+    returns_df = clean_dataframe(returns_df)
+    
+    # Load to ODS
+    try:
+        returns_df.to_sql('ods_returns', engine, if_exists='append', index=False)
+        print(f"Loaded {len(returns_df)} returns records to ODS")
+    except Exception as e:
+        print(f"Error loading returns data to ODS: {e}")
+
 def load_ods_layer(engine, df):
     """Load data into ODS layer tables."""
     # Load dimension tables first
@@ -344,6 +438,8 @@ def load_ods_layer(engine, df):
     
     # Load fact tables
     load_ods_sales_fact(engine, df, customer_map, product_map, store_map)
+    load_ods_inventory_fact(engine, df)
+    load_ods_returns_fact(engine, df)
     
     print("ODS layer loading completed.")
 
@@ -487,7 +583,7 @@ def transform_to_staging(engine):
                 -- Placeholder for supplier key
                 1 as supplier_key,
                 TRUE as is_active,
-                effective_date,
+                CURRENT_DATE as effective_date,
                 'Y' as current_flag,
                 :batch_id as etl_batch_id,
                 CURRENT_TIMESTAMP as etl_timestamp
@@ -532,7 +628,7 @@ def transform_to_staging(engine):
                 region,
                 -- Add derived fields
                 'USA' as country,
-                effective_date,
+                CURRENT_DATE as effective_date,
                 'Y' as current_flag,
                 :batch_id as etl_batch_id,
                 CURRENT_TIMESTAMP as etl_timestamp
@@ -602,6 +698,105 @@ def transform_to_staging(engine):
                 etl_timestamp = EXCLUDED.etl_timestamp
         """), {'batch_id': BATCH_ID})
         
+        # Transform and load inventory fact
+        print("Transforming inventory fact...")
+        conn.execute(text("""
+            INSERT INTO stg_inventory (
+                inventory_key, inventory_id, date_key, product_key, store_key,
+                stock_level, min_stock_level, max_stock_level, reorder_point,
+                last_restock_date_key, days_of_supply, stock_status, is_in_stock,
+                etl_batch_id, etl_timestamp
+            )
+            SELECT 
+                -- Generate a surrogate key based on row number
+                ROW_NUMBER() OVER (ORDER BY i.inventory_id) as inventory_key,
+                i.inventory_id,
+                -- Date key from inventory date
+                TO_CHAR(i.inventory_date, 'YYYYMMDD')::integer as date_key,
+                -- Use simplified approach for dimension keys
+                ROW_NUMBER() OVER (PARTITION BY i.product_id ORDER BY i.inventory_id) as product_key,
+                ROW_NUMBER() OVER (PARTITION BY i.store_id ORDER BY i.inventory_id) as store_key,
+                i.stock_level,
+                i.min_stock_level,
+                i.max_stock_level,
+                i.reorder_point,
+                -- Last restock date key
+                TO_CHAR(i.last_restock_date, 'YYYYMMDD')::integer as last_restock_date_key,
+                -- Calculate days of supply
+                CASE 
+                    WHEN i.stock_level > 0 AND i.min_stock_level > 0 
+                    THEN ROUND(i.stock_level::numeric / i.min_stock_level)
+                    ELSE 0
+                END as days_of_supply,
+                -- Determine stock status
+                CASE
+                    WHEN i.stock_level <= i.reorder_point THEN 'Low'
+                    WHEN i.stock_level >= i.max_stock_level THEN 'Excess'
+                    ELSE 'Normal'
+                END as stock_status,
+                -- Is in stock flag
+                (i.stock_level > 0) as is_in_stock,
+                :batch_id as etl_batch_id,
+                CURRENT_TIMESTAMP as etl_timestamp
+            FROM ods_inventory i
+            ON CONFLICT (inventory_key) DO UPDATE
+            SET 
+                stock_level = EXCLUDED.stock_level,
+                min_stock_level = EXCLUDED.min_stock_level,
+                max_stock_level = EXCLUDED.max_stock_level,
+                reorder_point = EXCLUDED.reorder_point,
+                days_of_supply = EXCLUDED.days_of_supply,
+                stock_status = EXCLUDED.stock_status,
+                is_in_stock = EXCLUDED.is_in_stock,
+                etl_batch_id = EXCLUDED.etl_batch_id,
+                etl_timestamp = EXCLUDED.etl_timestamp
+        """), {'batch_id': BATCH_ID})
+        
+        # Transform and load returns fact
+        print("Transforming returns fact...")
+        conn.execute(text("""
+            INSERT INTO stg_returns (
+                return_key, return_id, date_key, product_key, store_key,
+                return_reason_key, return_amount, quantity_returned, return_condition,
+                original_sale_id, original_sale_date_key, days_since_purchase, refund_type,
+                etl_batch_id, etl_timestamp
+            )
+            SELECT 
+                -- Generate a surrogate key based on row number
+                ROW_NUMBER() OVER (ORDER BY r.return_id) as return_key,
+                r.return_id,
+                -- Date key from return date
+                TO_CHAR(r.return_date, 'YYYYMMDD')::integer as date_key,
+                -- Use simplified approach for dimension keys
+                ROW_NUMBER() OVER (PARTITION BY r.product_id ORDER BY r.return_id) as product_key,
+                ROW_NUMBER() OVER (PARTITION BY r.store_id ORDER BY r.return_id) as store_key,
+                -- Use reason code as return reason key
+                1 as return_reason_key,
+                r.return_amount,
+                r.quantity_returned,
+                r.return_condition,
+                r.original_sale_id,
+                -- Placeholder for original sale date key
+                TO_CHAR(r.return_date - INTERVAL '7 days', 'YYYYMMDD')::integer as original_sale_date_key,
+                -- Placeholder for days since purchase
+                7 as days_since_purchase,
+                -- Placeholder for refund type
+                'Credit' as refund_type,
+                :batch_id as etl_batch_id,
+                CURRENT_TIMESTAMP as etl_timestamp
+            FROM ods_returns r
+            ON CONFLICT (return_key) DO UPDATE
+            SET 
+                return_reason_key = EXCLUDED.return_reason_key,
+                return_amount = EXCLUDED.return_amount,
+                quantity_returned = EXCLUDED.quantity_returned,
+                return_condition = EXCLUDED.return_condition,
+                days_since_purchase = EXCLUDED.days_since_purchase,
+                refund_type = EXCLUDED.refund_type,
+                etl_batch_id = EXCLUDED.etl_batch_id,
+                etl_timestamp = EXCLUDED.etl_timestamp
+        """), {'batch_id': BATCH_ID})
+        
         # Transaction is automatically committed when the context manager exits
     
     print("Staging layer transformation completed successfully.")
@@ -619,15 +814,88 @@ def load_to_target(engine, batch_id=None):
     
     Args:
         engine: SQLAlchemy engine for database connection
-        batch_id: Batch ID to process (defaults to global BATCH_ID)
+        batch_id: Batch ID to process (defaults to generated batch ID)
     """
-    if batch_id is None:
-        batch_id = BATCH_ID
-        
+    if not batch_id:
+        # Generate a batch ID if not provided
+        batch_id = f"BATCH_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    
     print(f"Starting load to target layer for batch {batch_id}...")
+    
+    # Default keys for dimensions that might not have matches
+    default_product_key = 1  # Assuming 1 is the key for 'Unknown Product'
+    default_store_key = 1    # Assuming 1 is the key for 'Unknown Store'
     max_date = '9999-12-31'  # Standard date for current records in SCD Type 2
     
     with engine.connect() as conn:
+        # First, ensure all required dates are in the date dimension
+        print("Ensuring all required dates are in the date dimension...")
+        
+        # Get all unique date keys from staging tables
+        date_keys_query = text("""
+            SELECT DISTINCT date_key FROM stg_inventory
+            UNION
+            SELECT DISTINCT date_key FROM stg_returns
+            UNION
+            SELECT DISTINCT last_restock_date_key FROM stg_inventory WHERE last_restock_date_key IS NOT NULL
+            UNION
+            SELECT DISTINCT original_sale_date_key FROM stg_returns WHERE original_sale_date_key IS NOT NULL
+        """)
+        
+        result = conn.execute(date_keys_query)
+        date_keys = [row[0] for row in result]
+        
+        # For each date key, check if it exists in tgt_dim_date and insert if not
+        for date_key in date_keys:
+            # Skip if NULL
+            if not date_key:
+                continue
+                
+            # Check if date exists
+            check_query = text("SELECT 1 FROM tgt_dim_date WHERE date_key = :date_key")
+            result = conn.execute(check_query, {"date_key": date_key})
+            exists = result.fetchone() is not None
+            
+            if not exists:
+                # Convert date_key to date components
+                year = date_key // 10000
+                month = (date_key // 100) % 100
+                day = date_key % 100
+                
+                # Create date object
+                try:
+                    date_obj = date(year, month, day)
+                    
+                    # Insert new date
+                    insert_query = text("""
+                        INSERT INTO tgt_dim_date (
+                            date_key, full_date, day_of_week, day_of_month, day_of_year,
+                            week_of_year, month, quarter, year, is_weekend, is_holiday
+                        ) VALUES (
+                            :date_key, :full_date, :day_of_week, :day_of_month, :day_of_year,
+                            :week_of_year, :month, :quarter, :year, :is_weekend, :is_holiday
+                        )
+                    """)
+                    
+                    conn.execute(insert_query, {
+                        "date_key": date_key,
+                        "full_date": date_obj,
+                        "day_of_week": date_obj.weekday() + 1,  # 1-7 where 1 is Monday
+                        "day_of_month": date_obj.day,
+                        "day_of_year": date_obj.timetuple().tm_yday,
+                        "week_of_year": date_obj.isocalendar()[1],
+                        "month": date_obj.month,
+                        "quarter": (date_obj.month - 1) // 3 + 1,
+                        "year": date_obj.year,
+                        "is_weekend": date_obj.weekday() >= 5,  # 5 and 6 are weekend (Sat, Sun)
+                        "is_holiday": False  # Default to not a holiday
+                    })
+                    
+                    print(f"Added date {date_key} to date dimension")
+                except ValueError as e:
+                    print(f"Invalid date {date_key}: {e}")
+        
+        # Now proceed with the regular loading process
         # Load date dimension to target
         print("Loading date dimension to target...")
         conn.execute(text("""
@@ -1009,6 +1277,73 @@ def load_to_target(engine, batch_id=None):
             'default_product_key': default_product_key,
             'default_store_key': default_store_key,
             'default_customer_key': default_customer_key
+        })
+        
+        # Load inventory fact to target
+        print("Loading inventory fact to target...")
+        conn.execute(text("""
+            INSERT INTO tgt_fact_inventory (
+                inventory_id, date_key, product_key, store_key,
+                stock_level, min_stock_level, max_stock_level, reorder_point,
+                last_restock_date_key, days_of_supply, stock_status, is_in_stock,
+                dw_created_date
+            )
+            SELECT 
+                i.inventory_id, i.date_key,
+                :default_product_key as product_key,
+                :default_store_key as store_key,
+                i.stock_level, i.min_stock_level, i.max_stock_level, i.reorder_point,
+                i.last_restock_date_key, i.days_of_supply, i.stock_status, i.is_in_stock,
+                CURRENT_TIMESTAMP
+            FROM stg_inventory i
+            WHERE i.etl_batch_id = :batch_id
+            ON CONFLICT (inventory_id) DO UPDATE
+            SET 
+                stock_level = EXCLUDED.stock_level,
+                min_stock_level = EXCLUDED.min_stock_level,
+                max_stock_level = EXCLUDED.max_stock_level,
+                reorder_point = EXCLUDED.reorder_point,
+                days_of_supply = EXCLUDED.days_of_supply,
+                stock_status = EXCLUDED.stock_status,
+                is_in_stock = EXCLUDED.is_in_stock,
+                dw_modified_date = CURRENT_TIMESTAMP
+        """), {
+            'batch_id': batch_id,
+            'default_product_key': default_product_key,
+            'default_store_key': default_store_key
+        })
+        
+        # Load returns fact to target
+        print("Loading returns fact to target...")
+        conn.execute(text("""
+            INSERT INTO tgt_fact_returns (
+                return_id, date_key, product_key, store_key, return_reason_key,
+                return_amount, quantity_returned, return_condition,
+                original_sale_id, original_sale_date_key, days_since_purchase, refund_type,
+                dw_created_date
+            )
+            SELECT 
+                r.return_id, r.date_key,
+                :default_product_key as product_key,
+                :default_store_key as store_key,
+                r.return_reason_key as return_reason_key,
+                r.return_amount, r.quantity_returned, r.return_condition,
+                r.original_sale_id, r.original_sale_date_key, r.days_since_purchase, r.refund_type,
+                CURRENT_TIMESTAMP
+            FROM stg_returns r
+            WHERE r.etl_batch_id = :batch_id
+            ON CONFLICT (return_id) DO UPDATE
+            SET 
+                return_amount = EXCLUDED.return_amount,
+                quantity_returned = EXCLUDED.quantity_returned,
+                return_condition = EXCLUDED.return_condition,
+                days_since_purchase = EXCLUDED.days_since_purchase,
+                refund_type = EXCLUDED.refund_type,
+                dw_modified_date = CURRENT_TIMESTAMP
+        """), {
+            'batch_id': batch_id,
+            'default_product_key': default_product_key,
+            'default_store_key': default_store_key
         })
         
         # Transaction is automatically committed when the context manager exits

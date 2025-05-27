@@ -1,0 +1,89 @@
+[2025-05-27T19:40:05.333+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: walmart_etl_dag.generate_inventory_returns manual__2025-05-27T19:39:56+00:00 [queued]>
+[2025-05-27T19:40:05.342+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: walmart_etl_dag.generate_inventory_returns manual__2025-05-27T19:39:56+00:00 [queued]>
+[2025-05-27T19:40:05.344+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T19:40:05.355+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): generate_inventory_returns> on 2025-05-27 19:39:56+00:00
+[2025-05-27T19:40:05.364+0000] {standard_task_runner.py:57} INFO - Started process 1560 to run task
+[2025-05-27T19:40:05.370+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'walmart_etl_dag', 'generate_inventory_returns', 'manual__2025-05-27T19:39:56+00:00', '--job-id', '319', '--raw', '--subdir', 'DAGS_FOLDER/walmart_etl_dag.py', '--cfg-path', '/tmp/tmpw2c34g1c']
+[2025-05-27T19:40:05.381+0000] {standard_task_runner.py:85} INFO - Job 319: Subtask generate_inventory_returns
+[2025-05-27T19:40:05.427+0000] {task_command.py:416} INFO - Running <TaskInstance: walmart_etl_dag.generate_inventory_returns manual__2025-05-27T19:39:56+00:00 [running]> on host d80f98a6628f
+[2025-05-27T19:40:05.819+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='walmart_etl_dag' AIRFLOW_CTX_TASK_ID='generate_inventory_returns' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T19:39:56+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T19:39:56+00:00'
+[2025-05-27T19:40:05.822+0000] {logging_mixin.py:154} INFO - Starting inventory and returns data generation...
+[2025-05-27T19:40:05.822+0000] {logging_mixin.py:154} INFO - Retrieving existing data for inventory and returns generation...
+[2025-05-27T19:40:05.841+0000] {logging_mixin.py:154} INFO - Generating inventory data...
+[2025-05-27T19:40:05.888+0000] {logging_mixin.py:154} INFO - Loaded 500 inventory records to ods_inventory
+[2025-05-27T19:40:05.888+0000] {logging_mixin.py:154} INFO - Generating returns data...
+[2025-05-27T19:40:05.907+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1890, in _execute_context
+    self.dialect.do_executemany(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py", line 982, in do_executemany
+    context._psycopg2_fetched_rows = xtras.execute_values(
+  File "/home/airflow/.local/lib/python3.8/site-packages/psycopg2/extras.py", line 1299, in execute_values
+    cur.execute(b''.join(parts))
+psycopg2.errors.UndefinedColumn: column "original_sale_date" of relation "ods_returns" does not exist
+LINE 1: ...ity_returned, return_condition, original_sale_id, original_s...
+                                                             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/walmart_etl_dag.py", line 105, in etl_generate_inventory_returns
+    result = generate_inventory_returns_data()
+  File "/opt/airflow/walmart-etl/generate_inventory_returns_data.py", line 244, in main
+    returns_data = generate_returns_data(existing_data, num_records=200)
+  File "/opt/airflow/walmart-etl/generate_inventory_returns_data.py", line 228, in generate_returns_data
+    df_returns.to_sql('ods_returns', engine, if_exists='append', index=False)
+  File "/home/airflow/.local/lib/python3.8/site-packages/pandas/core/generic.py", line 2878, in to_sql
+    return sql.to_sql(
+  File "/home/airflow/.local/lib/python3.8/site-packages/pandas/io/sql.py", line 769, in to_sql
+    return pandas_sql.to_sql(
+  File "/home/airflow/.local/lib/python3.8/site-packages/pandas/io/sql.py", line 1920, in to_sql
+    total_inserted = sql_engine.insert_records(
+  File "/home/airflow/.local/lib/python3.8/site-packages/pandas/io/sql.py", line 1470, in insert_records
+    raise err
+  File "/home/airflow/.local/lib/python3.8/site-packages/pandas/io/sql.py", line 1461, in insert_records
+    return table.insert(chunksize=chunksize, method=method)
+  File "/home/airflow/.local/lib/python3.8/site-packages/pandas/io/sql.py", line 1023, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/home/airflow/.local/lib/python3.8/site-packages/pandas/io/sql.py", line 929, in _execute_insert
+    result = conn.execute(self.table.insert(), data)
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1385, in execute
+    return meth(self, multiparams, params, _EMPTY_EXECUTION_OPTS)
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/sql/elements.py", line 334, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1577, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1953, in _execute_context
+    self._handle_dbapi_exception(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2134, in _handle_dbapi_exception
+    util.raise_(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1890, in _execute_context
+    self.dialect.do_executemany(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py", line 982, in do_executemany
+    context._psycopg2_fetched_rows = xtras.execute_values(
+  File "/home/airflow/.local/lib/python3.8/site-packages/psycopg2/extras.py", line 1299, in execute_values
+    cur.execute(b''.join(parts))
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "original_sale_date" of relation "ods_returns" does not exist
+LINE 1: ...ity_returned, return_condition, original_sale_id, original_s...
+                                                             ^
+
+[SQL: INSERT INTO ods_returns (return_id, return_date, product_id, store_id, reason_code, return_amount, quantity_returned, return_condition, original_sale_id, original_sale_date, source_system, load_timestamp) VALUES (%(return_id)s, %(return_date)s, %(product_id)s, %(store_id)s, %(reason_code)s, %(return_amount)s, %(quantity_returned)s, %(return_condition)s, %(original_sale_id)s, %(original_sale_date)s, %(source_system)s, %(load_timestamp)s)]
+[parameters: ({'return_id': 'RET000001', 'return_date': datetime.date(2025, 5, 23), 'product_id': '0a91d013-33c5-4215-a', 'store_id': 'Toms River_New Jersey_8753', 'reason_code': 'LATE', 'return_amount': Decimal('1083.88'), 'quantity_returned': 4, 'return_condition': 'Like New', 'original_sale_id': 'SALE29974', 'original_sale_date': datetime.date(2025, 5, 6), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895860)}, {'return_id': 'RET000002', 'return_date': datetime.date(2025, 5, 20), 'product_id': 'ac238e65-eb80-402d-a', 'store_id': 'Saint Peters_MO_63376', 'reason_code': 'WRONG', 'return_amount': Decimal('208.55'), 'quantity_returned': 5, 'return_condition': 'Like New', 'original_sale_id': 'SALE96496', 'original_sale_date': datetime.date(2025, 5, 8), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895868)}, {'return_id': 'RET000003', 'return_date': datetime.date(2025, 5, 15), 'product_id': 'c2ea5e71-6acd-4efa-b', 'store_id': 'Petaluma_California_94952', 'reason_code': 'PRICE', 'return_amount': Decimal('10.23'), 'quantity_returned': 1, 'return_condition': 'Defective', 'original_sale_id': 'SALE70483', 'original_sale_date': datetime.date(2025, 4, 24), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895875)}, {'return_id': 'RET000004', 'return_date': datetime.date(2025, 4, 30), 'product_id': 'd57204c0-a9e8-42a0-9', 'store_id': 'New Orleans_Louisiana_70117', 'reason_code': 'CHANGE', 'return_amount': Decimal('69.98'), 'quantity_returned': 2, 'return_condition': 'Like New', 'original_sale_id': 'SALE47938', 'original_sale_date': datetime.date(2025, 4, 8), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895881)}, {'return_id': 'RET000005', 'return_date': datetime.date(2025, 4, 30), 'product_id': 'aa3e705d-08c4-4255-a', 'store_id': 'Tyler_Texas_75701', 'reason_code': 'PRICE', 'return_amount': Decimal('43.88'), 'quantity_returned': 4, 'return_condition': 'Like New', 'original_sale_id': 'SALE37520', 'original_sale_date': datetime.date(2025, 4, 22), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895887)}, {'return_id': 'RET000006', 'return_date': datetime.date(2025, 5, 15), 'product_id': '0ec045f7-b4aa-45b2-a', 'store_id': 'Lynn_MA_1901', 'reason_code': 'SIZE', 'return_amount': Decimal('2799.96'), 'quantity_returned': 4, 'return_condition': 'Like New', 'original_sale_id': 'SALE27254', 'original_sale_date': datetime.date(2025, 5, 11), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895893)}, {'return_id': 'RET000007', 'return_date': datetime.date(2025, 5, 15), 'product_id': '9087a3ca-9300-48eb-8', 'store_id': 'Greensburg_Pennsylvania_15601', 'reason_code': 'WRONG', 'return_amount': Decimal('111.00'), 'quantity_returned': 4, 'return_condition': 'Damaged', 'original_sale_id': 'SALE16465', 'original_sale_date': datetime.date(2025, 4, 15), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895899)}, {'return_id': 'RET000008', 'return_date': datetime.date(2025, 5, 17), 'product_id': '84f01752-5841-4fb7-9', 'store_id': 'Gainesville_Georgia_30501', 'reason_code': 'LATE', 'return_amount': Decimal('1038.84'), 'quantity_returned': 4, 'return_condition': 'Defective', 'original_sale_id': 'SALE35038', 'original_sale_date': datetime.date(2025, 5, 9), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895905)}  ... displaying 10 of 200 total bound parameter sets ...  {'return_id': 'RET000199', 'return_date': datetime.date(2025, 5, 2), 'product_id': 'f362a65d-d2b9-4c22-8', 'store_id': 'Arlington_Virginia_22204', 'reason_code': 'SIZE', 'return_amount': Decimal('179.29'), 'quantity_returned': 1, 'return_condition': 'Damaged', 'original_sale_id': 'SALE68207', 'original_sale_date': datetime.date(2025, 4, 30), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 896998)}, {'return_id': 'RET000200', 'return_date': datetime.date(2025, 5, 14), 'product_id': '70bc414e-ab47-4127-a', 'store_id': 'Gadsden_Alabama_35904', 'reason_code': 'WRONG', 'return_amount': Decimal('12.28'), 'quantity_returned': 1, 'return_condition': 'Used', 'original_sale_id': 'SALE92988', 'original_sale_date': datetime.date(2025, 4, 16), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 897003)})]
+(Background on this error at: https://sqlalche.me/e/14/f405)
+[2025-05-27T19:40:05.929+0000] {taskinstance.py:1400} INFO - Marking task as UP_FOR_RETRY. dag_id=walmart_etl_dag, task_id=generate_inventory_returns, execution_date=20250527T193956, start_date=20250527T194005, end_date=20250527T194005
+[2025-05-27T19:40:05.940+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 319 for task generate_inventory_returns ((psycopg2.errors.UndefinedColumn) column "original_sale_date" of relation "ods_returns" does not exist
+LINE 1: ...ity_returned, return_condition, original_sale_id, original_s...
+                                                             ^
+
+[SQL: INSERT INTO ods_returns (return_id, return_date, product_id, store_id, reason_code, return_amount, quantity_returned, return_condition, original_sale_id, original_sale_date, source_system, load_timestamp) VALUES (%(return_id)s, %(return_date)s, %(product_id)s, %(store_id)s, %(reason_code)s, %(return_amount)s, %(quantity_returned)s, %(return_condition)s, %(original_sale_id)s, %(original_sale_date)s, %(source_system)s, %(load_timestamp)s)]
+[parameters: ({'return_id': 'RET000001', 'return_date': datetime.date(2025, 5, 23), 'product_id': '0a91d013-33c5-4215-a', 'store_id': 'Toms River_New Jersey_8753', 'reason_code': 'LATE', 'return_amount': Decimal('1083.88'), 'quantity_returned': 4, 'return_condition': 'Like New', 'original_sale_id': 'SALE29974', 'original_sale_date': datetime.date(2025, 5, 6), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895860)}, {'return_id': 'RET000002', 'return_date': datetime.date(2025, 5, 20), 'product_id': 'ac238e65-eb80-402d-a', 'store_id': 'Saint Peters_MO_63376', 'reason_code': 'WRONG', 'return_amount': Decimal('208.55'), 'quantity_returned': 5, 'return_condition': 'Like New', 'original_sale_id': 'SALE96496', 'original_sale_date': datetime.date(2025, 5, 8), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895868)}, {'return_id': 'RET000003', 'return_date': datetime.date(2025, 5, 15), 'product_id': 'c2ea5e71-6acd-4efa-b', 'store_id': 'Petaluma_California_94952', 'reason_code': 'PRICE', 'return_amount': Decimal('10.23'), 'quantity_returned': 1, 'return_condition': 'Defective', 'original_sale_id': 'SALE70483', 'original_sale_date': datetime.date(2025, 4, 24), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895875)}, {'return_id': 'RET000004', 'return_date': datetime.date(2025, 4, 30), 'product_id': 'd57204c0-a9e8-42a0-9', 'store_id': 'New Orleans_Louisiana_70117', 'reason_code': 'CHANGE', 'return_amount': Decimal('69.98'), 'quantity_returned': 2, 'return_condition': 'Like New', 'original_sale_id': 'SALE47938', 'original_sale_date': datetime.date(2025, 4, 8), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895881)}, {'return_id': 'RET000005', 'return_date': datetime.date(2025, 4, 30), 'product_id': 'aa3e705d-08c4-4255-a', 'store_id': 'Tyler_Texas_75701', 'reason_code': 'PRICE', 'return_amount': Decimal('43.88'), 'quantity_returned': 4, 'return_condition': 'Like New', 'original_sale_id': 'SALE37520', 'original_sale_date': datetime.date(2025, 4, 22), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895887)}, {'return_id': 'RET000006', 'return_date': datetime.date(2025, 5, 15), 'product_id': '0ec045f7-b4aa-45b2-a', 'store_id': 'Lynn_MA_1901', 'reason_code': 'SIZE', 'return_amount': Decimal('2799.96'), 'quantity_returned': 4, 'return_condition': 'Like New', 'original_sale_id': 'SALE27254', 'original_sale_date': datetime.date(2025, 5, 11), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895893)}, {'return_id': 'RET000007', 'return_date': datetime.date(2025, 5, 15), 'product_id': '9087a3ca-9300-48eb-8', 'store_id': 'Greensburg_Pennsylvania_15601', 'reason_code': 'WRONG', 'return_amount': Decimal('111.00'), 'quantity_returned': 4, 'return_condition': 'Damaged', 'original_sale_id': 'SALE16465', 'original_sale_date': datetime.date(2025, 4, 15), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895899)}, {'return_id': 'RET000008', 'return_date': datetime.date(2025, 5, 17), 'product_id': '84f01752-5841-4fb7-9', 'store_id': 'Gainesville_Georgia_30501', 'reason_code': 'LATE', 'return_amount': Decimal('1038.84'), 'quantity_returned': 4, 'return_condition': 'Defective', 'original_sale_id': 'SALE35038', 'original_sale_date': datetime.date(2025, 5, 9), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 895905)}  ... displaying 10 of 200 total bound parameter sets ...  {'return_id': 'RET000199', 'return_date': datetime.date(2025, 5, 2), 'product_id': 'f362a65d-d2b9-4c22-8', 'store_id': 'Arlington_Virginia_22204', 'reason_code': 'SIZE', 'return_amount': Decimal('179.29'), 'quantity_returned': 1, 'return_condition': 'Damaged', 'original_sale_id': 'SALE68207', 'original_sale_date': datetime.date(2025, 4, 30), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 896998)}, {'return_id': 'RET000200', 'return_date': datetime.date(2025, 5, 14), 'product_id': '70bc414e-ab47-4127-a', 'store_id': 'Gadsden_Alabama_35904', 'reason_code': 'WRONG', 'return_amount': Decimal('12.28'), 'quantity_returned': 1, 'return_condition': 'Used', 'original_sale_id': 'SALE92988', 'original_sale_date': datetime.date(2025, 4, 16), 'source_system': 'Synthetic Data', 'load_timestamp': datetime.datetime(2025, 5, 27, 19, 40, 5, 897003)})]
+(Background on this error at: https://sqlalche.me/e/14/f405); 1560)
+[2025-05-27T19:40:05.966+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2025-05-27T19:40:06.000+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

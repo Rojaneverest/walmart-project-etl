@@ -1,0 +1,122 @@
+[2025-05-27T18:49:00.599+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: walmart_etl_dag.load_to_target manual__2025-05-27T18:48:51+00:00 [queued]>
+[2025-05-27T18:49:00.614+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: walmart_etl_dag.load_to_target manual__2025-05-27T18:48:51+00:00 [queued]>
+[2025-05-27T18:49:00.615+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T18:49:00.626+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): load_to_target> on 2025-05-27 18:48:51+00:00
+[2025-05-27T18:49:00.645+0000] {standard_task_runner.py:57} INFO - Started process 593 to run task
+[2025-05-27T18:49:00.649+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'walmart_etl_dag', 'load_to_target', 'manual__2025-05-27T18:48:51+00:00', '--job-id', '252', '--raw', '--subdir', 'DAGS_FOLDER/walmart_etl_dag.py', '--cfg-path', '/tmp/tmp6v37ef88']
+[2025-05-27T18:49:00.654+0000] {standard_task_runner.py:85} INFO - Job 252: Subtask load_to_target
+[2025-05-27T18:49:00.702+0000] {task_command.py:416} INFO - Running <TaskInstance: walmart_etl_dag.load_to_target manual__2025-05-27T18:48:51+00:00 [running]> on host d80f98a6628f
+[2025-05-27T18:49:00.948+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='walmart_etl_dag' AIRFLOW_CTX_TASK_ID='load_to_target' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T18:48:51+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T18:48:51+00:00'
+[2025-05-27T18:49:00.954+0000] {logging_mixin.py:154} INFO - Starting load to target layer for batch BATCH_20250527184858...
+[2025-05-27T18:49:00.957+0000] {logging_mixin.py:154} INFO - Loading date dimension to target...
+[2025-05-27T18:49:00.967+0000] {logging_mixin.py:154} INFO - Loading customer dimension to target...
+[2025-05-27T18:49:01.280+0000] {logging_mixin.py:154} INFO - Loading supplier dimension to target...
+[2025-05-27T18:49:01.284+0000] {logging_mixin.py:154} INFO - Loading return reason dimension to target...
+[2025-05-27T18:49:01.286+0000] {logging_mixin.py:154} INFO - Loading product dimension to target with SCD Type 2...
+[2025-05-27T18:49:25.700+0000] {logging_mixin.py:154} INFO - Loading store dimension to target with SCD Type 2...
+[2025-05-27T18:49:25.771+0000] {logging_mixin.py:154} INFO - Loading sales fact to target...
+[2025-05-27T18:49:25.879+0000] {logging_mixin.py:154} INFO - Loading inventory fact to target...
+[2025-05-27T18:49:25.888+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1910, in _execute_context
+    self.dialect.do_execute(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "tgt_fact_inventory" violates foreign key constraint "tgt_fact_inventory_date_key_fkey"
+DETAIL:  Key (date_key)=(20250509) is not present in table "tgt_dim_date".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/walmart_etl_dag.py", line 109, in etl_load_to_target
+    load_to_target(engine, batch_id)
+  File "/opt/airflow/walmart-etl/etl_data_loader.py", line 1113, in load_to_target
+    conn.execute(text("""
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1385, in execute
+    return meth(self, multiparams, params, _EMPTY_EXECUTION_OPTS)
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/sql/elements.py", line 334, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1577, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1953, in _execute_context
+    self._handle_dbapi_exception(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2134, in _handle_dbapi_exception
+    util.raise_(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1910, in _execute_context
+    self.dialect.do_execute(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "tgt_fact_inventory" violates foreign key constraint "tgt_fact_inventory_date_key_fkey"
+DETAIL:  Key (date_key)=(20250509) is not present in table "tgt_dim_date".
+
+[SQL: 
+            INSERT INTO tgt_fact_inventory (
+                inventory_id, date_key, product_key, store_key,
+                stock_level, min_stock_level, max_stock_level, reorder_point,
+                last_restock_date_key, days_of_supply, stock_status, is_in_stock,
+                dw_created_date
+            )
+            SELECT 
+                i.inventory_id, i.date_key,
+                %(default_product_key)s as product_key,
+                %(default_store_key)s as store_key,
+                i.stock_level, i.min_stock_level, i.max_stock_level, i.reorder_point,
+                i.last_restock_date_key, i.days_of_supply, i.stock_status, i.is_in_stock,
+                CURRENT_TIMESTAMP
+            FROM stg_inventory i
+            WHERE i.etl_batch_id = %(batch_id)s
+            ON CONFLICT (inventory_id) DO UPDATE
+            SET 
+                stock_level = EXCLUDED.stock_level,
+                min_stock_level = EXCLUDED.min_stock_level,
+                max_stock_level = EXCLUDED.max_stock_level,
+                reorder_point = EXCLUDED.reorder_point,
+                days_of_supply = EXCLUDED.days_of_supply,
+                stock_status = EXCLUDED.stock_status,
+                is_in_stock = EXCLUDED.is_in_stock,
+                dw_modified_date = CURRENT_TIMESTAMP
+        ]
+[parameters: {'default_product_key': 1, 'default_store_key': 1, 'batch_id': 'BATCH_20250527184858'}]
+(Background on this error at: https://sqlalche.me/e/14/gkpj)
+[2025-05-27T18:49:25.909+0000] {taskinstance.py:1400} INFO - Marking task as UP_FOR_RETRY. dag_id=walmart_etl_dag, task_id=load_to_target, execution_date=20250527T184851, start_date=20250527T184900, end_date=20250527T184925
+[2025-05-27T18:49:25.932+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 252 for task load_to_target ((psycopg2.errors.ForeignKeyViolation) insert or update on table "tgt_fact_inventory" violates foreign key constraint "tgt_fact_inventory_date_key_fkey"
+DETAIL:  Key (date_key)=(20250509) is not present in table "tgt_dim_date".
+
+[SQL: 
+            INSERT INTO tgt_fact_inventory (
+                inventory_id, date_key, product_key, store_key,
+                stock_level, min_stock_level, max_stock_level, reorder_point,
+                last_restock_date_key, days_of_supply, stock_status, is_in_stock,
+                dw_created_date
+            )
+            SELECT 
+                i.inventory_id, i.date_key,
+                %(default_product_key)s as product_key,
+                %(default_store_key)s as store_key,
+                i.stock_level, i.min_stock_level, i.max_stock_level, i.reorder_point,
+                i.last_restock_date_key, i.days_of_supply, i.stock_status, i.is_in_stock,
+                CURRENT_TIMESTAMP
+            FROM stg_inventory i
+            WHERE i.etl_batch_id = %(batch_id)s
+            ON CONFLICT (inventory_id) DO UPDATE
+            SET 
+                stock_level = EXCLUDED.stock_level,
+                min_stock_level = EXCLUDED.min_stock_level,
+                max_stock_level = EXCLUDED.max_stock_level,
+                reorder_point = EXCLUDED.reorder_point,
+                days_of_supply = EXCLUDED.days_of_supply,
+                stock_status = EXCLUDED.stock_status,
+                is_in_stock = EXCLUDED.is_in_stock,
+                dw_modified_date = CURRENT_TIMESTAMP
+        ]
+[parameters: {'default_product_key': 1, 'default_store_key': 1, 'batch_id': 'BATCH_20250527184858'}]
+(Background on this error at: https://sqlalche.me/e/14/gkpj); 593)
+[2025-05-27T18:49:25.957+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2025-05-27T18:49:25.987+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

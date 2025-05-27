@@ -1,0 +1,91 @@
+[2025-05-27T17:58:10.233+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: walmart_etl_dag.load_to_ods manual__2025-05-27T17:58:08+00:00 [queued]>
+[2025-05-27T17:58:10.239+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: walmart_etl_dag.load_to_ods manual__2025-05-27T17:58:08+00:00 [queued]>
+[2025-05-27T17:58:10.239+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T17:58:10.244+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): load_to_ods> on 2025-05-27 17:58:08+00:00
+[2025-05-27T17:58:10.249+0000] {standard_task_runner.py:57} INFO - Started process 2583 to run task
+[2025-05-27T17:58:10.260+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'walmart_etl_dag', 'load_to_ods', 'manual__2025-05-27T17:58:08+00:00', '--job-id', '216', '--raw', '--subdir', 'DAGS_FOLDER/walmart_etl_dag.py', '--cfg-path', '/tmp/tmpeup0cmew']
+[2025-05-27T17:58:10.264+0000] {standard_task_runner.py:85} INFO - Job 216: Subtask load_to_ods
+[2025-05-27T17:58:10.289+0000] {task_command.py:416} INFO - Running <TaskInstance: walmart_etl_dag.load_to_ods manual__2025-05-27T17:58:08+00:00 [running]> on host a9df2a99636e
+[2025-05-27T17:58:10.437+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='walmart_etl_dag' AIRFLOW_CTX_TASK_ID='load_to_ods' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T17:58:08+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T17:58:08+00:00'
+[2025-05-27T17:58:10.471+0000] {logging_mixin.py:154} INFO - Loaded 8399 rows from CSV file.
+[2025-05-27T17:58:10.695+0000] {logging_mixin.py:154} INFO - Loaded 1459 records into ods_date.
+[2025-05-27T17:58:11.093+0000] {logging_mixin.py:154} INFO - Loaded 3011 records into ods_customer.
+[2025-05-27T17:58:11.137+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1890, in _execute_context
+    self.dialect.do_executemany(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py", line 1000, in do_executemany
+    cursor.executemany(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "effective_date" of relation "ods_product" does not exist
+LINE 5:                     effective_date, source_system, load_time...
+                            ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/walmart_etl_dag.py", line 84, in etl_load_to_ods
+    load_ods_layer(engine, df)
+  File "/opt/airflow/walmart-etl/etl_data_loader.py", line 339, in load_ods_layer
+    load_ods_product_dimension(engine, df)
+  File "/opt/airflow/walmart-etl/etl_data_loader.py", line 186, in load_ods_product_dimension
+    conn.execute(text("""
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1385, in execute
+    return meth(self, multiparams, params, _EMPTY_EXECUTION_OPTS)
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/sql/elements.py", line 334, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1577, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1953, in _execute_context
+    self._handle_dbapi_exception(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2134, in _handle_dbapi_exception
+    util.raise_(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1890, in _execute_context
+    self.dialect.do_executemany(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py", line 1000, in do_executemany
+    cursor.executemany(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "effective_date" of relation "ods_product" does not exist
+LINE 5:                     effective_date, source_system, load_time...
+                            ^
+
+[SQL: 
+                INSERT INTO ods_product (
+                    product_id, product_name, product_category, product_sub_category,
+                    product_container, product_base_margin, unit_price, supplier_id,
+                    effective_date, source_system, load_timestamp
+                ) VALUES (
+                    %(product_id)s, %(product_name)s, %(product_category)s, %(product_sub_category)s,
+                    %(product_container)s, %(product_base_margin)s, %(unit_price)s, %(supplier_id)s,
+                    %(effective_date)s, %(source_system)s, %(load_timestamp)s
+                )
+                ON CONFLICT (product_id) DO NOTHING
+            ]
+[parameters: ({'product_id': 'c90f0325-107c-4c06-8', 'product_name': 'Perma STOR-ALL™ Hanging File Box, 13 1/8"W x 12 1/4"D x 10 1/2"H', 'product_category': 'Office Supplies', 'product_sub_category': 'Storage & Organization', 'product_container': 'Small Box', 'product_base_margin': 0.68, 'unit_price': 5.98, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97246)}, {'product_id': '7d370a53-46fb-4507-b', 'product_name': 'Safco Industrial Wire Shelving', 'product_category': 'Office Supplies', 'product_sub_category': 'Storage & Organization', 'product_container': 'Large Box', 'product_base_margin': nan, 'unit_price': 95.99, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97283)}, {'product_id': '25aa8e81-786c-46c4-9', 'product_name': 'Hon 4070 Series Pagoda™ Armless Upholstered Stacking Chairs', 'product_category': 'Furniture', 'product_sub_category': 'Chairs & Chairmats', 'product_container': 'Jumbo Drum', 'product_base_margin': 0.56, 'unit_price': 291.73, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97313)}, {'product_id': 'e20c7d16-b872-4c33-a', 'product_name': 'White GlueTop Scratch Pads', 'product_category': 'Office Supplies', 'product_sub_category': 'Paper', 'product_container': 'Wrap Bag', 'product_base_margin': 0.39, 'unit_price': 15.04, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97341)}, {'product_id': 'ae9586f2-0b15-4c29-8', 'product_name': 'Hon Valutask™ Swivel Chairs', 'product_category': 'Furniture', 'product_sub_category': 'Chairs & Chairmats', 'product_container': 'Jumbo Drum', 'product_base_margin': 0.69, 'unit_price': 100.98, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97368)}, {'product_id': 'dcd02290-af83-424e-9', 'product_name': 'Black Print Carbonless Snap-Off® Rapid Letter, 8 1/2" x 7"', 'product_category': 'Office Supplies', 'product_sub_category': 'Paper', 'product_container': 'Wrap Bag', 'product_base_margin': 0.4, 'unit_price': 9.11, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97395)}, {'product_id': 'c588bba5-095b-4475-a', 'product_name': 'Avery Trapezoid Ring Binder, 3" Capacity, Black, 1040 sheets', 'product_category': 'Office Supplies', 'product_sub_category': 'Binders and Binder Accessories', 'product_container': 'Small Box', 'product_base_margin': 0.36, 'unit_price': 40.98, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97423)}, {'product_id': '49719200-1a62-4f93-b', 'product_name': 'Dual Level, Single-Width Filing Carts', 'product_category': 'Office Supplies', 'product_sub_category': 'Storage & Organization', 'product_container': 'Small Box', 'product_base_margin': 0.59, 'unit_price': 155.06, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97450)}  ... displaying 10 of 1314 total bound parameter sets ...  {'product_id': 'e6b7ce79-52d4-4a57-9', 'product_name': 'Global Comet™ Stacking Armless Chair', 'product_category': 'Furniture', 'product_sub_category': 'Chairs & Chairmats', 'product_container': 'Jumbo Drum', 'product_base_margin': 0.57, 'unit_price': 299.05, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 131460)}, {'product_id': 'f28e87e4-5820-4d0d-b', 'product_name': 'Epson FX-2180 Wide Format Dot Matrix Printer', 'product_category': 'Technology', 'product_sub_category': 'Office Machines', 'product_container': 'Jumbo Drum', 'product_base_margin': 0.57, 'unit_price': 596.98, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 131486)})]
+(Background on this error at: https://sqlalche.me/e/14/f405)
+[2025-05-27T17:58:11.146+0000] {taskinstance.py:1400} INFO - Marking task as UP_FOR_RETRY. dag_id=walmart_etl_dag, task_id=load_to_ods, execution_date=20250527T175808, start_date=20250527T175810, end_date=20250527T175811
+[2025-05-27T17:58:11.152+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 216 for task load_to_ods ((psycopg2.errors.UndefinedColumn) column "effective_date" of relation "ods_product" does not exist
+LINE 5:                     effective_date, source_system, load_time...
+                            ^
+
+[SQL: 
+                INSERT INTO ods_product (
+                    product_id, product_name, product_category, product_sub_category,
+                    product_container, product_base_margin, unit_price, supplier_id,
+                    effective_date, source_system, load_timestamp
+                ) VALUES (
+                    %(product_id)s, %(product_name)s, %(product_category)s, %(product_sub_category)s,
+                    %(product_container)s, %(product_base_margin)s, %(unit_price)s, %(supplier_id)s,
+                    %(effective_date)s, %(source_system)s, %(load_timestamp)s
+                )
+                ON CONFLICT (product_id) DO NOTHING
+            ]
+[parameters: ({'product_id': 'c90f0325-107c-4c06-8', 'product_name': 'Perma STOR-ALL™ Hanging File Box, 13 1/8"W x 12 1/4"D x 10 1/2"H', 'product_category': 'Office Supplies', 'product_sub_category': 'Storage & Organization', 'product_container': 'Small Box', 'product_base_margin': 0.68, 'unit_price': 5.98, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97246)}, {'product_id': '7d370a53-46fb-4507-b', 'product_name': 'Safco Industrial Wire Shelving', 'product_category': 'Office Supplies', 'product_sub_category': 'Storage & Organization', 'product_container': 'Large Box', 'product_base_margin': nan, 'unit_price': 95.99, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97283)}, {'product_id': '25aa8e81-786c-46c4-9', 'product_name': 'Hon 4070 Series Pagoda™ Armless Upholstered Stacking Chairs', 'product_category': 'Furniture', 'product_sub_category': 'Chairs & Chairmats', 'product_container': 'Jumbo Drum', 'product_base_margin': 0.56, 'unit_price': 291.73, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97313)}, {'product_id': 'e20c7d16-b872-4c33-a', 'product_name': 'White GlueTop Scratch Pads', 'product_category': 'Office Supplies', 'product_sub_category': 'Paper', 'product_container': 'Wrap Bag', 'product_base_margin': 0.39, 'unit_price': 15.04, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97341)}, {'product_id': 'ae9586f2-0b15-4c29-8', 'product_name': 'Hon Valutask™ Swivel Chairs', 'product_category': 'Furniture', 'product_sub_category': 'Chairs & Chairmats', 'product_container': 'Jumbo Drum', 'product_base_margin': 0.69, 'unit_price': 100.98, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97368)}, {'product_id': 'dcd02290-af83-424e-9', 'product_name': 'Black Print Carbonless Snap-Off® Rapid Letter, 8 1/2" x 7"', 'product_category': 'Office Supplies', 'product_sub_category': 'Paper', 'product_container': 'Wrap Bag', 'product_base_margin': 0.4, 'unit_price': 9.11, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97395)}, {'product_id': 'c588bba5-095b-4475-a', 'product_name': 'Avery Trapezoid Ring Binder, 3" Capacity, Black, 1040 sheets', 'product_category': 'Office Supplies', 'product_sub_category': 'Binders and Binder Accessories', 'product_container': 'Small Box', 'product_base_margin': 0.36, 'unit_price': 40.98, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97423)}, {'product_id': '49719200-1a62-4f93-b', 'product_name': 'Dual Level, Single-Width Filing Carts', 'product_category': 'Office Supplies', 'product_sub_category': 'Storage & Organization', 'product_container': 'Small Box', 'product_base_margin': 0.59, 'unit_price': 155.06, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 97450)}  ... displaying 10 of 1314 total bound parameter sets ...  {'product_id': 'e6b7ce79-52d4-4a57-9', 'product_name': 'Global Comet™ Stacking Armless Chair', 'product_category': 'Furniture', 'product_sub_category': 'Chairs & Chairmats', 'product_container': 'Jumbo Drum', 'product_base_margin': 0.57, 'unit_price': 299.05, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 131460)}, {'product_id': 'f28e87e4-5820-4d0d-b', 'product_name': 'Epson FX-2180 Wide Format Dot Matrix Printer', 'product_category': 'Technology', 'product_sub_category': 'Office Machines', 'product_container': 'Jumbo Drum', 'product_base_margin': 0.57, 'unit_price': 596.98, 'supplier_id': None, 'effective_date': datetime.date(2025, 5, 27), 'source_system': 'CSV Import', 'load_timestamp': datetime.datetime(2025, 5, 27, 17, 58, 11, 131486)})]
+(Background on this error at: https://sqlalche.me/e/14/f405); 2583)
+[2025-05-27T17:58:11.164+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2025-05-27T17:58:11.178+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

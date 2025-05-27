@@ -50,8 +50,21 @@ def generate_supplier_data(num_suppliers=50):
     
     suppliers = []
     
+    # Get existing supplier IDs to avoid duplicates
+    existing_ids = set()
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT supplier_id FROM ods_supplier"))
+            for row in result:
+                existing_ids.add(row[0])
+    except Exception as e:
+        print(f"Error retrieving existing supplier IDs: {e}")
+    
     for i in range(1, num_suppliers + 1):
-        supplier_id = str(i)
+        # Generate a UUID for supplier_id to avoid duplicates, truncated to 20 chars
+        supplier_id = str(uuid.uuid4())[:20]
+        while supplier_id in existing_ids:
+            supplier_id = str(uuid.uuid4())[:20]
         supplier_name = f"{random.choice(prefixes)} {random.choice(mid_parts)} {random.choice(suffixes)}"
         contact_person = f"{random.choice(['John', 'Jane', 'Mike', 'Sarah', 'David', 'Lisa', 'Robert', 'Emily'])} {random.choice(['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis', 'Garcia'])}"
         email = f"{contact_person.lower().replace(' ', '.')}@{supplier_name.lower().replace(' ', '')}.com"
@@ -265,8 +278,22 @@ def generate_inventory_data(existing_data, num_records=500):
     
     inventory_records = []
     
+    # Get existing inventory IDs to avoid duplicates
+    existing_ids = set()
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT inventory_id FROM ods_inventory"))
+            for row in result:
+                existing_ids.add(row[0])
+    except Exception as e:
+        print(f"Error retrieving existing inventory IDs: {e}")
+    
     for i in range(1, num_records + 1):
-        inventory_id = f"INV{i:06d}"
+        # Generate a unique inventory ID (column is varchar(50))
+        inventory_id = f"INV{uuid.uuid4().hex[:12]}"
+        while inventory_id in existing_ids:
+            inventory_id = f"INV{uuid.uuid4().hex[:12]}"
+        
         product = random.choice(products)
         store = random.choice(stores)
         
@@ -336,8 +363,22 @@ def generate_returns_data(existing_data, num_records=200):
     
     returns_records = []
     
+    # Get existing return IDs to avoid duplicates
+    existing_ids = set()
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT return_id FROM ods_returns"))
+            for row in result:
+                existing_ids.add(row[0])
+    except Exception as e:
+        print(f"Error retrieving existing return IDs: {e}")
+    
     for i in range(1, num_records + 1):
-        return_id = f"RET{i:06d}"
+        # Generate a unique return ID (column is varchar(50))
+        return_id = f"RET{uuid.uuid4().hex[:12]}"
+        while return_id in existing_ids:
+            return_id = f"RET{uuid.uuid4().hex[:12]}"
+        
         product = random.choice(products)
         store = random.choice(stores)
         reason = random.choice(return_reasons)

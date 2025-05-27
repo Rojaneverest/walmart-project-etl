@@ -21,6 +21,7 @@ if IN_DOCKER:
     # File paths for Docker
     DATA_DIR = "/opt/airflow/walmart-etl/data"
     CSV_FILE = os.path.join(DATA_DIR, "walmart Retail Data.csv")
+    # CSV_FILE = os.path.join(DATA_DIR, "scd_test_corrected.csv")
 else:
     # Local development environment
     DB_USER = "postgres"
@@ -32,7 +33,8 @@ else:
     # File paths for local development
     PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
     DATA_DIR = os.path.join(PROJECT_DIR, "data")
-    CSV_FILE = os.path.join(DATA_DIR, "walmart Retail Data.csv")
+    # CSV_FILE = os.path.join(DATA_DIR, "walmart Retail Data.csv")
+    CSV_FILE = os.path.join(DATA_DIR, "scd_test_corrected.csv")
 
 # Create database connection string
 def get_connection_string():

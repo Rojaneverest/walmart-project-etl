@@ -25,7 +25,6 @@ os.environ['IN_DOCKER'] = 'True'
 # Import the ETL functions
 from etl_tables_setup import get_engine
 from recreate_tables import recreate_tables
-from generate_synthetic_data import main as generate_synthetic_data
 from etl_data_loader import (
     load_csv_to_dataframe,
     clean_dataframe,
@@ -68,16 +67,20 @@ recreate_tables_task = PythonOperator(
 )
 """
 
-# Task 2: Generate synthetic data
-generate_synthetic_data_task = PythonOperator(
-    task_id='generate_synthetic_data',
-    python_callable=generate_synthetic_data,
-    dag=dag,
-)
+# Task 2: Generate synthetic data - REMOVED
+# Synthetic data generation is now handled manually outside the DAG
 
 # Task 3: Load data from CSV to ODS layer
 def etl_load_to_ods():
     engine = get_engine()
+    
+    # Check if we have inventory and returns data in ODS
+    with engine.connect() as conn:
+        inventory_count = conn.execute("SELECT COUNT(*) FROM ods_inventory").scalar()
+        returns_count = conn.execute("SELECT COUNT(*) FROM ods_returns").scalar()
+        print(f"Found {inventory_count} inventory records and {returns_count} returns records in ODS")
+    
+    # Load sales and dimension data from CSV
     df = load_csv_to_dataframe()
     df = clean_dataframe(df)
     df = generate_surrogate_keys(df)
@@ -90,10 +93,19 @@ load_to_ods_task = PythonOperator(
     dag=dag,
 )
 
+# Task 4: Generate inventory and returns data - REMOVED
+# Inventory and returns data generation is now handled manually outside the DAG
+
 # Task 4: Transform data from ODS to staging layer
 def etl_transform_to_staging():
     engine = get_engine()
+    
+    # Transform data from ODS to staging
     batch_id = transform_to_staging(engine)
+    
+    # Log the batch ID for tracking
+    print(f"Transformed data to staging with batch ID: {batch_id}")
+    
     return batch_id
 
 transform_to_staging_task = PythonOperator(
@@ -106,8 +118,14 @@ transform_to_staging_task = PythonOperator(
 def etl_load_to_target(**context):
     engine = get_engine()
     batch_id = context['ti'].xcom_pull(task_ids='transform_to_staging')
+    
+    # Load data from staging to target
     load_to_target(engine, batch_id)
-    return batch_id
+    
+    # Log completion message
+    print(f"Data loaded to target layer with batch ID: {batch_id}")
+    
+    return "Target layer loading completed"
 
 load_to_target_task = PythonOperator(
     task_id='load_to_target',
@@ -134,30 +152,39 @@ clean_staging_task = PythonOperator(
 def run_data_quality_checks():
     """Run data quality checks on the target layer."""
     engine = get_engine()
+    results = {}
+    
+    # Tables to check
+    tables = [
+        "tgt_dim_product", 
+        "tgt_dim_store", 
+        "tgt_fact_sales", 
+        "tgt_fact_inventory", 
+        "tgt_fact_returns"
+    ]
     
     with engine.connect() as conn:
-        # Check product dimension
-        product_count = conn.execute("SELECT COUNT(*) FROM tgt_dim_product").scalar()
-        if product_count == 0:
-            print("WARNING: No data in tgt_dim_product")
-        else:
-            print(f"Found {product_count} records in tgt_dim_product")
-        
-        # Check store dimension
-        store_count = conn.execute("SELECT COUNT(*) FROM tgt_dim_store").scalar()
-        if store_count == 0:
-            print("WARNING: No data in tgt_dim_store")
-        else:
-            print(f"Found {store_count} records in tgt_dim_store")
-        
-        # Check sales fact
-        sales_count = conn.execute("SELECT COUNT(*) FROM tgt_fact_sales").scalar()
-        if sales_count == 0:
-            print("WARNING: No data in tgt_fact_sales")
-        else:
-            print(f"Found {sales_count} records in tgt_fact_sales")
+        for table in tables:
+            count = conn.execute(f"SELECT COUNT(*) FROM {table}").scalar()
+            results[table] = count
+            if count == 0:
+                print(f"WARNING: No data in {table}")
+            else:
+                print(f"Found {count} records in {table}")
     
-    return f"Data quality checks completed. Products: {product_count}, Stores: {store_count}, Sales: {sales_count}"
+    # Check for SCD Type 2 historical records
+    with engine.connect() as conn:
+        historical_product_count = conn.execute(
+            "SELECT COUNT(*) FROM tgt_dim_product WHERE current_indicator = FALSE"
+        ).scalar()
+        print(f"Found {historical_product_count} historical product records")
+        
+        historical_store_count = conn.execute(
+            "SELECT COUNT(*) FROM tgt_dim_store WHERE current_indicator = FALSE"
+        ).scalar()
+        print(f"Found {historical_store_count} historical store records")
+    
+    return f"Data quality checks completed: {results}"
 
 data_quality_task = PythonOperator(
     task_id='data_quality_checks',
@@ -169,4 +196,5 @@ data_quality_task = PythonOperator(
 # If table recreation is enabled, add it to the beginning of the chain
 # recreate_tables_task >> generate_synthetic_data_task
 
-generate_synthetic_data_task >> load_to_ods_task >> transform_to_staging_task >> load_to_target_task >> clean_staging_task >> data_quality_task
+# Updated task dependencies - synthetic data generation and inventory/returns generation removed
+load_to_ods_task >> transform_to_staging_task >> load_to_target_task >> clean_staging_task >> data_quality_task

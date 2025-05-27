@@ -176,6 +176,7 @@ def create_ods_tables(metadata):
         Column('return_amount', Numeric(12, 2)),
         Column('quantity_returned', Integer),
         Column('original_sale_id', String(20)),
+        Column('original_sale_date', Date),  # Added missing column
         Column('return_condition', String(50)),
         Column('source_system', String(50)),
         Column('load_timestamp', TIMESTAMP, default=func.now())

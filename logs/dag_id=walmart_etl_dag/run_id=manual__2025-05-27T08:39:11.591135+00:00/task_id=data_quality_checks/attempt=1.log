@@ -1,0 +1,16 @@
+[2025-05-27T08:39:19.984+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: walmart_etl_dag.data_quality_checks manual__2025-05-27T08:39:11.591135+00:00 [queued]>
+[2025-05-27T08:39:19.988+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: walmart_etl_dag.data_quality_checks manual__2025-05-27T08:39:11.591135+00:00 [queued]>
+[2025-05-27T08:39:19.989+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T08:39:19.994+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): data_quality_checks> on 2025-05-27 08:39:11.591135+00:00
+[2025-05-27T08:39:20.003+0000] {standard_task_runner.py:57} INFO - Started process 97 to run task
+[2025-05-27T08:39:20.008+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'walmart_etl_dag', 'data_quality_checks', 'manual__2025-05-27T08:39:11.591135+00:00', '--job-id', '138', '--raw', '--subdir', 'DAGS_FOLDER/walmart_etl_dag.py', '--cfg-path', '/tmp/tmp6fxvpxl1']
+[2025-05-27T08:39:20.011+0000] {standard_task_runner.py:85} INFO - Job 138: Subtask data_quality_checks
+[2025-05-27T08:39:20.048+0000] {task_command.py:416} INFO - Running <TaskInstance: walmart_etl_dag.data_quality_checks manual__2025-05-27T08:39:11.591135+00:00 [running]> on host 930cc36999ac
+[2025-05-27T08:39:20.287+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='walmart_etl_dag' AIRFLOW_CTX_TASK_ID='data_quality_checks' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T08:39:11.591135+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T08:39:11.591135+00:00'
+[2025-05-27T08:39:20.297+0000] {logging_mixin.py:154} INFO - Found 1264 records in tgt_dim_product
+[2025-05-27T08:39:20.298+0000] {logging_mixin.py:154} INFO - Found 1638 records in tgt_dim_store
+[2025-05-27T08:39:20.303+0000] {logging_mixin.py:154} INFO - Found 8399 records in tgt_fact_sales
+[2025-05-27T08:39:20.303+0000] {python.py:194} INFO - Done. Returned value was: Data quality checks completed. Products: 1264, Stores: 1638, Sales: 8399
+[2025-05-27T08:39:20.317+0000] {taskinstance.py:1400} INFO - Marking task as SUCCESS. dag_id=walmart_etl_dag, task_id=data_quality_checks, execution_date=20250527T083911, start_date=20250527T083919, end_date=20250527T083920
+[2025-05-27T08:39:20.357+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 0
+[2025-05-27T08:39:20.369+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

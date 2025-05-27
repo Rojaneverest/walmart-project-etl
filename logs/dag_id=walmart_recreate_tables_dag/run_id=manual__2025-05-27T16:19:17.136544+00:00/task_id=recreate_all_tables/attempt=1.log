@@ -1,0 +1,18 @@
+[2025-05-27T16:19:19.318+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: walmart_recreate_tables_dag.recreate_all_tables manual__2025-05-27T16:19:17.136544+00:00 [queued]>
+[2025-05-27T16:19:19.322+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: walmart_recreate_tables_dag.recreate_all_tables manual__2025-05-27T16:19:17.136544+00:00 [queued]>
+[2025-05-27T16:19:19.323+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T16:19:19.328+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): recreate_all_tables> on 2025-05-27 16:19:17.136544+00:00
+[2025-05-27T16:19:19.331+0000] {standard_task_runner.py:57} INFO - Started process 645 to run task
+[2025-05-27T16:19:19.333+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'walmart_recreate_tables_dag', 'recreate_all_tables', 'manual__2025-05-27T16:19:17.136544+00:00', '--job-id', '182', '--raw', '--subdir', 'DAGS_FOLDER/walmart_recreate_tables_dag.py', '--cfg-path', '/tmp/tmp5h5h6jtq']
+[2025-05-27T16:19:19.333+0000] {standard_task_runner.py:85} INFO - Job 182: Subtask recreate_all_tables
+[2025-05-27T16:19:19.357+0000] {task_command.py:416} INFO - Running <TaskInstance: walmart_recreate_tables_dag.recreate_all_tables manual__2025-05-27T16:19:17.136544+00:00 [running]> on host a9df2a99636e
+[2025-05-27T16:19:19.398+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='walmart_recreate_tables_dag' AIRFLOW_CTX_TASK_ID='recreate_all_tables' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T16:19:17.136544+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T16:19:17.136544+00:00'
+[2025-05-27T16:19:19.398+0000] {logging_mixin.py:154} INFO - Recreating tables...
+[2025-05-27T16:19:20.104+0000] {logging_mixin.py:154} INFO - All tables created successfully!
+[2025-05-27T16:19:20.147+0000] {logging_mixin.py:154} INFO - Staging tables created successfully!
+[2025-05-27T16:19:20.192+0000] {logging_mixin.py:154} INFO - Target tables created successfully!
+[2025-05-27T16:19:20.192+0000] {logging_mixin.py:154} INFO - All tables recreated successfully.
+[2025-05-27T16:19:20.198+0000] {python.py:194} INFO - Done. Returned value was: All tables recreated successfully
+[2025-05-27T16:19:20.214+0000] {taskinstance.py:1400} INFO - Marking task as SUCCESS. dag_id=walmart_recreate_tables_dag, task_id=recreate_all_tables, execution_date=20250527T161917, start_date=20250527T161919, end_date=20250527T161920
+[2025-05-27T16:19:20.264+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 0
+[2025-05-27T16:19:20.299+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

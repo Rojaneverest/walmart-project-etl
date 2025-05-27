@@ -1,0 +1,72 @@
+[2025-05-27T22:23:00.426+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: inventory_returns_generation.load_to_target manual__2025-05-27T22:17:53.056010+00:00 [queued]>
+[2025-05-27T22:23:00.431+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: inventory_returns_generation.load_to_target manual__2025-05-27T22:17:53.056010+00:00 [queued]>
+[2025-05-27T22:23:00.431+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T22:23:00.437+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): load_to_target> on 2025-05-27 22:17:53.056010+00:00
+[2025-05-27T22:23:00.443+0000] {standard_task_runner.py:57} INFO - Started process 112 to run task
+[2025-05-27T22:23:00.446+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'inventory_returns_generation', 'load_to_target', 'manual__2025-05-27T22:17:53.056010+00:00', '--job-id', '464', '--raw', '--subdir', 'DAGS_FOLDER/inventory_returns_dag.py', '--cfg-path', '/tmp/tmpxghpiht4']
+[2025-05-27T22:23:00.448+0000] {standard_task_runner.py:85} INFO - Job 464: Subtask load_to_target
+[2025-05-27T22:23:00.470+0000] {task_command.py:416} INFO - Running <TaskInstance: inventory_returns_generation.load_to_target manual__2025-05-27T22:17:53.056010+00:00 [running]> on host 096aa9233816
+[2025-05-27T22:23:00.756+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='inventory_returns_generation' AIRFLOW_CTX_TASK_ID='load_to_target' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T22:17:53.056010+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T22:17:53.056010+00:00'
+[2025-05-27T22:23:00.778+0000] {logging_mixin.py:154} INFO - Starting load to target layer for batch BATCH_20250527222258...
+[2025-05-27T22:23:00.788+0000] {logging_mixin.py:154} INFO - Ensuring all required dates are in the date dimension...
+[2025-05-27T22:23:00.800+0000] {logging_mixin.py:154} INFO - Added date 20250421 to date dimension
+[2025-05-27T22:23:00.804+0000] {logging_mixin.py:154} INFO - Added date 20250518 to date dimension
+[2025-05-27T22:23:00.806+0000] {logging_mixin.py:154} INFO - Added date 20250520 to date dimension
+[2025-05-27T22:23:00.808+0000] {logging_mixin.py:154} INFO - Added date 20250506 to date dimension
+[2025-05-27T22:23:00.810+0000] {logging_mixin.py:154} INFO - Added date 20250425 to date dimension
+[2025-05-27T22:23:00.813+0000] {logging_mixin.py:154} INFO - Added date 20250512 to date dimension
+[2025-05-27T22:23:00.816+0000] {logging_mixin.py:154} INFO - Added date 20250422 to date dimension
+[2025-05-27T22:23:00.819+0000] {logging_mixin.py:154} INFO - Added date 20250502 to date dimension
+[2025-05-27T22:23:00.822+0000] {logging_mixin.py:154} INFO - Added date 20250424 to date dimension
+[2025-05-27T22:23:00.824+0000] {logging_mixin.py:154} INFO - Added date 20250413 to date dimension
+[2025-05-27T22:23:00.826+0000] {logging_mixin.py:154} INFO - Added date 20250418 to date dimension
+[2025-05-27T22:23:00.827+0000] {logging_mixin.py:154} INFO - Added date 20250517 to date dimension
+[2025-05-27T22:23:00.830+0000] {logging_mixin.py:154} INFO - Added date 20250419 to date dimension
+[2025-05-27T22:23:00.832+0000] {logging_mixin.py:154} INFO - Added date 20250426 to date dimension
+[2025-05-27T22:23:00.835+0000] {logging_mixin.py:154} INFO - Added date 20250414 to date dimension
+[2025-05-27T22:23:00.837+0000] {logging_mixin.py:154} INFO - Added date 20250525 to date dimension
+[2025-05-27T22:23:00.839+0000] {logging_mixin.py:154} INFO - Added date 20250420 to date dimension
+[2025-05-27T22:23:00.840+0000] {logging_mixin.py:154} INFO - Added date 20250516 to date dimension
+[2025-05-27T22:23:00.841+0000] {logging_mixin.py:154} INFO - Added date 20250524 to date dimension
+[2025-05-27T22:23:00.843+0000] {logging_mixin.py:154} INFO - Added date 20250503 to date dimension
+[2025-05-27T22:23:00.846+0000] {logging_mixin.py:154} INFO - Added date 20250526 to date dimension
+[2025-05-27T22:23:00.848+0000] {logging_mixin.py:154} INFO - Added date 20250504 to date dimension
+[2025-05-27T22:23:00.850+0000] {logging_mixin.py:154} INFO - Added date 20250510 to date dimension
+[2025-05-27T22:23:00.852+0000] {logging_mixin.py:154} INFO - Added date 20250429 to date dimension
+[2025-05-27T22:23:00.854+0000] {logging_mixin.py:154} INFO - Added date 20250507 to date dimension
+[2025-05-27T22:23:00.856+0000] {logging_mixin.py:154} INFO - Added date 20250427 to date dimension
+[2025-05-27T22:23:00.858+0000] {logging_mixin.py:154} INFO - Added date 20250521 to date dimension
+[2025-05-27T22:23:00.861+0000] {logging_mixin.py:154} INFO - Added date 20250527 to date dimension
+[2025-05-27T22:23:00.864+0000] {logging_mixin.py:154} INFO - Added date 20250430 to date dimension
+[2025-05-27T22:23:00.866+0000] {logging_mixin.py:154} INFO - Added date 20250501 to date dimension
+[2025-05-27T22:23:00.868+0000] {logging_mixin.py:154} INFO - Added date 20250522 to date dimension
+[2025-05-27T22:23:00.870+0000] {logging_mixin.py:154} INFO - Added date 20250428 to date dimension
+[2025-05-27T22:23:00.872+0000] {logging_mixin.py:154} INFO - Added date 20250416 to date dimension
+[2025-05-27T22:23:00.873+0000] {logging_mixin.py:154} INFO - Added date 20250511 to date dimension
+[2025-05-27T22:23:00.876+0000] {logging_mixin.py:154} INFO - Added date 20250505 to date dimension
+[2025-05-27T22:23:00.880+0000] {logging_mixin.py:154} INFO - Added date 20250519 to date dimension
+[2025-05-27T22:23:00.881+0000] {logging_mixin.py:154} INFO - Added date 20250514 to date dimension
+[2025-05-27T22:23:00.882+0000] {logging_mixin.py:154} INFO - Added date 20250515 to date dimension
+[2025-05-27T22:23:00.884+0000] {logging_mixin.py:154} INFO - Added date 20250513 to date dimension
+[2025-05-27T22:23:00.884+0000] {logging_mixin.py:154} INFO - Added date 20250415 to date dimension
+[2025-05-27T22:23:00.885+0000] {logging_mixin.py:154} INFO - Added date 20250423 to date dimension
+[2025-05-27T22:23:00.886+0000] {logging_mixin.py:154} INFO - Added date 20250417 to date dimension
+[2025-05-27T22:23:00.887+0000] {logging_mixin.py:154} INFO - Added date 20250508 to date dimension
+[2025-05-27T22:23:00.888+0000] {logging_mixin.py:154} INFO - Added date 20250523 to date dimension
+[2025-05-27T22:23:00.889+0000] {logging_mixin.py:154} INFO - Added date 20250509 to date dimension
+[2025-05-27T22:23:00.889+0000] {logging_mixin.py:154} INFO - Loading date dimension to target...
+[2025-05-27T22:23:00.902+0000] {logging_mixin.py:154} INFO - Loading customer dimension to target...
+[2025-05-27T22:23:00.976+0000] {logging_mixin.py:154} INFO - Loading supplier dimension to target...
+[2025-05-27T22:23:01.040+0000] {logging_mixin.py:154} INFO - Loading return reason dimension to target...
+[2025-05-27T22:23:01.084+0000] {logging_mixin.py:154} INFO - Loading product dimension to target with SCD Type 2...
+[2025-05-27T22:23:01.200+0000] {logging_mixin.py:154} INFO - Loading store dimension to target with SCD Type 2...
+[2025-05-27T22:23:01.331+0000] {logging_mixin.py:154} INFO - Loading sales fact to target...
+[2025-05-27T22:23:01.714+0000] {logging_mixin.py:154} INFO - Loading inventory fact to target...
+[2025-05-27T22:23:01.806+0000] {logging_mixin.py:154} INFO - Loading returns fact to target...
+[2025-05-27T22:23:01.824+0000] {logging_mixin.py:154} INFO - Target layer loading completed successfully.
+[2025-05-27T22:23:01.824+0000] {logging_mixin.py:154} INFO - Batch ID: BATCH_20250527222258
+[2025-05-27T22:23:01.825+0000] {logging_mixin.py:154} INFO - Data loaded to target layer with batch ID: BATCH_20250527222258
+[2025-05-27T22:23:01.827+0000] {python.py:194} INFO - Done. Returned value was: Target layer loading completed
+[2025-05-27T22:23:01.950+0000] {taskinstance.py:1400} INFO - Marking task as SUCCESS. dag_id=inventory_returns_generation, task_id=load_to_target, execution_date=20250527T221753, start_date=20250527T222300, end_date=20250527T222301
+[2025-05-27T22:23:02.059+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 0
+[2025-05-27T22:23:02.130+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

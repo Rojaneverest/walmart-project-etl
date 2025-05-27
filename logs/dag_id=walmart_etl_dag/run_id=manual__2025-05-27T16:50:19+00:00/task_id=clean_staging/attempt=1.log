@@ -1,0 +1,24 @@
+[2025-05-27T16:50:31.212+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: walmart_etl_dag.clean_staging manual__2025-05-27T16:50:19+00:00 [queued]>
+[2025-05-27T16:50:31.216+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: walmart_etl_dag.clean_staging manual__2025-05-27T16:50:19+00:00 [queued]>
+[2025-05-27T16:50:31.217+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T16:50:31.224+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): clean_staging> on 2025-05-27 16:50:19+00:00
+[2025-05-27T16:50:31.229+0000] {standard_task_runner.py:57} INFO - Started process 1481 to run task
+[2025-05-27T16:50:31.232+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'walmart_etl_dag', 'clean_staging', 'manual__2025-05-27T16:50:19+00:00', '--job-id', '210', '--raw', '--subdir', 'DAGS_FOLDER/walmart_etl_dag.py', '--cfg-path', '/tmp/tmpi16d1dfh']
+[2025-05-27T16:50:31.235+0000] {standard_task_runner.py:85} INFO - Job 210: Subtask clean_staging
+[2025-05-27T16:50:31.277+0000] {task_command.py:416} INFO - Running <TaskInstance: walmart_etl_dag.clean_staging manual__2025-05-27T16:50:19+00:00 [running]> on host a9df2a99636e
+[2025-05-27T16:50:31.523+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='walmart_etl_dag' AIRFLOW_CTX_TASK_ID='clean_staging' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T16:50:19+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T16:50:19+00:00'
+[2025-05-27T16:50:31.531+0000] {logging_mixin.py:154} INFO - Starting staging tables cleanup...
+[2025-05-27T16:50:31.540+0000] {logging_mixin.py:154} INFO - Deleted data from stg_date for batch BATCH_20250527165026
+[2025-05-27T16:50:31.544+0000] {logging_mixin.py:154} INFO - Deleted data from stg_customer for batch BATCH_20250527165026
+[2025-05-27T16:50:31.546+0000] {logging_mixin.py:154} INFO - Deleted data from stg_product for batch BATCH_20250527165026
+[2025-05-27T16:50:31.547+0000] {logging_mixin.py:154} INFO - Deleted data from stg_store for batch BATCH_20250527165026
+[2025-05-27T16:50:31.553+0000] {logging_mixin.py:154} INFO - Deleted data from stg_sales for batch BATCH_20250527165026
+[2025-05-27T16:50:31.554+0000] {logging_mixin.py:154} INFO - Deleted data from stg_supplier for batch BATCH_20250527165026
+[2025-05-27T16:50:31.555+0000] {logging_mixin.py:154} INFO - Deleted data from stg_return_reason for batch BATCH_20250527165026
+[2025-05-27T16:50:31.556+0000] {logging_mixin.py:154} INFO - Deleted data from stg_inventory for batch BATCH_20250527165026
+[2025-05-27T16:50:31.558+0000] {logging_mixin.py:154} INFO - Deleted data from stg_returns for batch BATCH_20250527165026
+[2025-05-27T16:50:31.568+0000] {logging_mixin.py:154} INFO - Staging tables cleanup completed successfully.
+[2025-05-27T16:50:31.568+0000] {python.py:194} INFO - Done. Returned value was: Staging tables cleaned for batch BATCH_20250527165026
+[2025-05-27T16:50:31.587+0000] {taskinstance.py:1400} INFO - Marking task as SUCCESS. dag_id=walmart_etl_dag, task_id=clean_staging, execution_date=20250527T165019, start_date=20250527T165031, end_date=20250527T165031
+[2025-05-27T16:50:31.630+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 0
+[2025-05-27T16:50:31.653+0000] {taskinstance.py:2778} INFO - 1 downstream tasks scheduled from follow-on schedule check

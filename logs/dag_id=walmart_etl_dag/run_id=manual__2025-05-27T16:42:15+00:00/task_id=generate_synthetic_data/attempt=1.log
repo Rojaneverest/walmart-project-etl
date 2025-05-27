@@ -1,0 +1,116 @@
+[2025-05-27T16:42:17.055+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: walmart_etl_dag.generate_synthetic_data manual__2025-05-27T16:42:15+00:00 [queued]>
+[2025-05-27T16:42:17.060+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: walmart_etl_dag.generate_synthetic_data manual__2025-05-27T16:42:15+00:00 [queued]>
+[2025-05-27T16:42:17.060+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-05-27T16:42:17.065+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): generate_synthetic_data> on 2025-05-27 16:42:15+00:00
+[2025-05-27T16:42:17.069+0000] {standard_task_runner.py:57} INFO - Started process 1116 to run task
+[2025-05-27T16:42:17.072+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'walmart_etl_dag', 'generate_synthetic_data', 'manual__2025-05-27T16:42:15+00:00', '--job-id', '196', '--raw', '--subdir', 'DAGS_FOLDER/walmart_etl_dag.py', '--cfg-path', '/tmp/tmp1xuq3il3']
+[2025-05-27T16:42:17.075+0000] {standard_task_runner.py:85} INFO - Job 196: Subtask generate_synthetic_data
+[2025-05-27T16:42:17.111+0000] {task_command.py:416} INFO - Running <TaskInstance: walmart_etl_dag.generate_synthetic_data manual__2025-05-27T16:42:15+00:00 [running]> on host a9df2a99636e
+[2025-05-27T16:42:17.435+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='walmart_etl_dag' AIRFLOW_CTX_TASK_ID='generate_synthetic_data' AIRFLOW_CTX_EXECUTION_DATE='2025-05-27T16:42:15+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-27T16:42:15+00:00'
+[2025-05-27T16:42:17.436+0000] {logging_mixin.py:154} INFO - Starting synthetic data generation process...
+[2025-05-27T16:42:17.436+0000] {logging_mixin.py:154} INFO - Generating supplier data...
+[2025-05-27T16:42:17.442+0000] {logging_mixin.py:154} INFO - Found 50 existing supplier records, skipping generation
+[2025-05-27T16:42:17.443+0000] {logging_mixin.py:154} INFO - Generating return reason data...
+[2025-05-27T16:42:17.444+0000] {logging_mixin.py:154} INFO - Found 10 existing return reason records, skipping generation
+[2025-05-27T16:42:17.444+0000] {logging_mixin.py:154} INFO - Transforming and loading data to staging tables...
+[2025-05-27T16:42:17.447+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1910, in _execute_context
+    self.dialect.do_execute(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "inventory_date" of relation "stg_inventory" does not exist
+LINE 3:             inventory_id, inventory_date, product_id, store_...
+                                  ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/walmart-etl/generate_synthetic_data.py", line 601, in main
+    batch_id = transform_and_load_to_staging()
+  File "/opt/airflow/walmart-etl/generate_synthetic_data.py", line 461, in transform_and_load_to_staging
+    conn.execute(inventory_query, {"batch_id": batch_id})
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1385, in execute
+    return meth(self, multiparams, params, _EMPTY_EXECUTION_OPTS)
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/sql/elements.py", line 334, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1577, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1953, in _execute_context
+    self._handle_dbapi_exception(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2134, in _handle_dbapi_exception
+    util.raise_(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1910, in _execute_context
+    self.dialect.do_execute(
+  File "/home/airflow/.local/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "inventory_date" of relation "stg_inventory" does not exist
+LINE 3:             inventory_id, inventory_date, product_id, store_...
+                                  ^
+
+[SQL: 
+        INSERT INTO stg_inventory (
+            inventory_id, inventory_date, product_id, store_id,
+            stock_level, min_stock_level, max_stock_level, reorder_point,
+            last_restock_date, stock_status, is_in_stock, days_of_supply,
+            etl_batch_id, etl_timestamp
+        )
+        SELECT 
+            inventory_id, inventory_date, product_id, store_id,
+            stock_level, min_stock_level, max_stock_level, reorder_point,
+            last_restock_date, 
+            CASE 
+                WHEN stock_level < min_stock_level THEN 'Low'
+                WHEN stock_level > max_stock_level THEN 'Excess'
+                ELSE 'Optimal'
+            END as stock_status,
+            CASE WHEN stock_level > 0 THEN TRUE ELSE FALSE END as is_in_stock,
+            CASE 
+                WHEN stock_level = 0 THEN 0
+                ELSE FLOOR(stock_level / GREATEST(1, (max_stock_level - stock_level) / 30))
+            END as days_of_supply,
+            %(batch_id)s, NOW()
+        FROM ods_inventory
+    ]
+[parameters: {'batch_id': 'BATCH_SYNTHETIC_20250527164217'}]
+(Background on this error at: https://sqlalche.me/e/14/f405)
+[2025-05-27T16:42:17.459+0000] {taskinstance.py:1400} INFO - Marking task as UP_FOR_RETRY. dag_id=walmart_etl_dag, task_id=generate_synthetic_data, execution_date=20250527T164215, start_date=20250527T164217, end_date=20250527T164217
+[2025-05-27T16:42:17.473+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 196 for task generate_synthetic_data ((psycopg2.errors.UndefinedColumn) column "inventory_date" of relation "stg_inventory" does not exist
+LINE 3:             inventory_id, inventory_date, product_id, store_...
+                                  ^
+
+[SQL: 
+        INSERT INTO stg_inventory (
+            inventory_id, inventory_date, product_id, store_id,
+            stock_level, min_stock_level, max_stock_level, reorder_point,
+            last_restock_date, stock_status, is_in_stock, days_of_supply,
+            etl_batch_id, etl_timestamp
+        )
+        SELECT 
+            inventory_id, inventory_date, product_id, store_id,
+            stock_level, min_stock_level, max_stock_level, reorder_point,
+            last_restock_date, 
+            CASE 
+                WHEN stock_level < min_stock_level THEN 'Low'
+                WHEN stock_level > max_stock_level THEN 'Excess'
+                ELSE 'Optimal'
+            END as stock_status,
+            CASE WHEN stock_level > 0 THEN TRUE ELSE FALSE END as is_in_stock,
+            CASE 
+                WHEN stock_level = 0 THEN 0
+                ELSE FLOOR(stock_level / GREATEST(1, (max_stock_level - stock_level) / 30))
+            END as days_of_supply,
+            %(batch_id)s, NOW()
+        FROM ods_inventory
+    ]
+[parameters: {'batch_id': 'BATCH_SYNTHETIC_20250527164217'}]
+(Background on this error at: https://sqlalche.me/e/14/f405); 1116)
+[2025-05-27T16:42:17.502+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2025-05-27T16:42:17.515+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check
