@@ -207,13 +207,12 @@ def load_ods_customer_dimension(engine, df):
 def load_ods_product_dimension(engine, df):
     """Load product dimension into ODS layer."""
     # Extract unique products
-    products = df[['Product Name', 'Product Category', 'Product Sub-Category', 
-                   'Product Container', 'Product Base Margin', 'Unit Price']].drop_duplicates()
+    products = df[['Product Name', 'Product Category', 'Product Sub-Category', 'Product Container', 'Product Base Margin', 'Unit Price']].drop_duplicates()
     
     # Create product records
     product_records = []
     for _, row in products.iterrows():
-        product_id = generate_product_id(row['Product Name'], row['Product Category'], row['Product Sub-Category'])
+        product_id = generate_product_id(row['Product Name'], row['Product Category'], row['Product Sub-Category'])  # Generate a deterministic ID
         record = {
             'product_id': product_id,
             'product_name': row['Product Name'],
@@ -223,6 +222,7 @@ def load_ods_product_dimension(engine, df):
             'product_base_margin': row['Product Base Margin'],
             'unit_price': row['Unit Price'],
             'supplier_id': None,  # Not available in the dataset
+            'effective_date': None,  # Will be set in the target layer
             'source_system': 'CSV Import',
             'load_timestamp': datetime.now()
         }
@@ -231,19 +231,42 @@ def load_ods_product_dimension(engine, df):
     # Insert into ODS product dimension
     if product_records:
         with engine.connect() as conn:
+            # First, check if any products have changed
+            for record in product_records:
+                existing_product = conn.execute(text("""
+                    SELECT product_id, unit_price, product_category, product_sub_category 
+                    FROM ods_product 
+                    WHERE product_id = :product_id
+                """), {'product_id': record['product_id']}).fetchone()
+                
+                # If product exists and has changes, log the change
+                if existing_product:
+                    if (existing_product.unit_price != record['unit_price'] or 
+                        existing_product.product_category != record['product_category'] or 
+                        existing_product.product_sub_category != record['product_sub_category']):
+                        print(f"Product {record['product_name']} has changes: Price {existing_product.unit_price} -> {record['unit_price']}")
+            
+            # Now insert/update the records
             conn.execute(text("""
                 INSERT INTO ods_product (
                     product_id, product_name, product_category, product_sub_category,
                     product_container, product_base_margin, unit_price, supplier_id,
-                    source_system, load_timestamp
+                    effective_date, source_system, load_timestamp
                 ) VALUES (
                     :product_id, :product_name, :product_category, :product_sub_category,
                     :product_container, :product_base_margin, :unit_price, :supplier_id,
-                    :source_system, :load_timestamp
+                    :effective_date, :source_system, :load_timestamp
                 )
-                ON CONFLICT (product_id) DO NOTHING
+                ON CONFLICT (product_id) DO UPDATE
+                SET
+                    product_name = EXCLUDED.product_name,
+                    product_category = EXCLUDED.product_category,
+                    product_sub_category = EXCLUDED.product_sub_category,
+                    product_container = EXCLUDED.product_container,
+                    product_base_margin = EXCLUDED.product_base_margin,
+                    unit_price = EXCLUDED.unit_price,
+                    load_timestamp = EXCLUDED.load_timestamp
             """), product_records)
-            # Transaction is automatically committed when the context manager exits
         
         print(f"Loaded {len(product_records)} records into ods_product.")
 
@@ -449,8 +472,26 @@ def transform_to_staging(engine):
     This function applies business logic and transformations to move data from the ODS layer
     to the staging layer. It enriches the data with additional attributes, calculates derived fields,
     and prepares the data for the target layer.
+    
+    Args:
+        engine: SQLAlchemy engine for database connection
+        
+    Returns:
+        The batch ID used for this transformation
     """
     print("Starting transformation from ODS to staging layer...")
+    
+    # Clean up all staging tables first to avoid unique constraint errors
+    with engine.connect() as conn:
+        print("Cleaning up all staging tables before transformation...")
+        conn.execute(text("DELETE FROM stg_product"))
+        conn.execute(text("DELETE FROM stg_customer"))
+        conn.execute(text("DELETE FROM stg_date"))
+        conn.execute(text("DELETE FROM stg_store"))
+        conn.execute(text("DELETE FROM stg_sales"))
+        conn.execute(text("DELETE FROM stg_inventory"))
+        conn.execute(text("DELETE FROM stg_returns"))
+        print("All staging tables cleaned up successfully.")
     
     with engine.connect() as conn:
         # Transform and load date dimension
@@ -557,6 +598,8 @@ def transform_to_staging(engine):
         
         # Transform and load product dimension
         print("Transforming product dimension...")
+        
+        # Now insert fresh data from ODS to staging
         conn.execute(text("""
             INSERT INTO stg_product (
                 product_key, product_id, product_name, category, subcategory,
@@ -588,15 +631,6 @@ def transform_to_staging(engine):
                 :batch_id as etl_batch_id,
                 CURRENT_TIMESTAMP as etl_timestamp
             FROM ods_product
-            ON CONFLICT (product_key) DO UPDATE
-            SET 
-                product_name = EXCLUDED.product_name,
-                category = EXCLUDED.category,
-                subcategory = EXCLUDED.subcategory,
-                price = EXCLUDED.price,
-                cost = EXCLUDED.cost,
-                etl_batch_id = EXCLUDED.etl_batch_id,
-                etl_timestamp = EXCLUDED.etl_timestamp
         """), {'batch_id': BATCH_ID})
         
         # Transform and load store dimension
@@ -1069,6 +1103,19 @@ def load_to_target(engine, batch_id=None):
             )
             AND s.etl_batch_id = :batch_id
         """), {'batch_id': batch_id}).fetchall()
+        
+        # Log the changes for debugging
+        print(f"Found {len(changed_products)} products with changes")
+        for product in changed_products:
+            # Get the current version in target
+            current_version = conn.execute(text("""
+                SELECT product_name, category, price 
+                FROM tgt_dim_product 
+                WHERE product_id = :product_id AND current_indicator = TRUE
+            """), {'product_id': product.product_id}).fetchone()
+            
+            if current_version:
+                print(f"Product {product.product_name} changes: Category {current_version.category} -> {product.category}, Price {current_version.price} -> {product.price}")
         
         # Process each changed product with SCD Type 2 logic
         for product in changed_products:

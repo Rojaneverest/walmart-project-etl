@@ -20,8 +20,8 @@ if IN_DOCKER:
     
     # File paths for Docker
     DATA_DIR = "/opt/airflow/walmart-etl/data"
-    CSV_FILE = os.path.join(DATA_DIR, "walmart Retail Data.csv")
-    # CSV_FILE = os.path.join(DATA_DIR, "scd_test_corrected.csv")
+    # CSV_FILE = os.path.join(DATA_DIR, "walmart Retail Data.csv")
+    CSV_FILE = os.path.join(DATA_DIR, "scd_test_corrected.csv")
 else:
     # Local development environment
     DB_USER = "postgres"

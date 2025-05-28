@@ -3298,3 +3298,8 @@
 [2025-05-27T22:27:13.102+0000] {logging_mixin.py:154} INFO - [2025-05-27T22:27:13.101+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_etl_utils.py
 [2025-05-27T22:27:13.117+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart_etl_utils.py
 [2025-05-27T22:27:13.164+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_etl_utils.py took 0.079 seconds
+[2025-05-27T22:27:43.378+0000] {processor.py:157} INFO - Started process (PID=328) to work on /opt/airflow/dags/walmart_etl_utils.py
+[2025-05-27T22:27:43.379+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_etl_utils.py for tasks to queue
+[2025-05-27T22:27:43.382+0000] {logging_mixin.py:154} INFO - [2025-05-27T22:27:43.382+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_etl_utils.py
+[2025-05-27T22:27:43.387+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart_etl_utils.py
+[2025-05-27T22:27:43.414+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_etl_utils.py took 0.043 seconds

@@ -4885,3 +4885,10 @@ IndentationError: unexpected indent
 [2025-05-27T22:27:12.209+0000] {logging_mixin.py:154} INFO - [2025-05-27T22:27:12.209+0000] {dag.py:2941} INFO - Sync 1 DAGs
 [2025-05-27T22:27:12.220+0000] {logging_mixin.py:154} INFO - [2025-05-27T22:27:12.220+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_etl_dag to 2025-05-27T00:00:00+00:00, run_after=2025-05-28T00:00:00+00:00
 [2025-05-27T22:27:12.229+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_etl_dag.py took 0.481 seconds
+[2025-05-27T22:27:42.745+0000] {processor.py:157} INFO - Started process (PID=326) to work on /opt/airflow/dags/walmart_etl_dag.py
+[2025-05-27T22:27:42.746+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_etl_dag.py for tasks to queue
+[2025-05-27T22:27:42.747+0000] {logging_mixin.py:154} INFO - [2025-05-27T22:27:42.747+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_etl_dag.py
+[2025-05-27T22:27:43.216+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_etl_dag']) retrieved from /opt/airflow/dags/walmart_etl_dag.py
+[2025-05-27T22:27:43.259+0000] {logging_mixin.py:154} INFO - [2025-05-27T22:27:43.258+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-27T22:27:43.288+0000] {logging_mixin.py:154} INFO - [2025-05-27T22:27:43.288+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_etl_dag to 2025-05-27T00:00:00+00:00, run_after=2025-05-28T00:00:00+00:00
+[2025-05-27T22:27:43.302+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_etl_dag.py took 0.559 seconds
