@@ -1125,3 +1125,17 @@
 [2025-05-28T05:46:20.924+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:20.924+0000] {dag.py:2941} INFO - Sync 1 DAGs
 [2025-05-28T05:46:20.935+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:20.935+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_etl_dag to 2025-05-27T00:00:00+00:00, run_after=2025-05-28T00:00:00+00:00
 [2025-05-28T05:46:20.943+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_etl_dag.py took 0.291 seconds
+[2025-05-28T05:46:51.618+0000] {processor.py:157} INFO - Started process (PID=1202) to work on /opt/airflow/dags/walmart_etl_dag.py
+[2025-05-28T05:46:51.619+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_etl_dag.py for tasks to queue
+[2025-05-28T05:46:51.620+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:51.620+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_etl_dag.py
+[2025-05-28T05:46:51.863+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_etl_dag']) retrieved from /opt/airflow/dags/walmart_etl_dag.py
+[2025-05-28T05:46:51.876+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:51.876+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:46:51.886+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:51.886+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_etl_dag to 2025-05-27T00:00:00+00:00, run_after=2025-05-28T00:00:00+00:00
+[2025-05-28T05:46:51.893+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_etl_dag.py took 0.279 seconds
+[2025-05-28T05:47:22.697+0000] {processor.py:157} INFO - Started process (PID=1216) to work on /opt/airflow/dags/walmart_etl_dag.py
+[2025-05-28T05:47:22.698+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_etl_dag.py for tasks to queue
+[2025-05-28T05:47:22.699+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:22.698+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_etl_dag.py
+[2025-05-28T05:47:22.986+0000] {processor.py:839} INFO - DAG(s) dict_keys(['walmart_etl_dag']) retrieved from /opt/airflow/dags/walmart_etl_dag.py
+[2025-05-28T05:47:23.005+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:23.004+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:47:23.016+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:23.016+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_etl_dag to 2025-05-27T00:00:00+00:00, run_after=2025-05-28T00:00:00+00:00
+[2025-05-28T05:47:23.026+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_etl_dag.py took 0.333 seconds

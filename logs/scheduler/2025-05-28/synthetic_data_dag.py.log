@@ -1129,3 +1129,17 @@
 [2025-05-28T05:46:19.570+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:19.570+0000] {dag.py:2941} INFO - Sync 1 DAGs
 [2025-05-28T05:46:19.577+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:19.577+0000] {dag.py:3722} INFO - Setting next_dagrun for synthetic_data_generation to None, run_after=None
 [2025-05-28T05:46:19.589+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/synthetic_data_dag.py took 0.538 seconds
+[2025-05-28T05:46:50.013+0000] {processor.py:157} INFO - Started process (PID=1198) to work on /opt/airflow/dags/synthetic_data_dag.py
+[2025-05-28T05:46:50.015+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/synthetic_data_dag.py for tasks to queue
+[2025-05-28T05:46:50.017+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:50.016+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/synthetic_data_dag.py
+[2025-05-28T05:46:50.511+0000] {processor.py:839} INFO - DAG(s) dict_keys(['synthetic_data_generation']) retrieved from /opt/airflow/dags/synthetic_data_dag.py
+[2025-05-28T05:46:50.541+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:50.541+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:46:50.549+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:50.549+0000] {dag.py:3722} INFO - Setting next_dagrun for synthetic_data_generation to None, run_after=None
+[2025-05-28T05:46:50.561+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/synthetic_data_dag.py took 0.557 seconds
+[2025-05-28T05:47:21.061+0000] {processor.py:157} INFO - Started process (PID=1212) to work on /opt/airflow/dags/synthetic_data_dag.py
+[2025-05-28T05:47:21.064+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/synthetic_data_dag.py for tasks to queue
+[2025-05-28T05:47:21.065+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:21.064+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/synthetic_data_dag.py
+[2025-05-28T05:47:21.591+0000] {processor.py:839} INFO - DAG(s) dict_keys(['synthetic_data_generation']) retrieved from /opt/airflow/dags/synthetic_data_dag.py
+[2025-05-28T05:47:21.612+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:21.612+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:47:21.621+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:21.621+0000] {dag.py:3722} INFO - Setting next_dagrun for synthetic_data_generation to None, run_after=None
+[2025-05-28T05:47:21.634+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/synthetic_data_dag.py took 0.584 seconds
