@@ -1097,3 +1097,59 @@
 [2025-05-28T05:44:16.554+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:44:16.554+0000] {dag.py:2941} INFO - Sync 1 DAGs
 [2025-05-28T05:44:16.584+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:44:16.584+0000] {dag.py:3722} INFO - Setting next_dagrun for walmart_recreate_tables_dag to None, run_after=None
 [2025-05-28T05:44:16.614+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.463 seconds
+[2025-05-28T05:44:47.469+0000] {processor.py:157} INFO - Started process (PID=1147) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:44:47.470+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-28T05:44:47.471+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:44:47.471+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:44:47.489+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:44:47.486+0000] {dagbag.py:346} ERROR - Failed to import: /opt/airflow/dags/walmart_recreate_tables_dag.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/dagbag.py", line 342, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 843, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/opt/airflow/dags/walmart_recreate_tables_dag.py", line 25, in <module>
+    from walmart_etl_utils import get_airflow_engine, log_etl_run
+ModuleNotFoundError: No module named 'walmart_etl_utils'
+[2025-05-28T05:44:47.490+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:44:47.520+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.055 seconds
+[2025-05-28T05:45:18.501+0000] {processor.py:157} INFO - Started process (PID=1160) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:45:18.503+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-28T05:45:18.504+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:45:18.504+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:45:18.521+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:45:18.520+0000] {dagbag.py:346} ERROR - Failed to import: /opt/airflow/dags/walmart_recreate_tables_dag.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/dagbag.py", line 342, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 843, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/opt/airflow/dags/walmart_recreate_tables_dag.py", line 25, in <module>
+    from walmart_etl_utils import get_airflow_engine, log_etl_run
+ModuleNotFoundError: No module named 'walmart_etl_utils'
+[2025-05-28T05:45:18.522+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:45:18.538+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.043 seconds
+[2025-05-28T05:45:48.578+0000] {processor.py:157} INFO - Started process (PID=1173) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:45:48.578+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-28T05:45:48.579+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:45:48.579+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:45:48.584+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:45:48.583+0000] {dagbag.py:346} ERROR - Failed to import: /opt/airflow/dags/walmart_recreate_tables_dag.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/dagbag.py", line 342, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 843, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/opt/airflow/dags/walmart_recreate_tables_dag.py", line 25, in <module>
+    from walmart_etl_utils import get_airflow_engine, log_etl_run
+ModuleNotFoundError: No module named 'walmart_etl_utils'
+[2025-05-28T05:45:48.584+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:45:48.594+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.018 seconds
+[2025-05-28T05:46:19.612+0000] {processor.py:157} INFO - Started process (PID=1187) to work on /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:46:19.613+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/walmart_recreate_tables_dag.py for tasks to queue
+[2025-05-28T05:46:19.613+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:19.613+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:46:19.618+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:46:19.617+0000] {dagbag.py:346} ERROR - Failed to import: /opt/airflow/dags/walmart_recreate_tables_dag.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/dagbag.py", line 342, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 843, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/opt/airflow/dags/walmart_recreate_tables_dag.py", line 25, in <module>
+    from walmart_etl_utils import get_airflow_engine, log_etl_run
+ModuleNotFoundError: No module named 'walmart_etl_utils'
+[2025-05-28T05:46:19.618+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/walmart_recreate_tables_dag.py
+[2025-05-28T05:46:19.627+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/walmart_recreate_tables_dag.py took 0.021 seconds

@@ -15870,3 +15870,49 @@ File Path                                         PID    Runtime      # DAGs    
 ================================================================================
 [2025-05-28T05:44:24.427+0000] {manager.py:1137} WARNING - Skipping processing of missing file: /opt/airflow/dags/walmart_maintenance_dag.py
 [2025-05-28T05:44:26.464+0000] {manager.py:1137} WARNING - Skipping processing of missing file: /opt/airflow/dags/walmart_etl_utils.py
+[2025-05-28T05:44:37.097+0000] {manager.py:887} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                         PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+------------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/synthetic_data_dag.py                                    1           0  0.67s           2025-05-28T05:44:15
+/opt/airflow/dags/walmart_recreate_tables_dag.py                           1           0  0.56s           2025-05-28T05:44:16
+/opt/airflow/dags/walmart_etl_dag.py                                       1           0  1.24s           2025-05-28T05:44:16
+/opt/airflow/dags/inventory_returns_dag.py                                 1           0  0.70s           2025-05-28T05:44:15
+================================================================================
+[2025-05-28T05:45:07.193+0000] {manager.py:887} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                         PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+------------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/walmart_recreate_tables_dag.py                           0           1  0.07s           2025-05-28T05:44:47
+/opt/airflow/dags/synthetic_data_dag.py                                    1           0  0.75s           2025-05-28T05:44:46
+/opt/airflow/dags/walmart_etl_dag.py                                       1           0  0.55s           2025-05-28T05:44:47
+/opt/airflow/dags/inventory_returns_dag.py                                 1           0  0.77s           2025-05-28T05:44:46
+================================================================================
+[2025-05-28T05:45:27.648+0000] {manager.py:755} INFO - Searching for files in /opt/airflow/dags
+[2025-05-28T05:45:27.668+0000] {manager.py:758} INFO - There are 4 files in /opt/airflow/dags
+[2025-05-28T05:45:37.795+0000] {manager.py:887} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                         PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+------------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/walmart_recreate_tables_dag.py                           0           1  0.06s           2025-05-28T05:45:18
+/opt/airflow/dags/synthetic_data_dag.py                                    1           0  0.59s           2025-05-28T05:45:17
+/opt/airflow/dags/walmart_etl_dag.py                                       1           0  0.33s           2025-05-28T05:45:18
+/opt/airflow/dags/inventory_returns_dag.py                                 1           0  0.61s           2025-05-28T05:45:17
+================================================================================
+[2025-05-28T05:46:07.836+0000] {manager.py:887} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                                         PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+------------------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/walmart_recreate_tables_dag.py                           0           1  0.02s           2025-05-28T05:45:48
+/opt/airflow/dags/synthetic_data_dag.py                                    1           0  0.61s           2025-05-28T05:45:48
+/opt/airflow/dags/walmart_etl_dag.py                                       1           0  0.29s           2025-05-28T05:45:49
+/opt/airflow/dags/inventory_returns_dag.py                                 1           0  0.65s           2025-05-28T05:45:48
+================================================================================
