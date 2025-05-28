@@ -34,6 +34,7 @@ else:
     PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
     DATA_DIR = os.path.join(PROJECT_DIR, "data")
     # CSV_FILE = os.path.join(DATA_DIR, "walmart Retail Data.csv")
+    # Uncomment below and comment above to use the smaller test file
     CSV_FILE = os.path.join(DATA_DIR, "scd_test_corrected.csv")
 
 # Create database connection string

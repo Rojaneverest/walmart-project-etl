@@ -113,8 +113,6 @@ def create_staging_tables(metadata):
         Column('cost', Numeric(10, 2)),
         Column('supplier_key', Integer),
         Column('is_active', Boolean),
-        Column('introduction_date', Date),
-        Column('discontinuation_date', Date),
         Column('effective_date', Date, nullable=False),
         Column('expiry_date', Date),
         Column('current_flag', String(1)),

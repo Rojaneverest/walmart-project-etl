@@ -222,7 +222,6 @@ def load_ods_product_dimension(engine, df):
             'product_base_margin': row['Product Base Margin'],
             'unit_price': row['Unit Price'],
             'supplier_id': None,  # Not available in the dataset
-            'effective_date': None,  # Will be set in the target layer
             'source_system': 'CSV Import',
             'load_timestamp': datetime.now()
         }
@@ -251,11 +250,11 @@ def load_ods_product_dimension(engine, df):
                 INSERT INTO ods_product (
                     product_id, product_name, product_category, product_sub_category,
                     product_container, product_base_margin, unit_price, supplier_id,
-                    effective_date, source_system, load_timestamp
+                    source_system, load_timestamp
                 ) VALUES (
                     :product_id, :product_name, :product_category, :product_sub_category,
                     :product_container, :product_base_margin, :unit_price, :supplier_id,
-                    :effective_date, :source_system, :load_timestamp
+                    :source_system, :load_timestamp
                 )
                 ON CONFLICT (product_id) DO UPDATE
                 SET
@@ -599,7 +598,38 @@ def transform_to_staging(engine):
         # Transform and load product dimension
         print("Transforming product dimension...")
         
-        # Now insert fresh data from ODS to staging
+        # Get available supplier keys from the supplier dimension
+        supplier_keys = conn.execute(text("""
+            SELECT supplier_key FROM tgt_dim_supplier
+        """)).fetchall()
+        
+        if not supplier_keys:
+            print("Warning: No suppliers found in tgt_dim_supplier. Creating a default supplier.")
+            # Insert a default supplier if none exists
+            conn.execute(text("""
+                INSERT INTO tgt_dim_supplier (
+                    supplier_id, supplier_name, contact_person, email, phone,
+                    address, city, state, zip_code, country, supplier_status,
+                    dw_created_date, dw_version_number
+                ) VALUES (
+                    'SUP_DEFAULT', 'Default Supplier', 'System Admin', 'admin@example.com', '000-000-0000',
+                    '123 Default St', 'Default City', 'Default State', '00000', 'USA', 'Active',
+                    CURRENT_TIMESTAMP, 1
+                )
+                ON CONFLICT (supplier_id) DO NOTHING
+            """))
+            
+            # Get the default supplier key
+            supplier_keys = conn.execute(text("""
+                SELECT supplier_key FROM tgt_dim_supplier
+            """)).fetchall()
+        
+        # Extract supplier keys as a list
+        supplier_key_list = [row[0] for row in supplier_keys]
+        num_suppliers = len(supplier_key_list)
+        
+        # Now insert fresh data from ODS to staging with distributed supplier keys
+        # Using a simpler approach to distribute products across suppliers
         conn.execute(text("""
             INSERT INTO stg_product (
                 product_key, product_id, product_name, category, subcategory,
@@ -623,15 +653,20 @@ def transform_to_staging(engine):
                     WHEN product_base_margin > 0 THEN unit_price * (1 - product_base_margin)
                     ELSE unit_price * 0.7 -- Default 30% margin if not provided
                 END as cost,
-                -- Placeholder for supplier key
-                1 as supplier_key,
+                -- Distribute products across suppliers using a simple hash function
+                -- If we have multiple suppliers, use modulo to distribute, otherwise use supplier_key 1
+                CASE 
+                    WHEN :num_suppliers > 0 THEN 
+                        (ABS(('x' || MD5(product_id))::bit(32)::int) % :num_suppliers) + 1
+                    ELSE 1
+                END as supplier_key,
                 TRUE as is_active,
                 CURRENT_DATE as effective_date,
                 'Y' as current_flag,
                 :batch_id as etl_batch_id,
                 CURRENT_TIMESTAMP as etl_timestamp
             FROM ods_product
-        """), {'batch_id': BATCH_ID})
+        """), {'batch_id': BATCH_ID, 'num_suppliers': num_suppliers})
         
         # Transform and load store dimension
         print("Transforming store dimension...")
@@ -1129,30 +1164,18 @@ def load_to_target(engine, batch_id=None):
                 AND current_indicator = TRUE
             """), {'product_id': product.product_id})
             
-            # Get a default supplier key from the target supplier table if not already fetched
-            if 'default_supplier_key' not in locals():
-                default_supplier = conn.execute(text("""
-                    SELECT supplier_key FROM tgt_dim_supplier LIMIT 1
-                """)).fetchone()
-                
-                if default_supplier:
-                    default_supplier_key = default_supplier[0]
-                else:
-                    print("Warning: No suppliers found in tgt_dim_supplier table. Cannot update product.")
-                    continue
-            
-            # 2. Insert the new version
+            # 2. Insert the new version - use the supplier_key from the staging table
             conn.execute(text("""
                 INSERT INTO tgt_dim_product (
                     product_id, product_name, category, subcategory,
                     department, brand, price, cost, supplier_key, is_active,
-                    introduction_date, discontinuation_date, effective_date, expiry_date,
+                    effective_date, expiry_date,
                     current_indicator, dw_created_date, dw_version_number
                 )
                 VALUES (
                     :product_id, :product_name, :category, :subcategory,
                     :department, :brand, :price, :cost, :supplier_key, :is_active,
-                    :introduction_date, :discontinuation_date, CURRENT_DATE, :max_date,
+                    CURRENT_DATE, :max_date,
                     TRUE, CURRENT_TIMESTAMP, 1
                 )
             """), {
@@ -1164,42 +1187,29 @@ def load_to_target(engine, batch_id=None):
                 'brand': product.brand,
                 'price': product.price,
                 'cost': product.cost,
-                'supplier_key': default_supplier_key,
+                'supplier_key': product.supplier_key,  # Use the supplier_key from staging
                 'is_active': product.is_active,
-                'introduction_date': None,  # Not available in staging
-                'discontinuation_date': None,  # Not available in staging
                 'max_date': max_date
             })
         
-        # Get a default supplier key from the target supplier table
-        default_supplier = conn.execute(text("""
-            SELECT supplier_key FROM tgt_dim_supplier LIMIT 1
-        """)).fetchone()
-        
-        if default_supplier:
-            default_supplier_key = default_supplier[0]
-            
-            # Insert new products that don't exist in target yet
-            conn.execute(text("""
-                INSERT INTO tgt_dim_product (
-                    product_id, product_name, category, subcategory,
-                    department, brand, price, cost, supplier_key, is_active,
-                    effective_date, expiry_date, current_indicator,
-                    dw_created_date, dw_version_number
-                )
-                SELECT 
-                    s.product_id, s.product_name, s.category, s.subcategory,
-                    s.department, s.brand, s.price, s.cost, :default_supplier_key, s.is_active,
-                    CURRENT_DATE, :max_date, TRUE,
-                    CURRENT_TIMESTAMP, 1
-                FROM stg_product s
-                LEFT JOIN tgt_dim_product t ON s.product_id = t.product_id
-                WHERE t.product_id IS NULL
-                AND s.etl_batch_id = :batch_id
-            """), {'batch_id': batch_id, 'max_date': max_date, 'default_supplier_key': default_supplier_key})
-        else:
-            print("Warning: No suppliers found in tgt_dim_supplier table. Cannot load products.")
-            return
+        # Insert new products that don't exist in target yet, using their assigned supplier keys from staging
+        conn.execute(text("""
+            INSERT INTO tgt_dim_product (
+                product_id, product_name, category, subcategory,
+                department, brand, price, cost, supplier_key, is_active,
+                effective_date, expiry_date, current_indicator,
+                dw_created_date, dw_version_number
+            )
+            SELECT 
+                s.product_id, s.product_name, s.category, s.subcategory,
+                s.department, s.brand, s.price, s.cost, s.supplier_key, s.is_active,
+                CURRENT_DATE, :max_date, TRUE,
+                CURRENT_TIMESTAMP, 1
+            FROM stg_product s
+            LEFT JOIN tgt_dim_product t ON s.product_id = t.product_id
+            WHERE t.product_id IS NULL
+            AND s.etl_batch_id = :batch_id
+        """), {'batch_id': batch_id, 'max_date': max_date})
         
         # Load store dimension to target with SCD Type 2
         print("Loading store dimension to target with SCD Type 2...")

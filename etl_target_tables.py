@@ -118,8 +118,6 @@ def create_target_tables(metadata):
         Column('cost', Numeric(10, 2)),
         Column('supplier_key', Integer, ForeignKey('tgt_dim_supplier.supplier_key')),
         Column('is_active', Boolean),
-        Column('introduction_date', Date),
-        Column('discontinuation_date', Date),
         Column('effective_date', Date, nullable=False),
         Column('expiry_date', Date),
         Column('current_indicator', Boolean, default=True),

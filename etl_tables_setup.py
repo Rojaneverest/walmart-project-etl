@@ -79,7 +79,6 @@ def create_ods_tables(metadata):
         Column('product_base_margin', Float),
         Column('unit_price', Numeric(10, 2)),
         Column('supplier_id', String(20)),
-        Column('effective_date', Date),
         Column('source_system', String(50)),
         Column('load_timestamp', TIMESTAMP, default=func.now())
     )
@@ -95,7 +94,6 @@ def create_ods_tables(metadata):
         Column('zip_code', String(20)),
         Column('region', String(50)),
         Column('store_size_sqft', Integer),
-        Column('effective_date', Date),
         Column('source_system', String(50)),
         Column('load_timestamp', TIMESTAMP, default=func.now())
     )

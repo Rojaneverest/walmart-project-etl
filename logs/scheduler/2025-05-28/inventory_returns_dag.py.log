@@ -1142,3 +1142,888 @@
 [2025-05-28T05:47:21.615+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:21.615+0000] {dag.py:2941} INFO - Sync 1 DAGs
 [2025-05-28T05:47:21.622+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:21.622+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
 [2025-05-28T05:47:21.635+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.605 seconds
+[2025-05-28T05:47:52.122+0000] {processor.py:157} INFO - Started process (PID=1224) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:47:52.125+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:47:52.127+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:52.126+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:47:52.699+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:47:52.725+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:52.724+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:47:52.732+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:47:52.732+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:47:52.749+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.639 seconds
+[2025-05-28T05:48:23.197+0000] {processor.py:157} INFO - Started process (PID=1238) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:48:23.202+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:48:23.206+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:48:23.205+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:48:23.776+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:48:23.798+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:48:23.797+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:48:23.805+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:48:23.805+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:48:23.817+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.639 seconds
+[2025-05-28T05:48:54.206+0000] {processor.py:157} INFO - Started process (PID=1251) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:48:54.210+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:48:54.212+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:48:54.211+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:48:54.745+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:48:54.762+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:48:54.761+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:48:54.769+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:48:54.769+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:48:54.782+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.583 seconds
+[2025-05-28T05:49:25.195+0000] {processor.py:157} INFO - Started process (PID=1265) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:49:25.200+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:49:25.204+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:49:25.202+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:49:25.672+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:49:25.698+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:49:25.698+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:49:25.706+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:49:25.706+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:49:25.719+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.540 seconds
+[2025-05-28T05:49:55.832+0000] {processor.py:157} INFO - Started process (PID=1279) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:49:55.837+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:49:55.838+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:49:55.837+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:49:56.658+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:49:56.707+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:49:56.706+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:49:56.721+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:49:56.721+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:49:56.739+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.918 seconds
+[2025-05-28T05:50:27.436+0000] {processor.py:157} INFO - Started process (PID=1300) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:50:27.438+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:50:27.440+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:50:27.439+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:50:27.938+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:50:27.952+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:50:27.952+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:50:27.958+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:50:27.958+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:50:27.971+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.554 seconds
+[2025-05-28T05:50:58.399+0000] {processor.py:157} INFO - Started process (PID=1314) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:50:58.401+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:50:58.403+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:50:58.402+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:50:58.902+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:50:58.930+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:50:58.930+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:50:58.937+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:50:58.937+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:50:58.950+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.565 seconds
+[2025-05-28T05:51:29.355+0000] {processor.py:157} INFO - Started process (PID=1328) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:51:29.358+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:51:29.360+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:51:29.359+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:51:29.856+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:51:29.879+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:51:29.879+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:51:29.886+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:51:29.886+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:51:29.901+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.558 seconds
+[2025-05-28T05:52:00.315+0000] {processor.py:157} INFO - Started process (PID=1342) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:52:00.319+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:52:00.321+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:52:00.320+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:52:00.852+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:52:00.875+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:52:00.875+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:52:00.883+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:52:00.883+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:52:00.895+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.594 seconds
+[2025-05-28T05:52:31.388+0000] {processor.py:157} INFO - Started process (PID=1355) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:52:31.391+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:52:31.394+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:52:31.393+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:52:31.936+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:52:31.960+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:52:31.960+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:52:31.971+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:52:31.971+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:52:31.984+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.605 seconds
+[2025-05-28T05:53:02.415+0000] {processor.py:157} INFO - Started process (PID=1369) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:53:02.419+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:53:02.421+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:53:02.421+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:53:02.941+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:53:02.964+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:53:02.964+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:53:02.975+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:53:02.975+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:53:02.985+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.584 seconds
+[2025-05-28T05:53:33.357+0000] {processor.py:157} INFO - Started process (PID=1383) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:53:33.359+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:53:33.361+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:53:33.361+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:53:33.677+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:53:33.713+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:53:33.713+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:53:33.729+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:53:33.729+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:53:33.747+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.400 seconds
+[2025-05-28T05:54:04.103+0000] {processor.py:157} INFO - Started process (PID=1397) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:54:04.106+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:54:04.107+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:54:04.107+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:54:04.367+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:54:04.389+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:54:04.388+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:54:04.399+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:54:04.399+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:54:04.414+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.317 seconds
+[2025-05-28T05:54:34.835+0000] {processor.py:157} INFO - Started process (PID=1411) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:54:34.839+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:54:34.842+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:54:34.842+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:54:35.126+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:54:35.160+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:54:35.160+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:54:35.174+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:54:35.173+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:54:35.188+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.359 seconds
+[2025-05-28T05:55:05.594+0000] {processor.py:157} INFO - Started process (PID=1425) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:55:05.597+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:55:05.599+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:55:05.598+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:55:05.915+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:55:05.940+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:55:05.940+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:55:05.953+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:55:05.953+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:55:05.967+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.383 seconds
+[2025-05-28T05:55:36.440+0000] {processor.py:157} INFO - Started process (PID=1439) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:55:36.442+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:55:36.444+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:55:36.443+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:55:36.708+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:55:36.737+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:55:36.736+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:55:36.754+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:55:36.754+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:55:36.768+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.338 seconds
+[2025-05-28T05:56:07.238+0000] {processor.py:157} INFO - Started process (PID=1453) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:56:07.241+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:56:07.243+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:56:07.242+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:56:07.532+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:56:07.565+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:56:07.565+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:56:07.576+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:56:07.576+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:56:07.592+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.362 seconds
+[2025-05-28T05:56:38.037+0000] {processor.py:157} INFO - Started process (PID=1467) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:56:38.043+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:56:38.045+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:56:38.045+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:56:38.352+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:56:38.382+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:56:38.382+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:56:38.395+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:56:38.395+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:56:38.409+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.388 seconds
+[2025-05-28T05:57:08.886+0000] {processor.py:157} INFO - Started process (PID=1481) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:57:08.889+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:57:08.891+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:57:08.891+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:57:09.202+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:57:09.225+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:57:09.225+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:57:09.241+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:57:09.241+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:57:09.254+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.382 seconds
+[2025-05-28T05:57:39.711+0000] {processor.py:157} INFO - Started process (PID=1495) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:57:39.714+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:57:39.721+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:57:39.718+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:57:40.064+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:57:40.087+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:57:40.087+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:57:40.098+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:57:40.098+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:57:40.110+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.408 seconds
+[2025-05-28T05:58:10.559+0000] {processor.py:157} INFO - Started process (PID=1509) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:58:10.563+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:58:10.564+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:58:10.564+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:58:10.893+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:58:10.937+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:58:10.937+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:58:10.962+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:58:10.962+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:58:10.984+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.439 seconds
+[2025-05-28T05:58:41.416+0000] {processor.py:157} INFO - Started process (PID=1523) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:58:41.418+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:58:41.420+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:58:41.419+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:58:41.671+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:58:41.691+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:58:41.690+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:58:41.704+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:58:41.703+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:58:41.716+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.312 seconds
+[2025-05-28T05:59:12.146+0000] {processor.py:157} INFO - Started process (PID=1537) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:59:12.149+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:59:12.151+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:59:12.150+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:59:12.409+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:59:12.441+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:59:12.441+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:59:12.452+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:59:12.452+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:59:12.466+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.333 seconds
+[2025-05-28T05:59:42.883+0000] {processor.py:157} INFO - Started process (PID=1551) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:59:42.888+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T05:59:42.891+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:59:42.890+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:59:43.221+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T05:59:43.258+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:59:43.257+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T05:59:43.273+0000] {logging_mixin.py:154} INFO - [2025-05-28T05:59:43.273+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T05:59:43.290+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.417 seconds
+[2025-05-28T06:00:13.776+0000] {processor.py:157} INFO - Started process (PID=1565) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T06:00:13.782+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T06:00:13.784+0000] {logging_mixin.py:154} INFO - [2025-05-28T06:00:13.783+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T06:00:14.062+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T06:00:14.094+0000] {logging_mixin.py:154} INFO - [2025-05-28T06:00:14.094+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T06:00:14.107+0000] {logging_mixin.py:154} INFO - [2025-05-28T06:00:14.107+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T06:00:14.121+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.354 seconds
+[2025-05-28T06:00:44.579+0000] {processor.py:157} INFO - Started process (PID=1579) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T06:00:44.581+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T06:00:44.583+0000] {logging_mixin.py:154} INFO - [2025-05-28T06:00:44.582+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T06:00:44.904+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T06:00:44.946+0000] {logging_mixin.py:154} INFO - [2025-05-28T06:00:44.945+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T06:00:44.964+0000] {logging_mixin.py:154} INFO - [2025-05-28T06:00:44.963+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T06:00:44.980+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.417 seconds
+[2025-05-28T06:47:38.121+0000] {processor.py:157} INFO - Started process (PID=1592) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T06:47:38.123+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T06:47:38.123+0000] {logging_mixin.py:154} INFO - [2025-05-28T06:47:38.123+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T06:47:38.508+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T06:47:38.552+0000] {logging_mixin.py:154} INFO - [2025-05-28T06:47:38.551+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T06:47:38.570+0000] {logging_mixin.py:154} INFO - [2025-05-28T06:47:38.569+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T06:47:38.595+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.479 seconds
+[2025-05-28T07:09:21.484+0000] {processor.py:157} INFO - Started process (PID=1606) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:09:21.486+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:09:21.487+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:09:21.487+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:09:22.064+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:09:22.177+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:09:22.176+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:09:22.219+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:09:22.218+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:09:22.283+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.811 seconds
+[2025-05-28T07:09:52.983+0000] {processor.py:157} INFO - Started process (PID=1620) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:09:52.985+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:09:52.986+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:09:52.986+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:09:53.344+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:09:53.372+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:09:53.372+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:09:53.384+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:09:53.384+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:09:53.401+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.429 seconds
+[2025-05-28T07:10:24.038+0000] {processor.py:157} INFO - Started process (PID=1634) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:10:24.042+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:10:24.047+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:10:24.044+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:10:24.647+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:10:24.707+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:10:24.706+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:10:24.727+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:10:24.727+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:10:24.750+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.729 seconds
+[2025-05-28T07:10:55.474+0000] {processor.py:157} INFO - Started process (PID=1648) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:10:55.477+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:10:55.480+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:10:55.479+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:10:55.815+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:10:55.857+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:10:55.857+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:10:55.879+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:10:55.879+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:10:55.899+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.438 seconds
+[2025-05-28T07:11:26.388+0000] {processor.py:157} INFO - Started process (PID=1662) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:11:26.391+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:11:26.399+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:11:26.396+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:11:26.757+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:11:26.787+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:11:26.787+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:11:26.798+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:11:26.798+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:11:26.812+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.438 seconds
+[2025-05-28T07:23:05.370+0000] {processor.py:157} INFO - Started process (PID=1676) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:23:05.375+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:23:05.378+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:23:05.378+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:23:06.452+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:23:06.526+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:23:06.524+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:23:06.543+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:23:06.543+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:23:06.573+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 1.214 seconds
+[2025-05-28T07:23:37.363+0000] {processor.py:157} INFO - Started process (PID=1690) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:23:37.367+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:23:37.370+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:23:37.369+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:23:37.657+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:23:37.691+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:23:37.691+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:23:37.711+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:23:37.710+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:23:37.727+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.389 seconds
+[2025-05-28T07:24:08.389+0000] {processor.py:157} INFO - Started process (PID=1704) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:24:08.395+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:24:08.398+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:24:08.397+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:24:08.727+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:24:08.754+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:24:08.753+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:24:08.771+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:24:08.771+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:24:08.786+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.411 seconds
+[2025-05-28T07:24:39.422+0000] {processor.py:157} INFO - Started process (PID=1718) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:24:39.427+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:24:39.432+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:24:39.430+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:24:39.770+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:24:39.807+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:24:39.806+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:24:39.820+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:24:39.820+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:24:39.838+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.439 seconds
+[2025-05-28T07:25:10.514+0000] {processor.py:157} INFO - Started process (PID=1732) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:25:10.521+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:25:10.526+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:25:10.526+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:25:10.876+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:25:10.919+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:25:10.919+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:25:10.937+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:25:10.937+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:25:10.955+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.463 seconds
+[2025-05-28T07:25:41.579+0000] {processor.py:157} INFO - Started process (PID=1746) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:25:41.583+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:25:41.585+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:25:41.585+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:25:41.952+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:25:42.013+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:25:42.012+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:25:42.037+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:25:42.037+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:25:42.061+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.501 seconds
+[2025-05-28T07:26:12.715+0000] {processor.py:157} INFO - Started process (PID=1760) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:26:12.723+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:26:12.728+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:26:12.727+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:26:13.259+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:26:13.391+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:26:13.386+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:26:13.445+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:26:13.445+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:26:13.485+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.785 seconds
+[2025-05-28T07:26:44.278+0000] {processor.py:157} INFO - Started process (PID=1774) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:26:44.283+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:26:44.285+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:26:44.284+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:26:44.613+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:26:44.610+0000] {dagbag.py:346} ERROR - Failed to import: /opt/airflow/dags/inventory_returns_dag.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/dagbag.py", line 342, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 843, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/opt/airflow/dags/inventory_returns_dag.py", line 29, in <module>
+    from etl_data_loader import (
+  File "/opt/airflow/walmart-etl/etl_data_loader.py", line 1210
+    return
+    ^
+IndentationError: unexpected indent
+[2025-05-28T07:26:44.614+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:26:44.649+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.386 seconds
+[2025-05-28T07:27:15.235+0000] {processor.py:157} INFO - Started process (PID=1788) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:27:15.239+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:27:15.241+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:27:15.240+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:27:15.559+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:27:15.597+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:27:15.596+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:27:15.612+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:27:15.612+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:27:15.631+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.412 seconds
+[2025-05-28T07:27:46.282+0000] {processor.py:157} INFO - Started process (PID=1802) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:27:46.292+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:27:46.299+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:27:46.297+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:27:46.697+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:27:46.734+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:27:46.734+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:27:46.746+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:27:46.745+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:27:46.765+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.496 seconds
+[2025-05-28T07:28:17.538+0000] {processor.py:157} INFO - Started process (PID=1816) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:28:17.545+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:28:17.548+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:28:17.547+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:28:17.856+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:28:17.896+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:28:17.896+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:28:17.909+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:28:17.909+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:28:17.926+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.398 seconds
+[2025-05-28T07:28:48.484+0000] {processor.py:157} INFO - Started process (PID=1830) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:28:48.490+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:28:48.494+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:28:48.493+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:28:48.808+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:28:48.848+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:28:48.848+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:28:48.860+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:28:48.860+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:28:48.879+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.411 seconds
+[2025-05-28T07:29:19.544+0000] {processor.py:157} INFO - Started process (PID=1844) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:29:19.548+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:29:19.549+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:29:19.549+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:29:19.887+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:29:19.936+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:29:19.936+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:29:19.951+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:29:19.951+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:29:19.968+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.442 seconds
+[2025-05-28T07:29:50.624+0000] {processor.py:157} INFO - Started process (PID=1858) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:29:50.628+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:29:50.631+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:29:50.629+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:29:50.942+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:29:50.977+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:29:50.977+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:29:50.993+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:29:50.993+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:29:51.008+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.397 seconds
+[2025-05-28T07:30:21.679+0000] {processor.py:157} INFO - Started process (PID=1872) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:30:21.685+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:30:21.688+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:30:21.687+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:30:22.045+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:30:22.099+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:30:22.099+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:30:22.175+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:30:22.175+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:30:22.201+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.537 seconds
+[2025-05-28T07:30:52.890+0000] {processor.py:157} INFO - Started process (PID=1886) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:30:52.895+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:30:52.899+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:30:52.898+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:30:53.275+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:30:53.322+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:30:53.322+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:30:53.339+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:30:53.339+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:30:53.354+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.476 seconds
+[2025-05-28T07:31:24.092+0000] {processor.py:157} INFO - Started process (PID=1900) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:31:24.098+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:31:24.100+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:31:24.099+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:31:24.435+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:31:24.472+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:31:24.472+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:31:24.491+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:31:24.490+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:31:24.511+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.434 seconds
+[2025-05-28T07:31:55.181+0000] {processor.py:157} INFO - Started process (PID=1914) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:31:55.186+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:31:55.188+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:31:55.187+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:31:55.609+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:31:55.657+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:31:55.656+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:31:55.680+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:31:55.680+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:31:55.702+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.531 seconds
+[2025-05-28T07:32:26.353+0000] {processor.py:157} INFO - Started process (PID=1928) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:32:26.358+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:32:26.360+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:32:26.359+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:32:26.684+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:32:26.713+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:32:26.713+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:32:26.727+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:32:26.726+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:32:26.741+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.399 seconds
+[2025-05-28T07:32:57.343+0000] {processor.py:157} INFO - Started process (PID=1942) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:32:57.346+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:32:57.347+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:32:57.347+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:32:57.669+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:32:57.714+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:32:57.714+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:32:57.726+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:32:57.726+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:32:57.742+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.419 seconds
+[2025-05-28T07:33:28.515+0000] {processor.py:157} INFO - Started process (PID=1956) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:33:28.518+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:33:28.523+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:33:28.521+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:33:28.857+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:33:28.896+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:33:28.896+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:33:28.910+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:33:28.909+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:33:28.923+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.431 seconds
+[2025-05-28T07:33:59.564+0000] {processor.py:157} INFO - Started process (PID=1969) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:33:59.567+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:33:59.569+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:33:59.568+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:33:59.892+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:33:59.934+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:33:59.934+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:33:59.947+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:33:59.947+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:33:59.967+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.420 seconds
+[2025-05-28T07:34:30.630+0000] {processor.py:157} INFO - Started process (PID=1983) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:34:30.634+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:34:30.636+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:34:30.635+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:34:30.972+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:34:31.013+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:34:31.012+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:34:31.028+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:34:31.028+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:34:31.045+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.434 seconds
+[2025-05-28T07:35:01.756+0000] {processor.py:157} INFO - Started process (PID=2003) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:35:01.762+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:35:01.764+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:35:01.763+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:35:02.109+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:35:02.143+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:35:02.143+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:35:02.162+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:35:02.162+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:35:02.179+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.448 seconds
+[2025-05-28T07:35:32.778+0000] {processor.py:157} INFO - Started process (PID=2016) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:35:32.780+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:35:32.781+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:35:32.781+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:35:33.077+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:35:33.117+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:35:33.116+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:35:33.130+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:35:33.130+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:35:33.148+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.391 seconds
+[2025-05-28T07:36:03.849+0000] {processor.py:157} INFO - Started process (PID=2030) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:36:03.855+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:36:03.857+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:36:03.856+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:36:04.376+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:36:04.441+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:36:04.439+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:36:04.461+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:36:04.461+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:36:04.480+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.641 seconds
+[2025-05-28T07:36:35.297+0000] {processor.py:157} INFO - Started process (PID=2044) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:36:35.303+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:36:35.307+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:36:35.306+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:36:35.708+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:36:35.744+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:36:35.744+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:36:35.762+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:36:35.762+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:36:35.781+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.507 seconds
+[2025-05-28T07:37:06.545+0000] {processor.py:157} INFO - Started process (PID=2058) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:37:06.550+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:37:06.553+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:37:06.553+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:37:06.888+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:37:06.919+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:37:06.918+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:37:06.932+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:37:06.932+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:37:06.951+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.423 seconds
+[2025-05-28T07:37:37.649+0000] {processor.py:157} INFO - Started process (PID=2072) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:37:37.652+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:37:37.654+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:37:37.653+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:37:37.952+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:37:37.983+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:37:37.983+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:37:37.996+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:37:37.996+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:37:38.011+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.376 seconds
+[2025-05-28T07:38:08.691+0000] {processor.py:157} INFO - Started process (PID=2086) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:38:08.694+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:38:08.697+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:38:08.696+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:38:08.999+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:38:09.030+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:38:09.029+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:38:09.039+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:38:09.039+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:38:09.053+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.376 seconds
+[2025-05-28T07:38:39.684+0000] {processor.py:157} INFO - Started process (PID=2100) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:38:39.686+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:38:39.688+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:38:39.688+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:38:40.001+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:38:40.032+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:38:40.032+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:38:40.043+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:38:40.043+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:38:40.063+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.390 seconds
+[2025-05-28T07:39:10.784+0000] {processor.py:157} INFO - Started process (PID=2114) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:39:10.786+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:39:10.787+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:39:10.786+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:39:11.084+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:39:11.120+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:39:11.118+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:39:11.164+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:39:11.163+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:39:11.208+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.433 seconds
+[2025-05-28T07:39:41.959+0000] {processor.py:157} INFO - Started process (PID=2128) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:39:41.962+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:39:41.964+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:39:41.964+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:39:42.332+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:39:42.383+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:39:42.383+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:39:42.393+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:39:42.393+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:39:42.411+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.472 seconds
+[2025-05-28T07:40:13.112+0000] {processor.py:157} INFO - Started process (PID=2142) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:40:13.115+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:40:13.119+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:40:13.118+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:40:13.610+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:40:13.655+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:40:13.654+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:40:13.671+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:40:13.671+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:40:13.694+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.600 seconds
+[2025-05-28T07:40:44.411+0000] {processor.py:157} INFO - Started process (PID=2156) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:40:44.415+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:40:44.417+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:40:44.416+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:40:44.735+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:40:44.804+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:40:44.802+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:40:44.821+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:40:44.821+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:40:44.854+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.458 seconds
+[2025-05-28T07:41:15.553+0000] {processor.py:157} INFO - Started process (PID=2170) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:41:15.557+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:41:15.559+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:41:15.558+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:41:15.865+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:41:15.897+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:41:15.896+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:41:15.907+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:41:15.907+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:41:15.922+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.382 seconds
+[2025-05-28T07:41:46.954+0000] {processor.py:157} INFO - Started process (PID=2197) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:41:46.958+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:41:46.960+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:41:46.960+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:41:47.419+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:41:47.458+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:41:47.457+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:41:47.474+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:41:47.474+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:41:47.491+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.551 seconds
+[2025-05-28T07:42:18.158+0000] {processor.py:157} INFO - Started process (PID=2211) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:42:18.163+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:42:18.164+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:42:18.163+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:42:18.457+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:42:18.477+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:42:18.476+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:42:18.486+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:42:18.485+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:42:18.499+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.349 seconds
+[2025-05-28T07:42:49.110+0000] {processor.py:157} INFO - Started process (PID=2225) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:42:49.118+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:42:49.122+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:42:49.119+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:42:49.413+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:42:49.449+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:42:49.449+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:42:49.459+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:42:49.459+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:42:49.474+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.386 seconds
+[2025-05-28T07:43:20.268+0000] {processor.py:157} INFO - Started process (PID=2239) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:43:20.270+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:43:20.272+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:43:20.272+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:43:20.590+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:43:20.628+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:43:20.628+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:43:20.646+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:43:20.646+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:43:20.663+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.410 seconds
+[2025-05-28T07:43:51.300+0000] {processor.py:157} INFO - Started process (PID=2253) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:43:51.305+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:43:51.307+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:43:51.306+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:43:52.047+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:43:52.171+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:43:52.165+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:43:52.216+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:43:52.216+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:43:52.263+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.980 seconds
+[2025-05-28T07:44:23.001+0000] {processor.py:157} INFO - Started process (PID=2266) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:44:23.006+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:44:23.008+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:44:23.008+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:44:23.352+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:44:23.401+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:44:23.401+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:44:23.418+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:44:23.418+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:44:23.437+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.448 seconds
+[2025-05-28T07:44:54.022+0000] {processor.py:157} INFO - Started process (PID=2281) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:44:54.025+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:44:54.027+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:44:54.027+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:44:54.273+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:44:54.295+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:44:54.295+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:44:54.306+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:44:54.306+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:44:54.322+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.317 seconds
+[2025-05-28T07:45:24.842+0000] {processor.py:157} INFO - Started process (PID=2295) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:45:24.848+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:45:24.850+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:45:24.849+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:45:25.204+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:45:25.244+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:45:25.243+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:45:25.263+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:45:25.263+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:45:25.278+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.449 seconds
+[2025-05-28T07:45:55.940+0000] {processor.py:157} INFO - Started process (PID=2309) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:45:55.945+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:45:55.949+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:45:55.947+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:45:56.318+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:45:56.355+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:45:56.354+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:45:56.366+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:45:56.366+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:45:56.381+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.458 seconds
+[2025-05-28T07:46:27.097+0000] {processor.py:157} INFO - Started process (PID=2323) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:46:27.100+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:46:27.102+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:46:27.102+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:46:27.387+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:46:27.411+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:46:27.411+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:46:27.422+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:46:27.422+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:46:27.436+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.353 seconds
+[2025-05-28T07:46:58.117+0000] {processor.py:157} INFO - Started process (PID=2337) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:46:58.124+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:46:58.127+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:46:58.126+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:46:58.541+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:46:58.575+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:46:58.575+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:46:58.590+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:46:58.590+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:46:58.607+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.508 seconds
+[2025-05-28T07:47:29.194+0000] {processor.py:157} INFO - Started process (PID=2351) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:47:29.200+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:47:29.202+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:47:29.202+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:47:29.423+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:47:29.448+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:47:29.448+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:47:29.457+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:47:29.456+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:47:29.472+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.290 seconds
+[2025-05-28T07:48:00.102+0000] {processor.py:157} INFO - Started process (PID=2365) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:48:00.105+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:48:00.108+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:48:00.107+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:48:00.398+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:48:00.421+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:48:00.420+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:48:00.433+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:48:00.433+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:48:00.449+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.359 seconds
+[2025-05-28T07:48:31.141+0000] {processor.py:157} INFO - Started process (PID=2379) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:48:31.143+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:48:31.147+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:48:31.146+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:48:31.575+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:48:31.620+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:48:31.619+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:48:31.635+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:48:31.635+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:48:31.651+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.521 seconds
+[2025-05-28T07:49:02.404+0000] {processor.py:157} INFO - Started process (PID=2393) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:49:02.406+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:49:02.410+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:49:02.409+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:49:03.066+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:49:03.175+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:49:03.174+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:49:03.202+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:49:03.202+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:49:03.226+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.847 seconds
+[2025-05-28T07:49:33.902+0000] {processor.py:157} INFO - Started process (PID=2411) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:49:33.903+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:49:33.904+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:49:33.903+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:49:34.170+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:49:34.195+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:49:34.195+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:49:34.209+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:49:34.209+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:49:34.220+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.333 seconds
+[2025-05-28T07:50:05.009+0000] {processor.py:157} INFO - Started process (PID=2433) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:50:05.018+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:50:05.021+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:50:05.020+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:50:05.544+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:50:05.603+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:50:05.602+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:50:05.637+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:50:05.637+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:50:05.664+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.693 seconds
+[2025-05-28T07:50:36.304+0000] {processor.py:157} INFO - Started process (PID=2454) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:50:36.309+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:50:36.311+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:50:36.311+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:50:36.576+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:50:36.610+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:50:36.610+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:50:36.625+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:50:36.625+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:50:36.640+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.344 seconds
+[2025-05-28T07:51:07.319+0000] {processor.py:157} INFO - Started process (PID=2468) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:51:07.322+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:51:07.327+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:51:07.325+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:51:07.610+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:51:07.649+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:51:07.648+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:51:07.670+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:51:07.670+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:51:07.687+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.381 seconds
+[2025-05-28T07:51:38.435+0000] {processor.py:157} INFO - Started process (PID=2482) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:51:38.437+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:51:38.438+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:51:38.438+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:51:38.919+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:51:39.021+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:51:39.021+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:51:39.041+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:51:39.041+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:51:39.081+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.656 seconds
+[2025-05-28T07:52:09.985+0000] {processor.py:157} INFO - Started process (PID=2496) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:52:09.989+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:52:09.998+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:52:09.994+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:52:10.493+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:52:10.568+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:52:10.567+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:52:10.588+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:52:10.587+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:52:10.623+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.656 seconds
+[2025-05-28T07:52:41.298+0000] {processor.py:157} INFO - Started process (PID=2510) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:52:41.300+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:52:41.301+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:52:41.301+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:52:41.525+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:52:41.555+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:52:41.554+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:52:41.569+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:52:41.568+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:52:41.584+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.301 seconds
+[2025-05-28T07:53:12.264+0000] {processor.py:157} INFO - Started process (PID=2524) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:53:12.267+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:53:12.270+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:53:12.270+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:53:12.566+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:53:12.596+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:53:12.596+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:53:12.609+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:53:12.609+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:53:12.624+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.369 seconds
+[2025-05-28T07:53:43.275+0000] {processor.py:157} INFO - Started process (PID=2538) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:53:43.279+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:53:43.284+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:53:43.281+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:53:43.618+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:53:43.649+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:53:43.648+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:53:43.658+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:53:43.658+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:53:43.672+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.406 seconds
+[2025-05-28T07:54:14.380+0000] {processor.py:157} INFO - Started process (PID=2552) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:54:14.382+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:54:14.384+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:54:14.383+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:54:14.712+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:54:14.749+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:54:14.749+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:54:14.763+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:54:14.763+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:54:14.778+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.409 seconds
+[2025-05-28T07:54:45.412+0000] {processor.py:157} INFO - Started process (PID=2566) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:54:45.415+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:54:45.416+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:54:45.416+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:54:45.641+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:54:45.660+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:54:45.660+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:54:45.672+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:54:45.672+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:54:45.686+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.285 seconds
+[2025-05-28T07:55:16.281+0000] {processor.py:157} INFO - Started process (PID=2580) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:55:16.282+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:55:16.284+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:55:16.283+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:55:16.565+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:55:16.591+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:55:16.591+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:55:16.603+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:55:16.603+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:55:16.622+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.347 seconds
+[2025-05-28T07:55:47.246+0000] {processor.py:157} INFO - Started process (PID=2594) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:55:47.250+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:55:47.251+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:55:47.250+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:55:47.682+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:55:47.761+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:55:47.760+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:55:47.808+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:55:47.808+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:55:47.845+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.609 seconds
+[2025-05-28T07:56:18.462+0000] {processor.py:157} INFO - Started process (PID=2608) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:56:18.464+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:56:18.465+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:56:18.465+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:56:18.833+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:56:18.869+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:56:18.869+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:56:18.881+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:56:18.881+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:56:18.896+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.443 seconds
+[2025-05-28T07:56:49.642+0000] {processor.py:157} INFO - Started process (PID=2622) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:56:49.645+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:56:49.646+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:56:49.645+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:56:49.965+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:56:50.013+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:56:50.012+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:56:50.025+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:56:50.025+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:56:50.047+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.425 seconds
+[2025-05-28T07:57:20.702+0000] {processor.py:157} INFO - Started process (PID=2636) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:57:20.707+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:57:20.709+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:57:20.708+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:57:21.039+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:57:21.082+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:57:21.081+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:57:21.100+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:57:21.100+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:57:21.114+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.431 seconds
+[2025-05-28T07:57:51.601+0000] {processor.py:157} INFO - Started process (PID=2650) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:57:51.604+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:57:51.606+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:57:51.605+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:57:52.124+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:57:52.178+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:57:52.177+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:57:52.192+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:57:52.192+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:57:52.217+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.631 seconds
+[2025-05-28T07:58:23.013+0000] {processor.py:157} INFO - Started process (PID=2664) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:58:23.021+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:58:23.023+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:58:23.022+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:58:23.383+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:58:23.437+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:58:23.436+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:58:23.457+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:58:23.457+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:58:23.472+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.477 seconds
+[2025-05-28T07:58:54.198+0000] {processor.py:157} INFO - Started process (PID=2678) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:58:54.202+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:58:54.205+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:58:54.205+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:58:54.510+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:58:54.551+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:58:54.551+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:58:54.566+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:58:54.566+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:58:54.581+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.391 seconds
+[2025-05-28T07:59:25.222+0000] {processor.py:157} INFO - Started process (PID=2692) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:59:25.225+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:59:25.228+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:59:25.227+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:59:25.548+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:59:25.590+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:59:25.590+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:59:25.606+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:59:25.606+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:59:25.626+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.418 seconds
+[2025-05-28T07:59:56.270+0000] {processor.py:157} INFO - Started process (PID=2706) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:59:56.273+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T07:59:56.274+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:59:56.274+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:59:56.592+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T07:59:56.648+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:59:56.648+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T07:59:56.665+0000] {logging_mixin.py:154} INFO - [2025-05-28T07:59:56.665+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T07:59:56.682+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.428 seconds
+[2025-05-28T08:00:27.461+0000] {processor.py:157} INFO - Started process (PID=2720) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:00:27.464+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:00:27.474+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:00:27.471+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:00:27.807+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:00:27.844+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:00:27.843+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:00:27.857+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:00:27.857+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:00:27.872+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.431 seconds
+[2025-05-28T08:00:58.625+0000] {processor.py:157} INFO - Started process (PID=2734) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:00:58.630+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:00:58.634+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:00:58.633+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:00:58.982+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:00:59.014+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:00:59.013+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:00:59.028+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:00:59.028+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:00:59.047+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.436 seconds
+[2025-05-28T08:01:29.763+0000] {processor.py:157} INFO - Started process (PID=2748) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:01:29.770+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:01:29.772+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:01:29.771+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:01:30.061+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:01:30.094+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:01:30.094+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:01:30.110+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:01:30.109+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:01:30.129+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.387 seconds
+[2025-05-28T08:02:00.811+0000] {processor.py:157} INFO - Started process (PID=2762) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:02:00.815+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:02:00.821+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:02:00.820+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:02:01.141+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:02:01.185+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:02:01.185+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:02:01.202+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:02:01.202+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:02:01.218+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.428 seconds
+[2025-05-28T08:02:31.785+0000] {processor.py:157} INFO - Started process (PID=2776) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:02:31.793+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:02:31.794+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:02:31.794+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:02:32.142+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:02:32.174+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:02:32.174+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:02:32.186+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:02:32.186+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:02:32.202+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.435 seconds
+[2025-05-28T08:03:02.825+0000] {processor.py:157} INFO - Started process (PID=2790) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:03:02.828+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:03:02.831+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:03:02.831+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:03:03.128+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:03:03.168+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:03:03.168+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:03:03.187+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:03:03.187+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:03:03.204+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.395 seconds
+[2025-05-28T08:03:33.844+0000] {processor.py:157} INFO - Started process (PID=2804) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:03:33.851+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:03:33.853+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:03:33.852+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:03:34.279+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:03:34.322+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:03:34.321+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:03:34.341+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:03:34.341+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:03:34.358+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.530 seconds
+[2025-05-28T08:04:05.106+0000] {processor.py:157} INFO - Started process (PID=2818) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:04:05.109+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:04:05.110+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:04:05.110+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:04:05.478+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:04:05.539+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:04:05.539+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:04:05.566+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:04:05.566+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:04:05.587+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.498 seconds
+[2025-05-28T08:04:36.376+0000] {processor.py:157} INFO - Started process (PID=2832) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:04:36.378+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:04:36.381+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:04:36.381+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:04:36.793+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:04:36.858+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:04:36.856+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:04:36.876+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:04:36.876+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:04:36.896+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.539 seconds
+[2025-05-28T08:05:07.712+0000] {processor.py:157} INFO - Started process (PID=2846) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:05:07.717+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:05:07.723+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:05:07.722+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:05:08.046+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:05:08.085+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:05:08.084+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:05:08.097+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:05:08.097+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:05:08.117+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.420 seconds
+[2025-05-28T08:06:01.157+0000] {processor.py:157} INFO - Started process (PID=59) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:06:01.160+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:06:01.164+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:06:01.164+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:06:02.939+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:06:03.262+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:06:03.260+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:06:03.275+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:06:03.275+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:06:03.314+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 2.165 seconds
+[2025-05-28T08:06:33.763+0000] {processor.py:157} INFO - Started process (PID=77) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:06:33.764+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:06:33.768+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:06:33.768+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:06:34.211+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:06:34.261+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:06:34.259+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:06:34.312+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:06:34.312+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:06:34.353+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.600 seconds
+[2025-05-28T08:07:04.496+0000] {processor.py:157} INFO - Started process (PID=99) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:07:04.499+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:07:04.503+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:07:04.502+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:07:05.008+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:07:05.034+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:07:05.033+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:07:05.045+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:07:05.044+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:07:05.064+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.574 seconds
+[2025-05-28T08:07:35.540+0000] {processor.py:157} INFO - Started process (PID=120) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:07:35.544+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:07:35.548+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:07:35.547+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:07:36.463+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:07:36.506+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:07:36.505+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:07:36.521+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:07:36.521+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:07:36.546+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 1.020 seconds
+[2025-05-28T08:08:07.150+0000] {processor.py:157} INFO - Started process (PID=138) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:08:07.155+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:08:07.192+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:08:07.189+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:08:08.657+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:08:08.710+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:08:08.710+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:08:08.738+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:08:08.738+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:08:08.775+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 1.661 seconds
+[2025-05-28T08:08:39.267+0000] {processor.py:157} INFO - Started process (PID=152) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:08:39.269+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:08:39.274+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:08:39.273+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:08:39.718+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:08:39.739+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:08:39.739+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:08:39.752+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:08:39.752+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:08:39.771+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.509 seconds
+[2025-05-28T08:09:09.910+0000] {processor.py:157} INFO - Started process (PID=173) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:09:09.912+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:09:09.917+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:09:09.917+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:09:10.396+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:09:10.414+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:09:10.414+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:09:10.423+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:09:10.423+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:09:10.437+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.532 seconds
+[2025-05-28T08:09:40.843+0000] {processor.py:157} INFO - Started process (PID=187) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:09:40.847+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:09:40.857+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:09:40.857+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:09:41.370+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:09:41.398+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:09:41.397+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:09:41.412+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:09:41.412+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:09:41.431+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.597 seconds
+[2025-05-28T08:10:11.904+0000] {processor.py:157} INFO - Started process (PID=201) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:10:11.907+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:10:11.913+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:10:11.913+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:10:12.411+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:10:12.432+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:10:12.431+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:10:12.440+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:10:12.440+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:10:12.454+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.564 seconds
+[2025-05-28T08:10:42.965+0000] {processor.py:157} INFO - Started process (PID=215) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:10:42.967+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:10:42.972+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:10:42.970+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:10:43.817+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:10:43.865+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:10:43.864+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:10:43.878+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:10:43.878+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:10:43.901+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.947 seconds
+[2025-05-28T08:11:14.519+0000] {processor.py:157} INFO - Started process (PID=229) to work on /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:11:14.521+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/inventory_returns_dag.py for tasks to queue
+[2025-05-28T08:11:14.532+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:11:14.531+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:11:15.042+0000] {processor.py:839} INFO - DAG(s) dict_keys(['inventory_returns_generation']) retrieved from /opt/airflow/dags/inventory_returns_dag.py
+[2025-05-28T08:11:15.085+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:11:15.085+0000] {dag.py:2941} INFO - Sync 1 DAGs
+[2025-05-28T08:11:15.098+0000] {logging_mixin.py:154} INFO - [2025-05-28T08:11:15.098+0000] {dag.py:3722} INFO - Setting next_dagrun for inventory_returns_generation to None, run_after=None
+[2025-05-28T08:11:15.113+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/inventory_returns_dag.py took 0.605 seconds

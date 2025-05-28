@@ -89,8 +89,6 @@ CREATE TABLE stg_product (
     cost DECIMAL(10,2),
     supplier_key INT,
     is_active BOOLEAN,
-    introduction_date DATE,
-    discontinuation_date DATE,
     effective_date DATE NOT NULL,
     expiry_date DATE,
     current_flag CHAR(1),
@@ -225,7 +223,7 @@ BEGIN
         -- Insert new version in target
         INSERT INTO tgt_dim_product (
             product_key, product_id, product_name, category, subcategory, department, brand,
-            price, cost, supplier_key, is_active, introduction_date, discontinuation_date,
+            price, cost, supplier_key, is_active,
             effective_date, expiry_date, current_indicator,
             dw_created_date, dw_version_number
         )
@@ -233,7 +231,6 @@ BEGIN
             v_new_product_key, product_rec.product_id, product_rec.product_name, 
             product_rec.category, product_rec.subcategory, product_rec.department, product_rec.brand,
             product_rec.price, product_rec.cost, product_rec.supplier_key, product_rec.is_active,
-            product_rec.introduction_date, product_rec.discontinuation_date,
             v_effective_date, v_max_date, TRUE,
             CURRENT_TIMESTAMP, 1
         );
@@ -242,14 +239,14 @@ BEGIN
     -- Insert new products that don't exist in target yet
     INSERT INTO tgt_dim_product (
         product_key, product_id, product_name, category, subcategory, department, brand,
-        price, cost, supplier_key, is_active, introduction_date, discontinuation_date,
+        price, cost, supplier_key, is_active,
         effective_date, expiry_date, current_indicator,
         dw_created_date, dw_version_number
     )
     SELECT 
         (SELECT COALESCE(MAX(product_key), 0) FROM tgt_dim_product) + ROW_NUMBER() OVER (ORDER BY s.product_id),
         s.product_id, s.product_name, s.category, s.subcategory, s.department, s.brand,
-        s.price, s.cost, s.supplier_key, s.is_active, s.introduction_date, s.discontinuation_date,
+        s.price, s.cost, s.supplier_key, s.is_active,
         v_effective_date, v_max_date, TRUE,
         CURRENT_TIMESTAMP, 1
     FROM stg_product s

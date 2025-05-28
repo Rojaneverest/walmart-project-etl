@@ -93,8 +93,6 @@ CREATE TABLE tgt_dim_product (
     cost DECIMAL(10,2),
     supplier_key INT,
     is_active BOOLEAN,
-    introduction_date DATE,
-    discontinuation_date DATE,
     effective_date DATE NOT NULL,
     expiry_date DATE,
     current_indicator BOOLEAN DEFAULT TRUE,
@@ -211,9 +209,7 @@ CREATE PROCEDURE usp_update_product_scd2 (
     IN p_price DECIMAL(10,2),
     IN p_cost DECIMAL(10,2),
     IN p_supplier_key INT,
-    IN p_is_active BOOLEAN,
-    IN p_introduction_date DATE,
-    IN p_discontinuation_date DATE
+    IN p_is_active BOOLEAN
 )
 BEGIN
     DECLARE v_effective_date DATE;
@@ -236,12 +232,12 @@ BEGIN
     -- Insert new record
     INSERT INTO tgt_dim_product (
         product_key, product_id, product_name, category, subcategory, department, brand,
-        price, cost, supplier_key, is_active, introduction_date, discontinuation_date,
+        price, cost, supplier_key, is_active,
         effective_date, expiry_date, current_indicator
     )
     VALUES (
         v_new_product_key, p_product_id, p_product_name, p_category, p_subcategory, p_department, p_brand,
-        p_price, p_cost, p_supplier_key, p_is_active, p_introduction_date, p_discontinuation_date,
+        p_price, p_cost, p_supplier_key, p_is_active,
         v_effective_date, NULL, TRUE
     );
     
