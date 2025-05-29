@@ -1,6 +1,4 @@
 # Data directories and files
-data/
-*.csv
 *.xlsx
 *.xls
 *.json
@@ -13,6 +11,7 @@ data/
 
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
@@ -37,7 +36,7 @@ wheels/
 venv/
 env/
 ENV/
-.env
+
 
 # IDE specific files
 .idea/
@@ -48,6 +47,7 @@ ENV/
 
 # Logs
 logs/
+**/logs/
 *.log
 
 # Local configuration
