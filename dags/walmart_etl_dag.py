@@ -35,6 +35,9 @@ from etl_data_loader import (
     clean_staging_tables
 )
 
+# Import synthetic data transform and load functions
+from generate_synthetic_data import transform_and_load_to_staging as transform_synthetic_to_staging, load_to_target as load_synthetic_to_target
+
 # Default arguments for the DAG
 default_args = {
     'owner': 'airflow',
@@ -114,6 +117,22 @@ transform_to_staging_task = PythonOperator(
     dag=dag,
 )
 
+# Task 4a: Transform synthetic data from ODS to staging layer
+def synthetic_transform_to_staging():
+    # Transform synthetic data from ODS to staging
+    batch_id = transform_synthetic_to_staging()
+    
+    # Log the batch ID for tracking
+    print(f"Transformed synthetic data to staging with batch ID: {batch_id}")
+    
+    return batch_id
+
+synthetic_transform_to_staging_task = PythonOperator(
+    task_id='synthetic_transform_to_staging',
+    python_callable=synthetic_transform_to_staging,
+    dag=dag,
+)
+
 # Task 5: Load data from staging to target layer
 def etl_load_to_target(**context):
     engine = get_engine()
@@ -130,6 +149,26 @@ def etl_load_to_target(**context):
 load_to_target_task = PythonOperator(
     task_id='load_to_target',
     python_callable=etl_load_to_target,
+    provide_context=True,
+    dag=dag,
+)
+
+# Task 5a: Load synthetic data from staging to target layer
+def synthetic_load_to_target(**context):
+    engine = get_engine()
+    batch_id = context['ti'].xcom_pull(task_ids='synthetic_transform_to_staging')
+    
+    # Load synthetic data from staging to target
+    load_synthetic_to_target(engine, batch_id)
+    
+    # Log completion message
+    print(f"Synthetic data loaded to target layer with batch ID: {batch_id}")
+    
+    return "Synthetic target layer loading completed"
+
+synthetic_load_to_target_task = PythonOperator(
+    task_id='synthetic_load_to_target',
+    python_callable=synthetic_load_to_target,
     provide_context=True,
     dag=dag,
 )
@@ -196,5 +235,9 @@ data_quality_task = PythonOperator(
 # If table recreation is enabled, add it to the beginning of the chain
 # recreate_tables_task >> generate_synthetic_data_task
 
-# Updated task dependencies - synthetic data generation and inventory/returns generation removed
+# Updated task dependencies - including synthetic data transformation and loading
 load_to_ods_task >> transform_to_staging_task >> load_to_target_task >> clean_staging_task >> data_quality_task
+
+# Synthetic data transformation and loading dependencies
+# These run in parallel with the main ETL flow
+load_to_ods_task >> synthetic_transform_to_staging_task >> synthetic_load_to_target_task >> clean_staging_task

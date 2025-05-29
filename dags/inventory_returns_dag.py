@@ -54,40 +54,12 @@ dag = DAG(
     tags=['walmart', 'etl', 'inventory', 'returns'],
 )
 
-# Task 1: Get existing data
-get_existing_data_task = PythonOperator(
-    task_id='get_existing_data',
-    python_callable=get_existing_data,
-    dag=dag,
-)
+# Task: Generate both inventory and returns data in one go
+# This uses the main() function which handles everything including getting existing data
 
-# Task 2: Generate inventory data
-def generate_inventory_wrapper(**context):
-    existing_data = context['ti'].xcom_pull(task_ids='get_existing_data')
-    return generate_inventory_data(existing_data, num_records=500)
-
-generate_inventory_task = PythonOperator(
-    task_id='generate_inventory_data',
-    python_callable=generate_inventory_wrapper,
-    provide_context=True,
-    dag=dag,
-)
-
-# Task 3: Generate returns data
-def generate_returns_wrapper(**context):
-    existing_data = context['ti'].xcom_pull(task_ids='get_existing_data')
-    return generate_returns_data(existing_data, num_records=200)
-
-generate_returns_task = PythonOperator(
-    task_id='generate_returns_data',
-    python_callable=generate_returns_wrapper,
-    provide_context=True,
-    dag=dag,
-)
-
-# Task 4: Generate all inventory and returns data (comprehensive task)
-generate_all_task = PythonOperator(
-    task_id='generate_all_inventory_returns',
+# Using the main function to generate all data at once
+generate_data_task = PythonOperator(
+    task_id='generate_inventory_returns_data',
     python_callable=generate_all_inventory_returns,
     dag=dag,
 )
@@ -120,15 +92,5 @@ load_target_task = PythonOperator(
     dag=dag,
 )
 
-# Set task dependencies for individual tasks
-get_existing_data_task >> generate_inventory_task
-get_existing_data_task >> generate_returns_task
-
-# Set task dependencies for ETL process
-generate_inventory_task >> transform_staging_task
-generate_returns_task >> transform_staging_task
-transform_staging_task >> load_target_task
-
-# The generate_all_task can be used as an alternative to the individual generation tasks
-# but should be followed by the transformation and loading tasks
-generate_all_task >> transform_staging_task
+# Set task dependencies for a simple, linear flow
+generate_data_task >> transform_staging_task >> load_target_task

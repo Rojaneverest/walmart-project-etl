@@ -424,18 +424,42 @@ def transform_and_load_to_staging():
     # Generate batch ID
     batch_id = f"BATCH_SYNTHETIC_{datetime.now().strftime('%Y%m%d%H%M%S')}"
     
+    # First truncate the staging supplier table to avoid conflicts
+    with engine.connect() as conn:
+        conn.execute(text("TRUNCATE TABLE stg_supplier RESTART IDENTITY CASCADE"))
+    
     # Supplier dimension
     supplier_query = text("""
         INSERT INTO stg_supplier (
-            supplier_id, supplier_name, contact_person, email, 
-            phone, address, city, state, zip_code, contract_start_date, 
-            supplier_status, etl_batch_id, etl_timestamp
+            supplier_key, supplier_id, supplier_name, contact_person, email, 
+            phone, address, city, state, zip_code, 
+            contract_start_date, contract_end_date, supplier_status, 
+            etl_batch_id, etl_timestamp
         )
         SELECT 
+            ROW_NUMBER() OVER (ORDER BY supplier_id) as supplier_key,
             supplier_id, supplier_name, contact_person, email, 
-            phone, address, city, state, zip_code, contract_start_date, 
+            phone, address, city, state, zip_code,
+            contract_start_date,
+            contract_start_date + INTERVAL '1 year',
             'Active', :batch_id, NOW()
         FROM ods_supplier
+        ON CONFLICT (supplier_key) DO UPDATE
+        SET 
+            supplier_id = EXCLUDED.supplier_id,
+            supplier_name = EXCLUDED.supplier_name,
+            contact_person = EXCLUDED.contact_person,
+            email = EXCLUDED.email,
+            phone = EXCLUDED.phone,
+            address = EXCLUDED.address,
+            city = EXCLUDED.city,
+            state = EXCLUDED.state,
+            zip_code = EXCLUDED.zip_code,
+            contract_start_date = EXCLUDED.contract_start_date,
+            contract_end_date = EXCLUDED.contract_end_date,
+            supplier_status = EXCLUDED.supplier_status,
+            etl_batch_id = EXCLUDED.etl_batch_id,
+            etl_timestamp = EXCLUDED.etl_timestamp
     """)
     
     # Return reason dimension
@@ -473,15 +497,15 @@ def load_to_target(engine, batch_id=None):
     supplier_query = text("""
         INSERT INTO tgt_dim_supplier (
             supplier_id, supplier_name, contact_person, 
-            email, phone, address, city, state, zip_code, country,
-            contract_start_date, contract_end_date, supplier_rating, supplier_status, 
+            email, phone, address, city, state, zip_code,
+            contract_start_date, contract_end_date, supplier_status, 
             dw_created_date, dw_modified_date, dw_version_number
         )
         SELECT 
             s.supplier_id, s.supplier_name, s.contact_person, 
-            s.email, s.phone, s.address, s.city, s.state, s.zip_code, 'USA',
-            s.contract_start_date, s.contract_start_date + INTERVAL '2 years', 5, s.supplier_status, 
-            NOW(), NULL, 1
+            s.email, s.phone, s.address, s.city, s.state, s.zip_code,
+            s.contract_start_date, s.contract_start_date + INTERVAL '2 years', s.supplier_status, 
+            NOW(), NOW(), 1
         FROM stg_supplier s
         LEFT JOIN tgt_dim_supplier t ON s.supplier_id = t.supplier_id
         WHERE t.supplier_id IS NULL
@@ -498,7 +522,7 @@ def load_to_target(engine, batch_id=None):
         SELECT 
             reason_code, reason_description, category,
             impact_level, is_controllable, NOW(), 
-            NULL, 1
+            NOW(), 1
         FROM stg_return_reason
         WHERE etl_batch_id = :batch_id
         ON CONFLICT (reason_code) DO UPDATE
@@ -520,7 +544,7 @@ def load_to_target(engine, batch_id=None):
 # We no longer need to create sequences since we're using auto-incrementing surrogate keys
 
 def main():
-    """Main function to generate and load synthetic data"""
+    """Main function to generate and load synthetic data to ODS only"""
     print("Starting synthetic data generation process...")
     
     # Generate and load supplier data
@@ -529,13 +553,8 @@ def main():
     # Generate and load return reason data
     reasons = generate_return_reason_data()
     
-    # Transform and load to staging
-    batch_id = transform_and_load_to_staging()
-    
-    # Load to target
-    load_to_target(engine, batch_id)
-    
-    print("Synthetic data generation and loading complete!")
+    print("Synthetic data generation and loading to ODS complete!")
+    print("Note: Transform and load to staging/target operations are now handled by the walmart_etl_dag.")
 
 if __name__ == "__main__":
     main()

@@ -595,41 +595,135 @@ def transform_to_staging(engine):
                 etl_timestamp = EXCLUDED.etl_timestamp
         """), {'batch_id': BATCH_ID})
         
-        # Transform and load product dimension
-        print("Transforming product dimension...")
+        # First, truncate the staging supplier table to avoid conflicts
+        print("Truncating staging supplier table...")
+        conn.execute(text("TRUNCATE TABLE stg_supplier RESTART IDENTITY CASCADE"))
         
-        # Get available supplier keys from the supplier dimension
+        # Transform and load supplier dimension from ODS to staging
+        print("Transforming supplier dimension...")
+        conn.execute(text("""
+            INSERT INTO stg_supplier (
+                supplier_key, supplier_id, supplier_name, contact_person, 
+                email, phone, address, city, state, zip_code, country,
+                supplier_rating, supplier_status, etl_batch_id, etl_timestamp
+            )
+            SELECT 
+                -- Generate a surrogate key based on row number
+                ROW_NUMBER() OVER (ORDER BY supplier_id) as supplier_key,
+                supplier_id,
+                supplier_name,
+                contact_person,
+                email,
+                phone,
+                address,
+                city,
+                state,
+                zip_code,
+                'USA' as country,
+                5 as supplier_rating,
+                'Active' as supplier_status,
+                :batch_id as etl_batch_id,
+                CURRENT_TIMESTAMP as etl_timestamp
+            FROM ods_supplier
+            ON CONFLICT (supplier_key) DO UPDATE
+            SET 
+                supplier_id = EXCLUDED.supplier_id,
+                supplier_name = EXCLUDED.supplier_name,
+                contact_person = EXCLUDED.contact_person,
+                email = EXCLUDED.email,
+                phone = EXCLUDED.phone,
+                address = EXCLUDED.address,
+                city = EXCLUDED.city,
+                state = EXCLUDED.state,
+                zip_code = EXCLUDED.zip_code,
+                country = EXCLUDED.country,
+                supplier_rating = EXCLUDED.supplier_rating,
+                supplier_status = EXCLUDED.supplier_status,
+                etl_batch_id = EXCLUDED.etl_batch_id,
+                etl_timestamp = EXCLUDED.etl_timestamp
+        """), {'batch_id': BATCH_ID})
+        
+        # Get available supplier keys from the staging supplier table
         supplier_keys = conn.execute(text("""
-            SELECT supplier_key FROM tgt_dim_supplier
+            SELECT supplier_key FROM stg_supplier
         """)).fetchall()
         
         if not supplier_keys:
-            print("Warning: No suppliers found in tgt_dim_supplier. Creating a default supplier.")
+            print("Warning: No suppliers found in stg_supplier. Creating a default supplier.")
             # Insert a default supplier if none exists
-            conn.execute(text("""
-                INSERT INTO tgt_dim_supplier (
-                    supplier_id, supplier_name, contact_person, email, phone,
-                    address, city, state, zip_code, country, supplier_status,
-                    dw_created_date, dw_version_number
-                ) VALUES (
-                    'SUP_DEFAULT', 'Default Supplier', 'System Admin', 'admin@example.com', '000-000-0000',
-                    '123 Default St', 'Default City', 'Default State', '00000', 'USA', 'Active',
-                    CURRENT_TIMESTAMP, 1
-                )
-                ON CONFLICT (supplier_id) DO NOTHING
-            """))
+            default_supplier_id = 'SUP_DEFAULT'
             
-            # Get the default supplier key
+            # First check if the default supplier exists in ODS
+            result = conn.execute(text("""
+                SELECT COUNT(*) FROM ods_supplier WHERE supplier_id = :supplier_id
+            """), {'supplier_id': default_supplier_id}).scalar()
+            
+            if result == 0:
+                # Insert into ODS first
+                conn.execute(text("""
+                    INSERT INTO ods_supplier (
+                        supplier_id, supplier_name, contact_person, email, phone,
+                        address, city, state, zip_code
+                    ) VALUES (
+                        :supplier_id, 'Default Supplier', 'System Admin', 'admin@example.com', '000-000-0000',
+                        '123 Default St', 'Default City', 'Default State', '00000'
+                    )
+                    ON CONFLICT (supplier_id) DO NOTHING
+                """), {'supplier_id': default_supplier_id})
+            
+            # Then insert into staging with ON CONFLICT handling
+            conn.execute(text("""
+                INSERT INTO stg_supplier (
+                    supplier_key, supplier_id, supplier_name, contact_person, 
+                    email, phone, address, city, state, zip_code, country,
+                    supplier_rating, supplier_status, etl_batch_id, etl_timestamp
+                )
+                VALUES (
+                    (SELECT COALESCE(MAX(supplier_key), 0) + 1 FROM stg_supplier), -- Use next available key
+                    :supplier_id,
+                    'Default Supplier',
+                    'System Admin',
+                    'admin@example.com',
+                    '000-000-0000',
+                    '123 Default St',
+                    'Default City',
+                    'Default State',
+                    '00000',
+                    'USA',
+                    5,
+                    'Active',
+                    :batch_id,
+                    CURRENT_TIMESTAMP
+                )
+                ON CONFLICT (supplier_key) DO UPDATE
+                SET 
+                    supplier_id = EXCLUDED.supplier_id,
+                    supplier_name = EXCLUDED.supplier_name,
+                    contact_person = EXCLUDED.contact_person,
+                    email = EXCLUDED.email,
+                    phone = EXCLUDED.phone,
+                    address = EXCLUDED.address,
+                    city = EXCLUDED.city,
+                    state = EXCLUDED.state,
+                    zip_code = EXCLUDED.zip_code,
+                    country = EXCLUDED.country,
+                    supplier_rating = EXCLUDED.supplier_rating,
+                    supplier_status = EXCLUDED.supplier_status,
+                    etl_batch_id = EXCLUDED.etl_batch_id,
+                    etl_timestamp = EXCLUDED.etl_timestamp
+            """), {'batch_id': BATCH_ID, 'supplier_id': default_supplier_id})
+            
+            # Get the supplier keys again
             supplier_keys = conn.execute(text("""
-                SELECT supplier_key FROM tgt_dim_supplier
+                SELECT supplier_key FROM stg_supplier
             """)).fetchall()
         
         # Extract supplier keys as a list
         supplier_key_list = [row[0] for row in supplier_keys]
         num_suppliers = len(supplier_key_list)
         
-        # Now insert fresh data from ODS to staging with distributed supplier keys
-        # Using a simpler approach to distribute products across suppliers
+        # Transform and load product dimension
+        print("Transforming product dimension...")
         conn.execute(text("""
             INSERT INTO stg_product (
                 product_key, product_id, product_name, category, subcategory,
@@ -654,18 +748,20 @@ def transform_to_staging(engine):
                     ELSE unit_price * 0.7 -- Default 30% margin if not provided
                 END as cost,
                 -- Distribute products across suppliers using a simple hash function
-                -- If we have multiple suppliers, use modulo to distribute, otherwise use supplier_key 1
-                CASE 
-                    WHEN :num_suppliers > 0 THEN 
-                        (ABS(('x' || MD5(product_id))::bit(32)::int) % :num_suppliers) + 1
-                    ELSE 1
-                END as supplier_key,
+                -- Join to stg_supplier to get a valid supplier_key
+                COALESCE(
+                    (SELECT s.supplier_key 
+                     FROM stg_supplier s 
+                     ORDER BY s.supplier_key 
+                     LIMIT 1 OFFSET (ABS(('x' || MD5(p.product_id))::bit(32)::int) % GREATEST(:num_suppliers, 1))
+                    ), 1
+                ) as supplier_key,
                 TRUE as is_active,
                 CURRENT_DATE as effective_date,
                 'Y' as current_flag,
                 :batch_id as etl_batch_id,
                 CURRENT_TIMESTAMP as etl_timestamp
-            FROM ods_product
+            FROM ods_product p
         """), {'batch_id': BATCH_ID, 'num_suppliers': num_suppliers})
         
         # Transform and load store dimension
@@ -935,14 +1031,22 @@ def load_to_target(engine, batch_id=None):
                 try:
                     date_obj = date(year, month, day)
                     
+                    # Get day name and month name
+                    day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                    month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                    day_name = day_names[date_obj.weekday()]
+                    month_name = month_names[date_obj.month - 1]
+                    
                     # Insert new date
                     insert_query = text("""
                         INSERT INTO tgt_dim_date (
-                            date_key, full_date, day_of_week, day_of_month, day_of_year,
-                            week_of_year, month, quarter, year, is_weekend, is_holiday
+                            date_key, full_date, day_of_week, day_name, day_of_month, day_of_year,
+                            week_of_year, month, month_name, quarter, year, is_weekend, is_holiday,
+                            fiscal_year, fiscal_quarter, dw_created_date, dw_modified_date, dw_version_number
                         ) VALUES (
-                            :date_key, :full_date, :day_of_week, :day_of_month, :day_of_year,
-                            :week_of_year, :month, :quarter, :year, :is_weekend, :is_holiday
+                            :date_key, :full_date, :day_of_week, :day_name, :day_of_month, :day_of_year,
+                            :week_of_year, :month, :month_name, :quarter, :year, :is_weekend, :is_holiday,
+                            :fiscal_year, :fiscal_quarter, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1
                         )
                     """)
                     
@@ -950,12 +1054,16 @@ def load_to_target(engine, batch_id=None):
                         "date_key": date_key,
                         "full_date": date_obj,
                         "day_of_week": date_obj.weekday() + 1,  # 1-7 where 1 is Monday
+                        "day_name": day_name,
                         "day_of_month": date_obj.day,
                         "day_of_year": date_obj.timetuple().tm_yday,
                         "week_of_year": date_obj.isocalendar()[1],
                         "month": date_obj.month,
+                        "month_name": month_name,
                         "quarter": (date_obj.month - 1) // 3 + 1,
                         "year": date_obj.year,
+                        "fiscal_year": date_obj.year,  # Assuming fiscal year is same as calendar year
+                        "fiscal_quarter": (date_obj.month - 1) // 3 + 1,  # Assuming fiscal quarter is same as calendar quarter
                         "is_weekend": date_obj.weekday() >= 5,  # 5 and 6 are weekend (Sat, Sun)
                         "is_holiday": False  # Default to not a holiday
                     })
@@ -971,18 +1079,19 @@ def load_to_target(engine, batch_id=None):
             INSERT INTO tgt_dim_date (
                 date_key, full_date, day_of_week, day_name, day_of_month, 
                 day_of_year, week_of_year, month, month_name, quarter, 
-                year, is_weekend, is_holiday, holiday_name, fiscal_year, 
-                fiscal_quarter, dw_created_date, dw_version_number
+                year, is_weekend, is_holiday, fiscal_year, 
+                fiscal_quarter, dw_created_date, dw_modified_date, dw_version_number
             )
             SELECT 
                 date_key, full_date, day_of_week, day_name, day_of_month, 
                 day_of_year, week_of_year, month, month_name, quarter, 
-                year, is_weekend, is_holiday, holiday_name, fiscal_year, 
-                fiscal_quarter, CURRENT_TIMESTAMP, 1
+                year, is_weekend, is_holiday, fiscal_year, 
+                fiscal_quarter, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1
             FROM stg_date
             WHERE etl_batch_id = :batch_id
             ON CONFLICT (date_key) DO UPDATE
             SET 
+                full_date = EXCLUDED.full_date,
                 day_of_week = EXCLUDED.day_of_week,
                 day_name = EXCLUDED.day_name,
                 day_of_month = EXCLUDED.day_of_month,
@@ -994,7 +1103,6 @@ def load_to_target(engine, batch_id=None):
                 year = EXCLUDED.year,
                 is_weekend = EXCLUDED.is_weekend,
                 is_holiday = EXCLUDED.is_holiday,
-                holiday_name = EXCLUDED.holiday_name,
                 fiscal_year = EXCLUDED.fiscal_year,
                 fiscal_quarter = EXCLUDED.fiscal_quarter,
                 dw_modified_date = CURRENT_TIMESTAMP,
@@ -1019,14 +1127,14 @@ def load_to_target(engine, batch_id=None):
         # Then insert from the temporary table
         conn.execute(text("""
             INSERT INTO tgt_dim_customer (
-                customer_id, customer_name, customer_age, customer_segment,
-                email, phone, address, city, state, zip_code, region, country,
-                customer_type, loyalty_segment, dw_created_date, dw_version_number
+                customer_id, customer_name, customer_segment,
+                city, state, zip_code, region, country,
+                customer_type, loyalty_segment, dw_created_date, dw_modified_date, dw_version_number
             )
             SELECT 
-                customer_id, customer_name, customer_age, customer_segment,
-                email, phone, address, city, state, zip_code, region, country,
-                customer_type, loyalty_segment, CURRENT_TIMESTAMP, 1
+                customer_id, customer_name, customer_segment,
+                city, state, zip_code, region, country,
+                customer_type, loyalty_segment, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1
             FROM temp_customers
             ON CONFLICT (customer_id) DO UPDATE
             SET 
@@ -1034,6 +1142,7 @@ def load_to_target(engine, batch_id=None):
                 customer_segment = EXCLUDED.customer_segment,
                 city = EXCLUDED.city,
                 state = EXCLUDED.state,
+                zip_code = EXCLUDED.zip_code,
                 region = EXCLUDED.region,
                 country = EXCLUDED.country,
                 customer_type = EXCLUDED.customer_type,
@@ -1050,8 +1159,8 @@ def load_to_target(engine, batch_id=None):
             CREATE TEMPORARY TABLE temp_suppliers AS
             SELECT DISTINCT ON (supplier_id)
                 supplier_id, supplier_name, contact_person, phone,
-                email, address, city, state, zip_code, country,
-                supplier_status, supplier_rating
+                email, address, city, state, zip_code,
+                contract_start_date, contract_end_date, supplier_status
             FROM stg_supplier
             ORDER BY supplier_id
         """))
@@ -1060,13 +1169,16 @@ def load_to_target(engine, batch_id=None):
         conn.execute(text("""
             INSERT INTO tgt_dim_supplier (
                 supplier_id, supplier_name, contact_person, phone,
-                email, address, city, state, zip_code, country,
-                supplier_status, supplier_rating, dw_created_date, dw_version_number
+                email, address, city, state, zip_code,
+                contract_start_date, contract_end_date, supplier_status,
+                dw_created_date, dw_modified_date, dw_version_number
             )
             SELECT 
                 supplier_id, supplier_name, contact_person, phone,
-                email, address, city, state, zip_code, country,
-                supplier_status, supplier_rating, CURRENT_TIMESTAMP, 1
+                email, address, city, state, zip_code,
+                COALESCE(contract_start_date, CURRENT_DATE),
+                COALESCE(contract_end_date, CURRENT_DATE + INTERVAL '1 year'),
+                supplier_status, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1
             FROM temp_suppliers
             ON CONFLICT (supplier_id) DO UPDATE
             SET 
@@ -1078,9 +1190,9 @@ def load_to_target(engine, batch_id=None):
                 city = EXCLUDED.city,
                 state = EXCLUDED.state,
                 zip_code = EXCLUDED.zip_code,
-                country = EXCLUDED.country,
+                contract_start_date = EXCLUDED.contract_start_date,
+                contract_end_date = EXCLUDED.contract_end_date,
                 supplier_status = EXCLUDED.supplier_status,
-                supplier_rating = EXCLUDED.supplier_rating,
                 dw_modified_date = CURRENT_TIMESTAMP,
                 dw_version_number = tgt_dim_supplier.dw_version_number + 1
         """))
@@ -1108,7 +1220,7 @@ def load_to_target(engine, batch_id=None):
             SELECT 
                 reason_code, reason_description, category,
                 impact_level, is_controllable, CURRENT_TIMESTAMP, 
-                NULL, 1
+                CURRENT_TIMESTAMP, 1
             FROM temp_return_reasons
             ON CONFLICT (reason_code) DO UPDATE
             SET reason_description = EXCLUDED.reason_description,
@@ -1170,13 +1282,13 @@ def load_to_target(engine, batch_id=None):
                     product_id, product_name, category, subcategory,
                     department, brand, price, cost, supplier_key, is_active,
                     effective_date, expiry_date,
-                    current_indicator, dw_created_date, dw_version_number
+                    current_indicator, dw_created_date, dw_modified_date, dw_version_number
                 )
                 VALUES (
                     :product_id, :product_name, :category, :subcategory,
                     :department, :brand, :price, :cost, :supplier_key, :is_active,
                     CURRENT_DATE, :max_date,
-                    TRUE, CURRENT_TIMESTAMP, 1
+                    TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1
                 )
             """), {
                 'product_id': product.product_id,
@@ -1198,13 +1310,13 @@ def load_to_target(engine, batch_id=None):
                 product_id, product_name, category, subcategory,
                 department, brand, price, cost, supplier_key, is_active,
                 effective_date, expiry_date, current_indicator,
-                dw_created_date, dw_version_number
+                dw_created_date, dw_modified_date, dw_version_number
             )
             SELECT 
                 s.product_id, s.product_name, s.category, s.subcategory,
                 s.department, s.brand, s.price, s.cost, s.supplier_key, s.is_active,
                 CURRENT_DATE, :max_date, TRUE,
-                CURRENT_TIMESTAMP, 1
+                CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1
             FROM stg_product s
             LEFT JOIN tgt_dim_product t ON s.product_id = t.product_id
             WHERE t.product_id IS NULL
@@ -1248,14 +1360,14 @@ def load_to_target(engine, batch_id=None):
                 INSERT INTO tgt_dim_store (
                     store_id, store_name, store_type, location,
                     address, city, state, zip_code, region, country,
-                    store_size_sqft, effective_date, expiry_date, current_indicator,
-                    dw_created_date, dw_version_number
+                    effective_date, expiry_date, current_indicator,
+                    dw_created_date, dw_modified_date, dw_version_number
                 )
                 VALUES (
                     :store_id, :store_name, :store_type, :location,
                     :address, :city, :state, :zip_code, :region, :country,
-                    :store_size_sqft, CURRENT_DATE, :max_date, TRUE,
-                    CURRENT_TIMESTAMP, 1
+                    CURRENT_DATE, :max_date, TRUE,
+                    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1
                 )
             """), {
                 'store_id': store.store_id,
@@ -1268,7 +1380,6 @@ def load_to_target(engine, batch_id=None):
                 'zip_code': store.zip_code,
                 'region': store.region,
                 'country': store.country,
-                'store_size_sqft': store.store_size_sqft,
                 'max_date': max_date
             })
         
@@ -1277,14 +1388,14 @@ def load_to_target(engine, batch_id=None):
             INSERT INTO tgt_dim_store (
                 store_id, store_name, store_type, location,
                 address, city, state, zip_code, region, country,
-                store_size_sqft, effective_date, expiry_date, current_indicator,
-                dw_created_date, dw_version_number
+                effective_date, expiry_date, current_indicator,
+                dw_created_date, dw_modified_date, dw_version_number
             )
             SELECT 
                 s.store_id, s.store_name, s.store_type, s.location,
                 s.address, s.city, s.state, s.zip_code, s.region, s.country,
-                s.store_size_sqft, CURRENT_DATE, :max_date, TRUE,
-                CURRENT_TIMESTAMP, 1
+                CURRENT_DATE, :max_date, TRUE,
+                CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1
             FROM stg_store s
             LEFT JOIN tgt_dim_store t ON s.store_id = t.store_id
             WHERE t.store_id IS NULL
@@ -1306,7 +1417,7 @@ def load_to_target(engine, batch_id=None):
                 sales_amount, quantity_sold, unit_price, total_cost, profit_margin,
                 discount_amount, net_sales_amount, sales_channel, promotion_key,
                 order_priority, ship_date_key, ship_mode, shipping_cost,
-                dw_created_date
+                dw_created_date, dw_modified_date
             )
             SELECT 
                 s.sale_id, s.order_id, s.date_key,
@@ -1316,7 +1427,7 @@ def load_to_target(engine, batch_id=None):
                 s.sales_amount, s.quantity_sold, s.unit_price,
                 s.total_cost, s.profit_margin, s.discount_amount, s.net_sales_amount,
                 'Online' as sales_channel, 1 as promotion_key, s.order_priority, s.ship_date_key,
-                s.ship_mode, s.shipping_cost, CURRENT_TIMESTAMP
+                s.ship_mode, s.shipping_cost, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM stg_sales s
             WHERE s.etl_batch_id = :batch_id
             ON CONFLICT (sale_id) DO UPDATE
@@ -1343,7 +1454,7 @@ def load_to_target(engine, batch_id=None):
                 inventory_id, date_key, product_key, store_key,
                 stock_level, min_stock_level, max_stock_level, reorder_point,
                 last_restock_date_key, days_of_supply, stock_status, is_in_stock,
-                dw_created_date
+                dw_created_date, dw_modified_date
             )
             SELECT 
                 i.inventory_id, i.date_key,
@@ -1351,7 +1462,7 @@ def load_to_target(engine, batch_id=None):
                 :default_store_key as store_key,
                 i.stock_level, i.min_stock_level, i.max_stock_level, i.reorder_point,
                 i.last_restock_date_key, i.days_of_supply, i.stock_status, i.is_in_stock,
-                CURRENT_TIMESTAMP
+                CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM stg_inventory i
             WHERE i.etl_batch_id = :batch_id
             ON CONFLICT (inventory_id) DO UPDATE
@@ -1377,7 +1488,7 @@ def load_to_target(engine, batch_id=None):
                 return_id, date_key, product_key, store_key, return_reason_key,
                 return_amount, quantity_returned, return_condition,
                 original_sale_id, original_sale_date_key, days_since_purchase, refund_type,
-                dw_created_date
+                dw_created_date, dw_modified_date
             )
             SELECT 
                 r.return_id, r.date_key,
@@ -1386,7 +1497,7 @@ def load_to_target(engine, batch_id=None):
                 r.return_reason_key as return_reason_key,
                 r.return_amount, r.quantity_returned, r.return_condition,
                 r.original_sale_id, r.original_sale_date_key, r.days_since_purchase, r.refund_type,
-                CURRENT_TIMESTAMP
+                CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM stg_returns r
             WHERE r.etl_batch_id = :batch_id
             ON CONFLICT (return_id) DO UPDATE

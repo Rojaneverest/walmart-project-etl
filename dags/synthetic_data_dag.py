@@ -1,9 +1,11 @@
 """
 Walmart ETL Project - Synthetic Data Generation DAG
-This DAG generates synthetic data for the Walmart data warehouse.
+This DAG generates synthetic data for the Walmart data warehouse and loads it to the ODS layer only.
 It includes tasks for:
 1. Generating supplier data
 2. Generating return reason data
+
+Note: The transform_and_load_to_staging and load_to_target operations are handled by the walmart_etl_dag.
 """
 
 from datetime import datetime, timedelta
@@ -46,29 +48,11 @@ dag = DAG(
     tags=['walmart', 'etl', 'synthetic_data'],
 )
 
-# Task 1: Generate supplier data
-generate_supplier_task = PythonOperator(
-    task_id='generate_supplier_data',
-    python_callable=generate_supplier_data,
-    op_kwargs={'num_suppliers': 50},
-    dag=dag,
-)
-
-# Task 2: Generate return reason data
-generate_return_reason_task = PythonOperator(
-    task_id='generate_return_reason_data',
-    python_callable=generate_return_reason_data,
-    dag=dag,
-)
-
-# Task 3: Generate all synthetic data (comprehensive task)
-generate_all_task = PythonOperator(
-    task_id='generate_all_synthetic_data',
+# Task: Generate all synthetic data in one go
+generate_data_task = PythonOperator(
+    task_id='generate_synthetic_data',
     python_callable=generate_all_synthetic_data,
     dag=dag,
 )
 
-# Set task dependencies
-generate_supplier_task >> generate_return_reason_task
-
-# The generate_all_task is independent and can be used as an alternative to the individual tasks
+# No dependencies needed since we only have one task

@@ -1,0 +1,519 @@
+// Walmart ETL Project Database Schema
+// Created using dbdiagram.io
+
+// ODS LAYER - Operational Data Store
+Table ods_date {
+  date_id integer [pk]
+  full_date date [not null]
+  day_of_week varchar(10)
+  day_of_month integer
+  month integer
+  month_name varchar(10)
+  quarter integer
+  year integer
+  is_holiday boolean
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_customer {
+  customer_id varchar(20) [pk]
+  customer_name varchar(100)
+  customer_age varchar(10)
+  customer_segment varchar(50)
+  email varchar(100)
+  phone varchar(20)
+  address varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  region varchar(50)
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_product {
+  product_id varchar(20) [pk]
+  product_name varchar(200)
+  product_category varchar(50)
+  product_sub_category varchar(50)
+  product_container varchar(50)
+  product_base_margin float
+  unit_price decimal(10,2)
+  supplier_id varchar(20)
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_store {
+  store_id varchar(50) [pk]
+  store_name varchar(100)
+  location varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  region varchar(50)
+  store_size_sqft integer
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_supplier {
+  supplier_id varchar(20) [pk]
+  supplier_name varchar(100)
+  contact_person varchar(100)
+  email varchar(100)
+  phone varchar(20)
+  address varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  contract_start_date date
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_return_reason {
+  reason_code varchar(20) [pk]
+  reason_description varchar(200)
+  category varchar(50)
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_sales {
+  sale_id varchar(20) [pk]
+  order_id varchar(20)
+  row_id integer
+  transaction_date date
+  product_id varchar(20)
+  store_id varchar(20)
+  customer_id varchar(20)
+  order_priority varchar(20)
+  order_quantity integer
+  sales_amount decimal(12,2)
+  discount float
+  profit decimal(12,2)
+  shipping_cost decimal(10,2)
+  ship_date date
+  ship_mode varchar(50)
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_inventory {
+  inventory_id varchar(50) [pk]
+  inventory_date date
+  product_id varchar(50)
+  store_id varchar(50)
+  stock_level integer
+  min_stock_level integer
+  max_stock_level integer
+  reorder_point integer
+  last_restock_date date
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_returns {
+  return_id varchar(50) [pk]
+  return_date date
+  product_id varchar(50)
+  store_id varchar(50)
+  reason_code varchar(20)
+  return_amount decimal(12,2)
+  quantity_returned integer
+  original_sale_id varchar(20)
+  original_sale_date date
+  return_condition varchar(50)
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+// STAGING LAYER
+Table stg_date {
+  date_key integer [pk]
+  full_date date [not null]
+  day_of_week varchar(10)
+  day_name varchar(10)
+  day_of_month integer
+  day_of_year integer
+  week_of_year integer
+  month integer
+  month_name varchar(10)
+  quarter integer
+  year integer
+  is_weekend boolean
+  is_holiday boolean
+  holiday_name varchar(50)
+  fiscal_year integer
+  fiscal_quarter integer
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_customer {
+  customer_key integer [pk]
+  customer_id varchar(20) [not null]
+  customer_name varchar(100)
+  customer_age varchar(10)
+  customer_segment varchar(50)
+  email varchar(100)
+  phone varchar(20)
+  address varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  region varchar(50)
+  country varchar(50)
+  customer_since date
+  customer_type varchar(20)
+  loyalty_segment varchar(20)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_supplier {
+  supplier_key integer [pk]
+  supplier_id varchar(20) [not null]
+  supplier_name varchar(100)
+  contact_person varchar(100)
+  email varchar(100)
+  phone varchar(20)
+  address varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  country varchar(50)
+  contract_start_date date
+  contract_end_date date
+  supplier_rating integer
+  supplier_status varchar(20)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_return_reason {
+  return_reason_key integer [pk]
+  reason_code varchar(20) [not null]
+  reason_description varchar(200)
+  category varchar(50)
+  impact_level varchar(20)
+  is_controllable boolean
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_product {
+  product_key integer [pk]
+  product_id varchar(20) [not null]
+  product_name varchar(200)
+  category varchar(50)
+  subcategory varchar(50)
+  department varchar(50)
+  brand varchar(50)
+  price decimal(10,2)
+  cost decimal(10,2)
+  supplier_key integer
+  is_active boolean
+  effective_date date [not null]
+  expiry_date date
+  current_flag varchar(1)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_store {
+  store_key integer [pk]
+  store_id varchar(50) [not null]
+  store_name varchar(100)
+  store_type varchar(50)
+  location varchar(200)
+  address varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  region varchar(50)
+  country varchar(50)
+  store_size_sqft integer
+  opening_date date
+  remodeling_date date
+  effective_date date [not null]
+  expiry_date date
+  current_flag varchar(1)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_sales {
+  sale_key integer [pk]
+  sale_id varchar(20) [not null]
+  order_id varchar(20)
+  row_id integer
+  date_key integer [not null]
+  product_key integer [not null]
+  store_key integer [not null]
+  customer_key integer [not null]
+  sales_amount decimal(12,2) [not null]
+  quantity_sold integer [not null]
+  unit_price decimal(10,2)
+  total_cost decimal(12,2)
+  profit_margin decimal(10,2)
+  discount_amount decimal(10,2)
+  net_sales_amount decimal(12,2)
+  sales_channel varchar(20)
+  promotion_key integer
+  order_priority varchar(20)
+  ship_date_key integer
+  ship_mode varchar(50)
+  shipping_cost decimal(10,2)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_inventory {
+  inventory_key integer [pk]
+  inventory_id varchar(50) [not null]
+  date_key integer [not null]
+  product_key integer [not null]
+  store_key integer [not null]
+  stock_level integer [not null]
+  min_stock_level integer
+  max_stock_level integer
+  reorder_point integer
+  last_restock_date_key integer
+  days_of_supply integer
+  stock_status varchar(20)
+  is_in_stock boolean
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_returns {
+  return_key integer [pk]
+  return_id varchar(50) [not null]
+  date_key integer [not null]
+  product_key integer [not null]
+  store_key integer [not null]
+  return_reason_key integer [not null]
+  return_amount decimal(12,2) [not null]
+  quantity_returned integer [not null]
+  original_sale_id varchar(50)
+  original_sale_date_key integer
+  return_condition varchar(50)
+  days_since_purchase integer
+  refund_type varchar(20)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+// TARGET LAYER - Final Dimensional Model
+Table tgt_dim_date {
+  date_key integer [pk]
+  full_date date [not null]
+  day_of_week varchar(10)
+  day_name varchar(10)
+  day_of_month integer
+  day_of_year integer
+  week_of_year integer
+  month integer
+  month_name varchar(10)
+  quarter integer
+  year integer
+  is_weekend boolean
+  is_holiday boolean
+  holiday_name varchar(50)
+  fiscal_year integer
+  fiscal_quarter integer
+  dw_created_date timestamp
+  dw_modified_date timestamp
+  dw_version_number integer
+}
+
+Table tgt_dim_customer {
+  customer_key integer [pk, increment]
+  customer_id varchar(20) [not null, unique]
+  customer_name varchar(100)
+  customer_age varchar(10)
+  customer_segment varchar(50)
+  email varchar(100)
+  phone varchar(20)
+  address varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  region varchar(50)
+  country varchar(50)
+  customer_since date
+  customer_type varchar(20)
+  loyalty_segment varchar(20)
+  dw_created_date timestamp
+  dw_modified_date timestamp
+  dw_version_number integer
+}
+
+Table tgt_dim_supplier {
+  supplier_key integer [pk, increment]
+  supplier_id varchar(20) [not null, unique]
+  supplier_name varchar(100)
+  contact_person varchar(100)
+  email varchar(100)
+  phone varchar(20)
+  address varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  country varchar(50)
+  contract_start_date date
+  contract_end_date date
+  supplier_rating integer
+  supplier_status varchar(20)
+  dw_created_date timestamp
+  dw_modified_date timestamp
+  dw_version_number integer
+}
+
+Table tgt_dim_return_reason {
+  return_reason_key integer [pk, increment]
+  reason_code varchar(20) [not null, unique]
+  reason_description varchar(200)
+  category varchar(50)
+  impact_level varchar(20)
+  is_controllable boolean
+  dw_created_date timestamp
+  dw_modified_date timestamp
+  dw_version_number integer
+}
+
+Table tgt_dim_product {
+  product_key integer [pk, increment]
+  product_id varchar(20) [not null]
+  product_name varchar(200)
+  category varchar(50)
+  subcategory varchar(50)
+  department varchar(50)
+  brand varchar(50)
+  price decimal(10,2)
+  cost decimal(10,2)
+  supplier_key integer [ref: > tgt_dim_supplier.supplier_key]
+  is_active boolean
+  effective_date date [not null]
+  expiry_date date
+  current_indicator boolean
+  dw_created_date timestamp
+  dw_modified_date timestamp
+  dw_version_number integer
+}
+
+Table tgt_dim_store {
+  store_key integer [pk, increment]
+  store_id varchar(50) [not null]
+  store_name varchar(100)
+  store_type varchar(50)
+  location varchar(200)
+  address varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  region varchar(50)
+  country varchar(50)
+  store_size_sqft integer
+  opening_date date
+  remodeling_date date
+  effective_date date [not null]
+  expiry_date date
+  current_indicator boolean
+  dw_created_date timestamp
+  dw_modified_date timestamp
+  dw_version_number integer
+}
+
+Table tgt_fact_sales {
+  sale_key integer [pk, increment]
+  sale_id varchar(20) [not null, unique]
+  order_id varchar(20)
+  date_key integer [not null, ref: > tgt_dim_date.date_key]
+  product_key integer [not null, ref: > tgt_dim_product.product_key]
+  store_key integer [not null, ref: > tgt_dim_store.store_key]
+  customer_key integer [not null, ref: > tgt_dim_customer.customer_key]
+  sales_amount decimal(12,2) [not null]
+  quantity_sold integer [not null]
+  unit_price decimal(10,2)
+  total_cost decimal(12,2)
+  profit_margin decimal(10,2)
+  discount_amount decimal(10,2)
+  net_sales_amount decimal(12,2)
+  sales_channel varchar(20)
+  promotion_key integer
+  order_priority varchar(20)
+  ship_date_key integer [ref: > tgt_dim_date.date_key]
+  ship_mode varchar(50)
+  shipping_cost decimal(10,2)
+  dw_created_date timestamp
+  dw_modified_date timestamp
+}
+
+Table tgt_fact_inventory {
+  inventory_key integer [pk, increment]
+  inventory_id varchar(50) [not null, unique]
+  date_key integer [not null, ref: > tgt_dim_date.date_key]
+  product_key integer [not null, ref: > tgt_dim_product.product_key]
+  store_key integer [not null, ref: > tgt_dim_store.store_key]
+  stock_level integer [not null]
+  min_stock_level integer
+  max_stock_level integer
+  reorder_point integer
+  last_restock_date_key integer [ref: > tgt_dim_date.date_key]
+  days_of_supply integer
+  stock_status varchar(20)
+  is_in_stock boolean
+  dw_created_date timestamp
+  dw_modified_date timestamp
+}
+
+Table tgt_fact_returns {
+  return_key integer [pk, increment]
+  return_id varchar(50) [not null, unique]
+  date_key integer [not null, ref: > tgt_dim_date.date_key]
+  product_key integer [not null, ref: > tgt_dim_product.product_key]
+  store_key integer [not null, ref: > tgt_dim_store.store_key]
+  return_reason_key integer [not null, ref: > tgt_dim_return_reason.return_reason_key]
+  return_amount decimal(12,2) [not null]
+  quantity_returned integer [not null]
+  original_sale_id varchar(50)
+  original_sale_date_key integer [ref: > tgt_dim_date.date_key]
+  return_condition varchar(50)
+  days_since_purchase integer
+  refund_type varchar(20)
+  dw_created_date timestamp
+  dw_modified_date timestamp
+}
+
+// ODS Layer Relationships
+Ref: ods_sales.product_id > ods_product.product_id
+Ref: ods_sales.store_id > ods_store.store_id
+Ref: ods_sales.customer_id > ods_customer.customer_id
+Ref: ods_product.supplier_id > ods_supplier.supplier_id
+Ref: ods_inventory.product_id > ods_product.product_id
+Ref: ods_inventory.store_id > ods_store.store_id
+Ref: ods_returns.product_id > ods_product.product_id
+Ref: ods_returns.store_id > ods_store.store_id
+Ref: ods_returns.reason_code > ods_return_reason.reason_code
+Ref: ods_returns.original_sale_id > ods_sales.sale_id
+
+// Staging Layer Relationships
+Ref: stg_sales.date_key > stg_date.date_key
+Ref: stg_sales.product_key > stg_product.product_key
+Ref: stg_sales.store_key > stg_store.store_key
+Ref: stg_sales.customer_key > stg_customer.customer_key
+Ref: stg_sales.ship_date_key > stg_date.date_key
+Ref: stg_product.supplier_key > stg_supplier.supplier_key
+Ref: stg_inventory.date_key > stg_date.date_key
+Ref: stg_inventory.product_key > stg_product.product_key
+Ref: stg_inventory.store_key > stg_store.store_key
+Ref: stg_inventory.last_restock_date_key > stg_date.date_key
+Ref: stg_returns.date_key > stg_date.date_key
+Ref: stg_returns.product_key > stg_product.product_key
+Ref: stg_returns.store_key > stg_store.store_key
+Ref: stg_returns.return_reason_key > stg_return_reason.return_reason_key
+Ref: stg_returns.original_sale_date_key > stg_date.date_key
