@@ -1,0 +1,161 @@
+// Walmart ETL Project - Target Layer Schema
+// This schema represents the final dimensional model with SCD Type 2 for appropriate dimensions
+
+Table tgt_dim_date {
+  date_key integer [pk]
+  date_id integer [not null]
+  full_date date [not null]
+  day_of_week varchar(10) [not null, default: 'Unknown']
+  day_of_month integer [not null, default: 1]
+  month integer [not null, default: 1]
+  month_name varchar(10) [not null, default: 'Unknown']
+  quarter integer [not null, default: 1]
+  year integer [not null, default: 2025]
+  is_weekend boolean [not null, default: false]
+  is_holiday boolean [not null, default: false]
+  fiscal_year integer [not null, default: 2025]
+  fiscal_quarter integer [not null, default: 1]
+  insertion_date timestamp [not null, default: `now()`]
+  modification_date timestamp [not null, default: `now()`]
+}
+
+Table tgt_dim_customer {
+  customer_key integer [pk, increment]
+  customer_id varchar(20) [not null]
+  customer_name varchar(100) [not null, default: 'Unknown']
+  customer_age integer
+  age_group varchar(20)
+  customer_segment varchar(50) [not null, default: 'Unknown']
+  city varchar(50) [not null, default: 'Unknown']
+  state varchar(50) [not null, default: 'Unknown']
+  zip_code varchar(20) [not null, default: '00000']
+  region varchar(50) [not null, default: 'Unknown']
+  insertion_date timestamp [not null, default: `now()`]
+  modification_date timestamp [not null, default: `now()`]
+}
+
+Table tgt_dim_supplier {
+  supplier_key integer [pk, increment]
+  supplier_id varchar(20) [not null]
+  supplier_name varchar(100) [not null, default: 'Unknown']
+  supplier_type varchar(50) [not null, default: 'Standard']
+  contact_name varchar(100) [not null, default: 'Unknown']
+  contact_phone varchar(20) [not null, default: '000-000-0000']
+  contact_email varchar(100) [not null, default: 'unknown@example.com']
+  insertion_date timestamp [not null, default: `now()`]
+  modification_date timestamp [not null, default: `now()`]
+}
+
+Table tgt_dim_return_reason {
+  reason_key integer [pk, increment]
+  reason_code varchar(20) [not null]
+  reason_description varchar(200) [not null, default: 'Unknown']
+  category varchar(50) [not null, default: 'Unknown']
+  reason_type varchar(50) [not null, default: 'Other']
+  insertion_date timestamp [not null, default: `now()`]
+  modification_date timestamp [not null, default: `now()`]
+}
+
+// SCD Type 2 implementation for Product dimension
+Table tgt_dim_product {
+  product_key integer [pk, increment]
+  product_id varchar(20) [not null]
+  product_name varchar(200) [not null, default: 'Unknown']
+  product_category varchar(50) [not null, default: 'Unknown']
+  product_sub_category varchar(50) [not null, default: 'Unknown']
+  product_container varchar(50) [not null, default: 'Unknown']
+  unit_price decimal(10,2) [not null, default: 0.00]
+  price_tier varchar(20) [not null, default: 'Standard']
+  product_base_margin float [not null, default: 0.00]
+  margin_percentage float [not null, default: 0.00]
+  is_high_margin boolean [not null, default: false]
+  supplier_key integer [ref: > tgt_dim_supplier.supplier_key]
+  is_current boolean [not null, default: true]
+  start_date date [not null]
+  end_date date
+  version integer [not null, default: 1]
+  insertion_date timestamp [not null, default: `now()`]
+  modification_date timestamp [not null, default: `now()`]
+}
+
+// SCD Type 2 implementation for Store dimension
+Table tgt_dim_store {
+  store_key integer [pk, increment]
+  store_id varchar(20) [not null]
+  store_name varchar(100) [not null, default: 'Unknown']
+  location varchar(200) [not null, default: 'Unknown']
+  city varchar(50) [not null, default: 'Unknown']
+  state varchar(50) [not null, default: 'Unknown']
+  zip_code varchar(20) [not null, default: '00000']
+  region varchar(50) [not null, default: 'Unknown']
+  market varchar(50) [not null, default: 'Unknown']
+  is_current boolean [not null, default: true]
+  start_date date [not null]
+  end_date date
+  version integer [not null, default: 1]
+  insertion_date timestamp [not null, default: `now()`]
+  modification_date timestamp [not null, default: `now()`]
+}
+
+Table tgt_fact_sales {
+  sales_key integer [pk, increment]
+  sale_id varchar(20) [not null, unique]
+  order_id varchar(20)
+  transaction_date_key integer [ref: > tgt_dim_date.date_key, not null]
+  product_key integer [ref: > tgt_dim_product.product_key, not null]
+  store_key integer [ref: > tgt_dim_store.store_key, not null]
+  customer_key integer [ref: > tgt_dim_customer.customer_key, not null]
+  order_priority varchar(20) [not null, default: 'Medium']
+  order_quantity integer [not null, default: 0]
+  sales_amount decimal(12,2) [not null, default: 0.00]
+  discount float [not null, default: 0.00]
+  discount_amount decimal(10,2) [not null, default: 0.00]
+  shipping_cost decimal(10,2) [not null, default: 0.00]
+  gross_revenue decimal(12,2) [not null, default: 0.00]
+  net_revenue decimal(12,2) [not null, default: 0.00]
+  profit decimal(12,2) [not null, default: 0.00]
+  profit_margin float [not null, default: 0.00]
+  is_profitable boolean [not null, default: false]
+  ship_date_key integer [ref: > tgt_dim_date.date_key]
+  ship_mode varchar(50) [not null, default: 'Standard']
+  insertion_date timestamp [not null, default: `now()`]
+  modification_date timestamp [not null, default: `now()`]
+}
+
+Table tgt_fact_inventory {
+  inventory_key integer [pk, increment]
+  inventory_id varchar(20) [not null, unique]
+  date_key integer [ref: > tgt_dim_date.date_key, not null]
+  product_key integer [ref: > tgt_dim_product.product_key, not null]
+  store_key integer [ref: > tgt_dim_store.store_key, not null]
+  stock_level integer [not null, default: 0]
+  min_stock_level integer [not null, default: 0]
+  max_stock_level integer [not null, default: 0]
+  reorder_point integer [not null, default: 0]
+  last_restock_date_key integer [ref: > tgt_dim_date.date_key]
+  days_of_supply integer
+  stock_status varchar(20) [not null, default: 'In Stock']
+  is_in_stock boolean [not null, default: true]
+  insertion_date timestamp [not null, default: `now()`]
+  modification_date timestamp [not null, default: `now()`]
+}
+
+Table tgt_fact_returns {
+  return_key integer [pk, increment]
+  return_id varchar(20) [not null, unique]
+  return_date_key integer [ref: > tgt_dim_date.date_key, not null]
+  product_key integer [ref: > tgt_dim_product.product_key, not null]
+  store_key integer [ref: > tgt_dim_store.store_key, not null]
+  reason_key integer [ref: > tgt_dim_return_reason.reason_key]
+  reason_code varchar(20)
+  return_amount decimal(12,2) [not null, default: 0.00]
+  quantity_returned integer [not null, default: 0]
+  avg_return_price decimal(10,2) [not null, default: 0.00]
+  original_sale_id varchar(20)
+  original_sale_date_key integer [ref: > tgt_dim_date.date_key]
+  days_since_sale integer
+  is_within_30_days boolean [not null, default: false]
+  return_condition varchar(50) [not null, default: 'Unknown']
+  insertion_date timestamp [not null, default: `now()`]
+  modification_date timestamp [not null, default: `now()`]
+}

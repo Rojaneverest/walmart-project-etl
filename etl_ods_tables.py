@@ -46,6 +46,7 @@ def create_ods_tables(metadata):
         Column('quarter', Integer),
         Column('year', Integer),
         Column('is_holiday', Boolean),
+        # Removed holiday_name as specified
         Column('source_system', String(50)),
         Column('load_timestamp', TIMESTAMP, default=func.now())
     )
@@ -57,13 +58,14 @@ def create_ods_tables(metadata):
         Column('customer_name', String(100)),
         Column('customer_age', String(10)),  # Using string as it might have missing values
         Column('customer_segment', String(50)),
-        Column('email', String(100)),
-        Column('phone', String(20)),
-        Column('address', String(200)),
+        # Removed email as specified
+        # Removed phone as specified
+        # Removed address as specified
         Column('city', String(50)),
         Column('state', String(50)),
         Column('zip_code', String(20)),
         Column('region', String(50)),
+        # Removed country as specified
         Column('source_system', String(50)),
         Column('load_timestamp', TIMESTAMP, default=func.now())
     )
@@ -78,7 +80,7 @@ def create_ods_tables(metadata):
         Column('product_container', String(50)),
         Column('product_base_margin', Float),
         Column('unit_price', Numeric(10, 2)),
-        Column('supplier_id', String(20)),
+        Column('supplier_id', String(20), ForeignKey('ods_supplier.supplier_id')),
         Column('source_system', String(50)),
         Column('load_timestamp', TIMESTAMP, default=func.now())
     )
@@ -86,14 +88,16 @@ def create_ods_tables(metadata):
     # ODS Store dimension
     ods_store = Table(
         'ods_store', metadata,
-        Column('store_id', String(50), primary_key=True),  # Increased from 20 to 50 characters
+        Column('store_id', String(20), primary_key=True),  # Using 20 characters for consistency
         Column('store_name', String(100)),
         Column('location', String(200)),
         Column('city', String(50)),
         Column('state', String(50)),
         Column('zip_code', String(20)),
         Column('region', String(50)),
-        Column('store_size_sqft', Integer),
+        # Removed store_size_sqft as specified
+        # Removed opening_date as specified
+        # Removed remodeling_date as specified
         Column('source_system', String(50)),
         Column('load_timestamp', TIMESTAMP, default=func.now())
     )
@@ -111,6 +115,7 @@ def create_ods_tables(metadata):
         Column('state', String(50)),
         Column('zip_code', String(20)),
         Column('contract_start_date', Date),
+        # Removed supplier_rating as specified
         Column('source_system', String(50)),
         Column('load_timestamp', TIMESTAMP, default=func.now())
     )
@@ -132,9 +137,9 @@ def create_ods_tables(metadata):
         Column('order_id', String(20)),
         Column('row_id', Integer),
         Column('transaction_date', Date),
-        Column('product_id', String(20)),
-        Column('store_id', String(20)),
-        Column('customer_id', String(20)),
+        Column('product_id', String(20), ForeignKey('ods_product.product_id')),
+        Column('store_id', String(20), ForeignKey('ods_store.store_id')),
+        Column('customer_id', String(20), ForeignKey('ods_customer.customer_id')),
         Column('order_priority', String(20)),
         Column('order_quantity', Integer),
         Column('sales_amount', Numeric(12, 2)),
@@ -143,6 +148,11 @@ def create_ods_tables(metadata):
         Column('shipping_cost', Numeric(10, 2)),
         Column('ship_date', Date),
         Column('ship_mode', String(50)),
+        # Transaction-specific location fields
+        Column('transaction_city', String(50)),
+        Column('transaction_state', String(50)),
+        Column('transaction_zip', String(20)),
+        Column('product_base_margin', Float),
         Column('source_system', String(50)),
         Column('load_timestamp', TIMESTAMP, default=func.now())
     )
@@ -152,8 +162,8 @@ def create_ods_tables(metadata):
         'ods_inventory', metadata,
         Column('inventory_id', String(50), primary_key=True),  # Increased from 20 to 50 characters
         Column('inventory_date', Date),
-        Column('product_id', String(50)),  # Increased from 20 to 50 characters
-        Column('store_id', String(50)),  # Increased from 20 to 50 characters
+        Column('product_id', String(50), ForeignKey('ods_product.product_id')),  # Increased from 20 to 50 characters
+        Column('store_id', String(50), ForeignKey('ods_store.store_id')),  # Increased from 20 to 50 characters
         Column('stock_level', Integer),
         Column('min_stock_level', Integer),
         Column('max_stock_level', Integer),
@@ -168,12 +178,12 @@ def create_ods_tables(metadata):
         'ods_returns', metadata,
         Column('return_id', String(50), primary_key=True),  # Increased from 20 to 50 characters
         Column('return_date', Date),
-        Column('product_id', String(50)),  # Increased from 20 to 50 characters
-        Column('store_id', String(50)),  # Increased from 20 to 50 characters
-        Column('reason_code', String(20)),
+        Column('product_id', String(50), ForeignKey('ods_product.product_id')),  # Increased from 20 to 50 characters
+        Column('store_id', String(50), ForeignKey('ods_store.store_id')),  # Increased from 20 to 50 characters
+        Column('reason_code', String(20), ForeignKey('ods_return_reason.reason_code')),
         Column('return_amount', Numeric(12, 2)),
         Column('quantity_returned', Integer),
-        Column('original_sale_id', String(20)),
+        Column('original_sale_id', String(20), ForeignKey('ods_sales.sale_id')),
         Column('original_sale_date', Date),  # Added missing column
         Column('return_condition', String(50)),
         Column('source_system', String(50)),

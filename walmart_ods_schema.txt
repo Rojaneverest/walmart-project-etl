@@ -1,0 +1,131 @@
+// Walmart ETL Project - ODS Layer Schema
+// This schema represents the Operational Data Store (ODS) layer
+
+Table ods_date {
+  date_id integer [pk]
+  full_date date [not null]
+  day_of_week varchar(10)
+  day_of_month integer
+  month integer
+  month_name varchar(10)
+  quarter integer
+  year integer
+  is_holiday boolean
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_customer {
+  customer_id varchar(20) [pk]
+  customer_name varchar(100)
+  customer_age varchar(10)
+  customer_segment varchar(50)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  region varchar(50)
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_supplier {
+  supplier_id varchar(20) [pk]
+  supplier_name varchar(100)
+  contact_person varchar(100)
+  email varchar(100)
+  phone varchar(20)
+  address varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  country varchar(50)
+  supplier_type varchar(50)
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_product {
+  product_id varchar(20) [pk]
+  product_name varchar(200)
+  product_category varchar(50)
+  product_sub_category varchar(50)
+  product_container varchar(50)
+  product_base_margin float
+  unit_price decimal(10,2)
+  supplier_id varchar(20) [ref: > ods_supplier.supplier_id]
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_store {
+  store_id varchar(20) [pk]
+  store_name varchar(100)
+  location varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  region varchar(50)
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_return_reason {
+  reason_code varchar(20) [pk]
+  reason_description varchar(200)
+  category varchar(50)
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_sales {
+  sale_id varchar(20) [pk]
+  order_id varchar(20)
+  row_id integer
+  transaction_date date
+  product_id varchar(20) [ref: > ods_product.product_id]
+  store_id varchar(20) [ref: > ods_store.store_id]
+  customer_id varchar(20) [ref: > ods_customer.customer_id]
+  order_priority varchar(20)
+  order_quantity integer
+  sales_amount decimal(12,2)
+  discount float
+  profit decimal(12,2)
+  shipping_cost decimal(10,2)
+  ship_date date
+  ship_mode varchar(50)
+  transaction_city varchar(50)
+  transaction_state varchar(50)
+  transaction_zip varchar(20)
+  product_base_margin float
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_inventory {
+  inventory_id varchar(50) [pk]
+  inventory_date date
+  product_id varchar(50) [ref: > ods_product.product_id]
+  store_id varchar(50) [ref: > ods_store.store_id]
+  stock_level integer
+  min_stock_level integer
+  max_stock_level integer
+  reorder_point integer
+  last_restock_date date
+  source_system varchar(50)
+  load_timestamp timestamp
+}
+
+Table ods_returns {
+  return_id varchar(50) [pk]
+  return_date date
+  product_id varchar(50) [ref: > ods_product.product_id]
+  store_id varchar(50) [ref: > ods_store.store_id]
+  reason_code varchar(20) [ref: > ods_return_reason.reason_code]
+  return_amount decimal(12,2)
+  quantity_returned integer
+  original_sale_id varchar(20) [ref: > ods_sales.sale_id]
+  original_sale_date date
+  return_condition varchar(50)
+  source_system varchar(50)
+  load_timestamp timestamp
+}

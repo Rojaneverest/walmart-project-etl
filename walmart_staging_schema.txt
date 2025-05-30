@@ -1,0 +1,157 @@
+// Walmart ETL Project - Staging Layer Schema
+// This schema represents the Staging layer with transformations and surrogate keys
+
+Table stg_date {
+  date_key integer [pk, increment]
+  date_id integer [unique, not null]
+  full_date date [not null]
+  day_of_week varchar(10)
+  day_of_month integer
+  month integer
+  month_name varchar(10)
+  quarter integer
+  year integer
+  is_weekend boolean
+  is_holiday boolean
+  fiscal_year integer
+  fiscal_quarter integer
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_customer {
+  customer_key integer [pk, increment]
+  customer_id varchar(20) [not null]
+  customer_name varchar(100)
+  customer_age integer
+  age_group varchar(20)
+  customer_segment varchar(50)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  region varchar(50)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_supplier {
+  supplier_key integer [pk, increment]
+  supplier_id varchar(20) [not null]
+  supplier_name varchar(100)
+  contact_person varchar(100)
+  email varchar(100)
+  phone varchar(20)
+  address varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  country varchar(50)
+  supplier_type varchar(50)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_product {
+  product_key integer [pk, increment]
+  product_id varchar(20) [not null]
+  product_name varchar(200)
+  product_category varchar(50)
+  product_sub_category varchar(50)
+  product_container varchar(50)
+  unit_price decimal(10,2)
+  price_tier varchar(20)
+  product_base_margin float
+  margin_percentage float
+  is_high_margin boolean
+  supplier_id varchar(20)
+  supplier_name varchar(100)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_store {
+  store_key integer [pk, increment]
+  store_id varchar(20) [not null]
+  store_name varchar(100)
+  location varchar(200)
+  city varchar(50)
+  state varchar(50)
+  zip_code varchar(20)
+  region varchar(50)
+  market varchar(50)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_return_reason {
+  reason_key integer [pk, increment]
+  reason_code varchar(20) [not null]
+  reason_description varchar(200)
+  category varchar(50)
+  reason_type varchar(50)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_sales {
+  sales_key integer [pk, increment]
+  sale_id varchar(20) [not null]
+  order_id varchar(20)
+  transaction_date_key integer [ref: > stg_date.date_key]
+  product_key integer [ref: > stg_product.product_key]
+  store_key integer [ref: > stg_store.store_key]
+  customer_key integer [ref: > stg_customer.customer_key]
+  order_priority varchar(20)
+  order_quantity integer
+  sales_amount decimal(12,2)
+  discount float
+  discount_amount decimal(10,2)
+  shipping_cost decimal(10,2)
+  gross_revenue decimal(12,2)
+  net_revenue decimal(12,2)
+  profit decimal(12,2)
+  profit_margin float
+  is_profitable boolean
+  ship_date_key integer [ref: > stg_date.date_key]
+  ship_mode varchar(50)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_inventory {
+  inventory_key integer [pk, increment]
+  inventory_id varchar(50) [not null]
+  date_key integer [ref: > stg_date.date_key]
+  product_key integer [ref: > stg_product.product_key]
+  store_key integer [ref: > stg_store.store_key]
+  stock_level integer
+  min_stock_level integer
+  max_stock_level integer
+  reorder_point integer
+  last_restock_date_key integer [ref: > stg_date.date_key]
+  days_of_supply integer
+  stock_status varchar(20)
+  is_in_stock boolean
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
+
+Table stg_returns {
+  return_key integer [pk, increment]
+  return_id varchar(50) [not null]
+  return_date_key integer [ref: > stg_date.date_key]
+  product_key integer [ref: > stg_product.product_key]
+  store_key integer [ref: > stg_store.store_key]
+  reason_key integer [ref: > stg_return_reason.reason_key]
+  reason_code varchar(20)
+  return_amount decimal(12,2)
+  quantity_returned integer
+  avg_return_price decimal(10,2)
+  original_sale_id varchar(20)
+  original_sale_date_key integer [ref: > stg_date.date_key]
+  days_since_sale integer
+  is_within_30_days boolean
+  return_condition varchar(50)
+  etl_batch_id varchar(50)
+  etl_timestamp timestamp
+}
