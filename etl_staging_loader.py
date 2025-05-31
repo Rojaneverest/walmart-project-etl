@@ -82,9 +82,9 @@ def get_engine():
     """Get SQLAlchemy engine for Snowflake Staging database (for backward compatibility)."""
     return get_snowflake_staging_engine()
 
-def clean_database(engine):
+def clean_database(staging_engine):
     """Clean up staging tables before loading."""
-    with engine.begin() as conn:
+    with staging_engine.begin() as conn:
         conn.execute(text("DROP TABLE IF EXISTS stg_sales CASCADE"))
         conn.execute(text("DROP TABLE IF EXISTS stg_inventory CASCADE"))
         conn.execute(text("DROP TABLE IF EXISTS stg_returns CASCADE"))
@@ -96,11 +96,11 @@ def clean_database(engine):
         conn.execute(text("DROP TABLE IF EXISTS stg_date CASCADE"))
     print("Staging tables cleaned successfully!")
 
-def create_tables(engine):
+def create_tables(staging_engine):
     """Create staging tables."""
     # Create staging tables using the imported metadata and create_staging_tables function
     staging_tables = create_staging_tables(metadata)
-    metadata.create_all(engine)
+    metadata.create_all(staging_engine)
     print("Staging tables created successfully!")
 
 # Helper function to generate date ID
@@ -146,46 +146,7 @@ def load_staging_date_dimension(staging_engine, ods_engine):
         
     print(f"Found {len(date_records)} date records in ODS.")
     
-    # Ensure we have dates for the next 3 years for future-proofing
-    # This is important for handling ship dates and other future dates
-    current_date = datetime.now().date()
-    future_dates = []
-    
-    # Check if we need to add future dates
-    max_date = max(record['full_date'] for record in date_records)
-    three_years_from_now = (datetime.now() + timedelta(days=365*3)).date()
-    
-    if max_date < three_years_from_now:
-        print(f"Adding future dates from {max_date} to {three_years_from_now}")
-        current_date = max_date + timedelta(days=1)
-        while current_date <= three_years_from_now:
-            date_id = int(current_date.strftime('%Y%m%d'))
-            day_of_week = current_date.strftime('%A')
-            day_of_month = current_date.day
-            month = current_date.month
-            month_name = current_date.strftime('%B')
-            quarter = (month - 1) // 3 + 1
-            year = current_date.year
-            is_holiday = False  # Simplified
-            
-            future_dates.append({
-                'date_id': date_id,
-                'full_date': current_date,
-                'day_of_week': day_of_week,
-                'day_of_month': day_of_month,
-                'month': month,
-                'month_name': month_name,
-                'quarter': quarter,
-                'year': year,
-                'is_holiday': is_holiday
-            })
-            
-            current_date += timedelta(days=1)
-        
-        # Add future dates to our records
-        date_records.extend(future_dates)
-        print(f"Added {len(future_dates)} future dates to date dimension.")
-    
+    # No longer generating future dates - only using dates from ODS
     print(f"Total date records to process: {len(date_records)}")
 
     
@@ -224,27 +185,36 @@ def load_staging_date_dimension(staging_engine, ods_engine):
         }
         staging_records.append(staging_record)
     
-    # Load data into staging
-    with engine.begin() as conn:
-        # Insert new data
-        for record in staging_records:
-            result = conn.execute(
+    # Load data into staging using batch processing
+    with staging_engine.begin() as conn:
+        if staging_records:
+            # Batch insert all records at once
+            conn.execute(
                 text("""
                     INSERT INTO stg_date (
                         date_id, full_date, day_of_week, day_of_month,
                         month, month_name, quarter, year, is_weekend, is_holiday,
                         fiscal_year, fiscal_quarter, etl_batch_id, etl_timestamp
-                    ) VALUES (
-                        :date_id, :full_date, :day_of_week, :day_of_month,
-                        :month, :month_name, :quarter, :year, :is_weekend, :is_holiday,
-                        :fiscal_year, :fiscal_quarter, :etl_batch_id, :etl_timestamp
-                    )
-                    RETURNING date_key, date_id
-                """), 
-                record
+                    ) 
+                    VALUES (:date_id, :full_date, :day_of_week, :day_of_month,
+                           :month, :month_name, :quarter, :year, :is_weekend, :is_holiday,
+                           :fiscal_year, :fiscal_quarter, :etl_batch_id, :etl_timestamp)
+                """),
+                staging_records
             )
-            row = result.fetchone()
-            date_map[row.date_id] = row.date_key
+            
+            # Get all date_ids to fetch
+            date_ids = [record['date_id'] for record in staging_records]
+            
+            # Fetch all keys in a single query
+            placeholders = ', '.join([str(date_id) for date_id in date_ids])
+            result = conn.execute(
+                text(f"SELECT date_key, date_id FROM stg_date WHERE date_id IN ({placeholders})")
+            )
+            
+            # Build the mapping dictionary
+            for row in result:
+                date_map[row.date_id] = row.date_key
     
     print(f"Loaded {len(staging_records)} records into staging date dimension.")
     return date_map
@@ -319,27 +289,37 @@ def load_staging_customer_dimension(staging_engine, ods_engine):
         }
         staging_records.append(staging_record)
     
-    # Load data into staging
-    with engine.begin() as conn:
-        # Insert new data
-        for record in staging_records:
-            result = conn.execute(
+    # Load data into staging using batch processing
+    with staging_engine.begin() as conn:
+        if staging_records:
+            # Batch insert all records at once
+            conn.execute(
                 text("""
                     INSERT INTO stg_customer (
                         customer_id, customer_name, customer_age, age_group,
                         customer_segment, city, state, zip_code, region,
                         etl_batch_id, etl_timestamp
-                    ) VALUES (
-                        :customer_id, :customer_name, :customer_age, :age_group,
-                        :customer_segment, :city, :state, :zip_code, :region,
-                        :etl_batch_id, :etl_timestamp
-                    )
-                    RETURNING customer_key, customer_id
-                """), 
-                record
+                    ) 
+                    VALUES (:customer_id, :customer_name, :customer_age, :age_group,
+                           :customer_segment, :city, :state, :zip_code, :region,
+                           :etl_batch_id, :etl_timestamp)
+                """),
+                staging_records
             )
-            row = result.fetchone()
-            customer_map[row.customer_id] = row.customer_key
+            
+            # Get all customer_ids to fetch
+            customer_ids = [record['customer_id'] for record in staging_records]
+            
+            # Fetch all keys in a single query
+            # Use parameterized query with IN clause for better security and performance
+            placeholders = ', '.join([f"'{customer_id}'" for customer_id in customer_ids])
+            result = conn.execute(
+                text(f"SELECT customer_key, customer_id FROM stg_customer WHERE customer_id IN ({placeholders})")
+            )
+            
+            # Build the mapping dictionary
+            for row in result:
+                customer_map[row.customer_id] = row.customer_key
     
     print(f"Loaded {len(staging_records)} records into staging customer dimension.")
     return customer_map
@@ -414,29 +394,39 @@ def load_staging_product_dimension(staging_engine, ods_engine):
         }
         staging_records.append(staging_record)
     
-    # Load data into staging
-    with engine.begin() as conn:
-        # Insert new data
-        for record in staging_records:
-            result = conn.execute(
+    # Load data into staging using batch processing
+    with staging_engine.begin() as conn:
+        if staging_records:
+            # Batch insert all records at once
+            conn.execute(
                 text("""
                     INSERT INTO stg_product (
                         product_id, product_name, product_category, product_sub_category,
                         product_container, unit_price, price_tier, product_base_margin,
                         margin_percentage, is_high_margin, supplier_id, supplier_name,
                         etl_batch_id, etl_timestamp
-                    ) VALUES (
-                        :product_id, :product_name, :product_category, :product_sub_category,
-                        :product_container, :unit_price, :price_tier, :product_base_margin,
-                        :margin_percentage, :is_high_margin, :supplier_id, :supplier_name,
-                        :etl_batch_id, :etl_timestamp
-                    )
-                    RETURNING product_key, product_id
+                    ) 
+                    VALUES (:product_id, :product_name, :product_category, :product_sub_category,
+                           :product_container, :unit_price, :price_tier, :product_base_margin,
+                           :margin_percentage, :is_high_margin, :supplier_id, :supplier_name,
+                           :etl_batch_id, :etl_timestamp)
                 """),
-                record
+                staging_records
             )
-            row = result.fetchone()
-            product_map[row.product_id] = row.product_key
+            
+            # Get all product_ids to fetch
+            product_ids = [record['product_id'] for record in staging_records]
+            
+            # Fetch all keys in a single query
+            # Use parameterized query with IN clause for better security and performance
+            placeholders = ', '.join([f"'{product_id}'" for product_id in product_ids])
+            result = conn.execute(
+                text(f"SELECT product_key, product_id FROM stg_product WHERE product_id IN ({placeholders})")
+            )
+            
+            # Build the mapping dictionary
+            for row in result:
+                product_map[row.product_id] = row.product_key
     
     print(f"Loaded {len(staging_records)} product records to staging.")
     return product_map
@@ -500,25 +490,35 @@ def load_staging_store_dimension(staging_engine, ods_engine):
         }
         staging_records.append(staging_record)
     
-    # Load data into staging
-    with engine.begin() as conn:
-        # Insert new data
-        for record in staging_records:
-            result = conn.execute(
+    # Load data into staging using batch processing
+    with staging_engine.begin() as conn:
+        if staging_records:
+            # Batch insert all records at once
+            conn.execute(
                 text("""
                     INSERT INTO stg_store (
                         store_id, store_name, location, city, state,
                         zip_code, region, market, etl_batch_id, etl_timestamp
-                    ) VALUES (
-                        :store_id, :store_name, :location, :city, :state,
-                        :zip_code, :region, :market, :etl_batch_id, :etl_timestamp
-                    )
-                    RETURNING store_key, store_id
+                    ) 
+                    VALUES (:store_id, :store_name, :location, :city, :state,
+                           :zip_code, :region, :market, :etl_batch_id, :etl_timestamp)
                 """),
-                record
+                staging_records
             )
-            row = result.fetchone()
-            store_map[row.store_id] = row.store_key
+            
+            # Get all store_ids to fetch
+            store_ids = [record['store_id'] for record in staging_records]
+            
+            # Fetch all keys in a single query
+            # Use parameterized query with IN clause for better security and performance
+            placeholders = ', '.join([f"'{store_id}'" for store_id in store_ids])
+            result = conn.execute(
+                text(f"SELECT store_key, store_id FROM stg_store WHERE store_id IN ({placeholders})")
+            )
+            
+            # Build the mapping dictionary
+            for row in result:
+                store_map[row.store_id] = row.store_key
     
     print(f"Loaded {len(staging_records)} store records to staging.")
     return store_map
@@ -578,25 +578,35 @@ def load_staging_supplier_dimension(staging_engine, ods_engine):
         }
         staging_records.append(staging_record)
     
-    # Load data into staging
-    with engine.begin() as conn:
-        # Insert new data
-        for record in staging_records:
-            result = conn.execute(
+    # Load data into staging using batch processing
+    with staging_engine.begin() as conn:
+        if staging_records:
+            # Batch insert all records at once
+            conn.execute(
                 text("""
                     INSERT INTO stg_supplier (
                         supplier_id, supplier_name, supplier_type,
                         contact_name, contact_phone, contact_email, etl_batch_id, etl_timestamp
-                    ) VALUES (
-                        :supplier_id, :supplier_name, :supplier_type,
-                        :contact_name, :contact_phone, :contact_email, :etl_batch_id, :etl_timestamp
-                    )
-                    RETURNING supplier_key, supplier_id
+                    ) 
+                    VALUES (:supplier_id, :supplier_name, :supplier_type,
+                           :contact_name, :contact_phone, :contact_email, :etl_batch_id, :etl_timestamp)
                 """),
-                record
+                staging_records
             )
-            row = result.fetchone()
-            supplier_map[row.supplier_id] = row.supplier_key
+            
+            # Get all supplier_ids to fetch
+            supplier_ids = [record['supplier_id'] for record in staging_records]
+            
+            # Fetch all keys in a single query
+            # Use parameterized query with IN clause for better security and performance
+            placeholders = ', '.join([f"'{supplier_id}'" for supplier_id in supplier_ids])
+            result = conn.execute(
+                text(f"SELECT supplier_key, supplier_id FROM stg_supplier WHERE supplier_id IN ({placeholders})")
+            )
+            
+            # Build the mapping dictionary
+            for row in result:
+                supplier_map[row.supplier_id] = row.supplier_key
     
     print(f"Loaded {len(staging_records)} supplier records to staging.")
     return supplier_map
@@ -654,25 +664,35 @@ def load_staging_return_reason_dimension(staging_engine, ods_engine):
         }
         staging_records.append(staging_record)
     
-    # Load data into staging
-    with engine.begin() as conn:
-        # Insert new data
-        for record in staging_records:
-            result = conn.execute(
+    # Load data into staging using batch processing
+    with staging_engine.begin() as conn:
+        if staging_records:
+            # Batch insert all records at once
+            conn.execute(
                 text("""
                     INSERT INTO stg_return_reason (
                         reason_code, reason_description, reason_category,
                         impact_level, is_controllable, etl_batch_id, etl_timestamp
-                    ) VALUES (
-                        :reason_code, :reason_description, :reason_category,
-                        :impact_level, :is_controllable, :etl_batch_id, :etl_timestamp
-                    )
-                    RETURNING reason_key, reason_code
+                    ) 
+                    VALUES (:reason_code, :reason_description, :reason_category,
+                           :impact_level, :is_controllable, :etl_batch_id, :etl_timestamp)
                 """),
-                record
+                staging_records
             )
-            row = result.fetchone()
-            reason_map[row.reason_code] = row.reason_key
+            
+            # Get all reason_codes to fetch
+            reason_codes = [record['reason_code'] for record in staging_records]
+            
+            # Fetch all keys in a single query
+            # Use parameterized query with IN clause for better security and performance
+            placeholders = ', '.join([f"'{code}'" for code in reason_codes])
+            result = conn.execute(
+                text(f"SELECT reason_key, reason_code FROM stg_return_reason WHERE reason_code IN ({placeholders})")
+            )
+            
+            # Build the mapping dictionary
+            for row in result:
+                reason_map[row.reason_code] = row.reason_key
     
     print(f"Loaded {len(staging_records)} return reason records to staging.")
     return reason_map
@@ -792,29 +812,41 @@ def load_staging_sales_fact(staging_engine, ods_engine, date_map, customer_map, 
         }
         staging_records.append(staging_record)
     
-    # Load data into staging
-    with engine.begin() as conn:
-        # Insert new data
-        for record in staging_records:
-            result = conn.execute(
+    # Load data into staging using batch processing
+    with staging_engine.begin() as conn:
+        if staging_records:
+            # Batch insert all records at once
+            conn.execute(
                 text("""
                     INSERT INTO stg_sales (
                         sale_id, order_id, row_id, transaction_date_key, product_key, store_key,
                         customer_key, order_priority, order_quantity, sales_amount, discount, discount_amount,
                         shipping_cost, gross_revenue, net_revenue, profit, profit_margin, is_profitable,
                         ship_date_key, ship_mode, etl_batch_id, etl_timestamp
-                    ) VALUES (
+                    ) 
+                    VALUES (
                         :sale_id, :order_id, :row_id, :transaction_date_key, :product_key, :store_key,
                         :customer_key, :order_priority, :order_quantity, :sales_amount, :discount, :discount_amount,
                         :shipping_cost, :gross_revenue, :net_revenue, :profit, :profit_margin, :is_profitable,
                         :ship_date_key, :ship_mode, :etl_batch_id, :etl_timestamp
                     )
-                    RETURNING sales_key, sale_id
                 """),
-                record
+                staging_records
             )
-            row = result.fetchone()
-            sales_map[row.sale_id] = row.sales_key
+            
+            # Get all sale_ids to fetch
+            sale_ids = [record['sale_id'] for record in staging_records]
+            
+            # Fetch all keys in a single query
+            # Use parameterized query with IN clause for better security and performance
+            placeholders = ', '.join([f"'{sale_id}'" for sale_id in sale_ids])
+            result = conn.execute(
+                text(f"SELECT sales_key, sale_id FROM stg_sales WHERE sale_id IN ({placeholders})")
+            )
+            
+            # Build the mapping dictionary
+            for row in result:
+                sales_map[row.sale_id] = row.sales_key
     
     print(f"Loaded {len(staging_records)} sales records to staging.")
     return sales_map
@@ -846,7 +878,7 @@ def load_staging_returns_fact(staging_engine, ods_engine, date_map, product_map,
     # Get reason map if not provided
     if not reason_map:
         reason_map = {}
-        with engine.begin() as conn:
+        with staging_engine.begin() as conn:
             result = conn.execute(text("SELECT reason_code, reason_key FROM stg_return_reason"))
             for row in result:
                 reason_map[row.reason_code] = row.reason_key
@@ -936,29 +968,41 @@ def load_staging_returns_fact(staging_engine, ods_engine, date_map, product_map,
         }
         staging_records.append(staging_record)
     
-    # Load data into staging
-    with engine.begin() as conn:
-        # Insert new data
-        for record in staging_records:
-            result = conn.execute(
+    # Load data into staging using batch processing
+    with staging_engine.begin() as conn:
+        if staging_records:
+            # Batch insert all records at once
+            conn.execute(
                 text("""
                     INSERT INTO stg_returns (
                         return_id, return_date_key, product_key, store_key, reason_key,
                         reason_code, return_amount, quantity_returned, avg_return_price,
                         original_sale_id, original_sale_date_key, days_since_sale,
                         is_within_30_days, return_condition, etl_batch_id, etl_timestamp
-                    ) VALUES (
+                    ) 
+                    VALUES (
                         :return_id, :return_date_key, :product_key, :store_key, :reason_key,
                         :reason_code, :return_amount, :quantity_returned, :avg_return_price,
                         :original_sale_id, :original_sale_date_key, :days_since_sale,
                         :is_within_30_days, :return_condition, :etl_batch_id, :etl_timestamp
                     )
-                    RETURNING return_key, return_id
                 """),
-                record
+                staging_records
             )
-            row = result.fetchone()
-            returns_map[row.return_id] = row.return_key
+            
+            # Get all return_ids to fetch
+            return_ids = [record['return_id'] for record in staging_records]
+            
+            # Fetch all keys in a single query
+            # Use parameterized query with IN clause for better security and performance
+            placeholders = ', '.join([f"'{return_id}'" for return_id in return_ids])
+            result = conn.execute(
+                text(f"SELECT return_key, return_id FROM stg_returns WHERE return_id IN ({placeholders})")
+            )
+            
+            # Build the mapping dictionary
+            for row in result:
+                returns_map[row.return_id] = row.return_key
     
     print(f"Loaded {len(staging_records)} returns records to staging.")
     return returns_map
@@ -1075,11 +1119,11 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
         }
         staging_records.append(staging_record)
     
-    # Load data into staging
-    with engine.begin() as conn:
-        # Insert new data
-        for record in staging_records:
-            result = conn.execute(
+    # Load data into staging using batch processing
+    with staging_engine.begin() as conn:
+        if staging_records:
+            # Batch insert all records at once
+            conn.execute(
                 text("""
                     INSERT INTO stg_inventory (
                         inventory_id, date_key, product_key, store_key,
@@ -1092,22 +1136,33 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
                         :last_restock_date_key, :days_of_supply, :stock_status, :is_in_stock,
                         :etl_batch_id, :etl_timestamp
                     )
-                    RETURNING inventory_key, inventory_id
                 """),
-                record
+                staging_records
             )
-            row = result.fetchone()
-            inventory_map[row.inventory_id] = row.inventory_key
+            
+            # Get all inventory_ids to fetch
+            inventory_ids = [record['inventory_id'] for record in staging_records]
+            
+            # Fetch all keys in a single query
+            # Use parameterized query with IN clause for better security and performance
+            placeholders = ', '.join([f"'{inventory_id}'" for inventory_id in inventory_ids])
+            result = conn.execute(
+                text(f"SELECT inventory_key, inventory_id FROM stg_inventory WHERE inventory_id IN ({placeholders})")
+            )
+            
+            # Build the mapping dictionary
+            for row in result:
+                inventory_map[row.inventory_id] = row.inventory_key
     
     print(f"Loaded {len(staging_records)} inventory records to staging.")
     return inventory_map
 
-def verify_staging_data(engine):
+def verify_staging_data(staging_engine):
     """Verify the data loaded into staging tables."""
     print("\nVerifying staging data...")
     
     # Check record counts in each table
-    with engine.begin() as conn:
+    with staging_engine.begin() as conn:
         date_count = conn.execute(text("SELECT COUNT(*) FROM stg_date")).scalar()
         print(f"Staging date dimension has {date_count} records.")
         
@@ -1137,7 +1192,7 @@ def verify_staging_data(engine):
         print(f"Staging returns fact has {returns_count} records.")
     
     # Check for data quality issues
-    with engine.begin() as conn:
+    with staging_engine.begin() as conn:
         # Check for high margin products
         high_margin_products = conn.execute(text("""
             SELECT COUNT(*) FROM stg_product
@@ -1190,10 +1245,9 @@ def load_staging_layer():
     date_map = load_staging_date_dimension(staging_engine, ods_engine)
     customer_map = load_staging_customer_dimension(staging_engine, ods_engine)
     product_map = load_staging_product_dimension(staging_engine, ods_engine)
-    store_map = load_staging_store_dimension(staging_engine, ods_engine)
     supplier_map = load_staging_supplier_dimension(staging_engine, ods_engine)
     reason_map = load_staging_return_reason_dimension(staging_engine, ods_engine)
-    
+    store_map = load_staging_store_dimension(staging_engine, ods_engine)
     # Load fact tables using dimension mappings
     print("\nLoading fact tables...")
     sales_map = load_staging_sales_fact(staging_engine, ods_engine, date_map, customer_map, product_map, store_map)

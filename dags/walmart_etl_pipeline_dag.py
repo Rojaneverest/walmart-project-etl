@@ -196,7 +196,7 @@ try:
     create_staging_tables = etl_staging_tables.main
     load_staging_data = etl_staging_loader.load_staging_layer  # This module uses load_staging_layer
     create_target_tables = etl_target_tables.main
-    load_target_data = etl_target_loader.load_target_layer  # This module uses load_target_layer
+    load_target_data = etl_target_loader.main  # This module uses main function
     
     print("Successfully imported all ETL modules directly!")
     
@@ -229,26 +229,6 @@ except ImportError as e:
                     spec.loader.exec_module(module)
                     return module
         
-        # If module not found, return a dummy module with appropriate functions
-        print(f"Could not find {module_name}.py in any of the expected locations")
-        class DummyModule:
-            @staticmethod
-            def main(*args, **kwargs):
-                print(f"Error: {module_name} module not found")
-                return False
-                
-            @staticmethod
-            def load_staging_layer(*args, **kwargs):
-                print(f"Error: {module_name} module not found")
-                return False
-                
-            @staticmethod
-            def load_target_layer(*args, **kwargs):
-                print(f"Error: {module_name} module not found")
-                return False
-        
-        return DummyModule()
-    
     # Load all modules
     etl_ods_tables_module = load_module_from_file('etl_ods_tables')
     etl_ods_loader_module = load_module_from_file('etl_ods_loader')
@@ -263,7 +243,7 @@ except ImportError as e:
     create_staging_tables = etl_staging_tables_module.main
     load_staging_data = etl_staging_loader_module.load_staging_layer  # This module uses load_staging_layer
     create_target_tables = etl_target_tables_module.main
-    load_target_data = etl_target_loader_module.load_target_layer  # This module uses load_target_layer
+    load_target_data = etl_target_loader_module.main  # This module uses main function
 
 # Default arguments for the DAG
 default_args = {

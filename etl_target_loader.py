@@ -4,51 +4,34 @@
 """
 ETL Target Loader Module
 
-This module handles the ETL process from staging to target layer, focusing on:
-1. SCD Type 2 implementation for product and store dimensions
-2. Loading fact tables with appropriate surrogate keys
-3. Maintaining data integrity and historical tracking
+This module handles the ETL process from the Staging layer to the Target layer (Data Warehouse),
+focusing on:
+1. Loading dimension tables, including SCD Type 2 for Product and Store.
+2. Loading fact tables, resolving surrogate keys from target dimensions.
 """
 
 import os
 import sys
-import pandas as pd
-import numpy as np
 from datetime import datetime, timedelta, date
-from sqlalchemy import create_engine, text, MetaData, inspect
-from sqlalchemy.sql import text
+from sqlalchemy import create_engine, text, func
+# Removed snowflake-specific import that was causing errors
+# from sqlalchemy.dialects.snowflake import insert as snowflake_insert
 
-# Import the target tables module with fallback mechanisms
+# Import the target tables module (assuming it's in the same directory or Python path)
 try:
-    # Try direct import first
-    from etl_target_tables import create_target_tables, metadata
-except ImportError:
-    try:
-        # Try relative import
-        import sys
-        import os
-        # Add parent directory to path
-        parent_dir = os.path.dirname(os.path.abspath(__file__))
-        if parent_dir not in sys.path:
-            sys.path.insert(0, parent_dir)
-        # Try import again
-        from etl_target_tables import create_target_tables, metadata
-    except ImportError as e:
-        print(f"Error importing target tables module: {e}")
-        # Define fallback metadata
-        metadata = MetaData()
-        # Define fallback function
-        def create_target_tables():
-            print("Error: Could not import create_target_tables function")
-            return False
+    from etl_target_tables import metadata as target_metadata
+    # We don't strictly need create_target_tables here if they are already created,
+    # but metadata is useful if we want to refer to table objects.
+    # For simplicity, we'll use table names directly in SQL strings.
+except ImportError as e:
+    print(f"Error importing target tables module (etl_target_tables.py): {e}")
+    print("Please ensure etl_target_tables.py is in the same directory or your PYTHONPATH.")
+    sys.exit(1)
 
 # Generate a unique ETL batch ID for this run
-ETL_BATCH_ID = f"BATCH_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+ETL_BATCH_ID = f"TARGET_LOAD_{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
-# Define the far future date for SCD Type 2 expiry
-FAR_FUTURE_DATE = date(9999, 12, 31)
-
-# Snowflake connection parameters
+# Snowflake connection parameters (ensure these are set as environment variables or adjust defaults)
 SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'ROJAN')
 SNOWFLAKE_PASSWORD = os.environ.get('SNOWFLAKE_PASSWORD', 'e!Mv5ashy5aVdNb')
 SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'GEBNTIK-YU16043')
@@ -57,1230 +40,544 @@ SNOWFLAKE_WAREHOUSE = os.environ.get('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
 SNOWFLAKE_ROLE = os.environ.get('SNOWFLAKE_ROLE', 'ACCOUNTADMIN')
 
 # Database-specific parameters
-SNOWFLAKE_DB_ODS = os.environ.get('SNOWFLAKE_DB_ODS', 'ODS_DB')
 SNOWFLAKE_DB_STAGING = os.environ.get('SNOWFLAKE_DB_STAGING', 'STAGING_DB')
 SNOWFLAKE_DB_TARGET = os.environ.get('SNOWFLAKE_DB_TARGET', 'TARGET_DB')
 
-# Function to get Snowflake Staging engine
+# SCD Type 2 Date Constants
+TODAY_DATE = datetime.now().date()
+EXPIRY_DATE_FOR_OLD_RECORDS = TODAY_DATE - timedelta(days=1)
+FAR_FUTURE_EXPIRY_DATE = date(9999, 12, 31)
+
+# --- Database Engine Functions ---
+def get_snowflake_engine(db_name):
+    """Create and return a SQLAlchemy engine for the specified Snowflake database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{db_name}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
+    return create_engine(connection_string)
+
 def get_snowflake_staging_engine():
-    """Create and return a SQLAlchemy engine for Snowflake Staging database."""
-    connection_string = (
-        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
-        f"{SNOWFLAKE_DB_STAGING}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
-    )
-    return create_engine(connection_string)
+    return get_snowflake_engine(SNOWFLAKE_DB_STAGING)
 
-# Function to get Snowflake Target engine
 def get_snowflake_target_engine():
-    """Create and return a SQLAlchemy engine for Snowflake Target database."""
-    connection_string = (
-        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
-        f"{SNOWFLAKE_DB_TARGET}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    return get_snowflake_engine(SNOWFLAKE_DB_TARGET)
+
+# --- Helper Function to Execute SQL ---
+def execute_sql(engine, sql_statement, params=None):
+    """Executes a given SQL statement."""
+    with engine.connect() as connection:
+        transaction = connection.begin()
+        try:
+            connection.execute(text(sql_statement), params or {})
+            transaction.commit()
+            print(f"Successfully executed SQL.")
+        except Exception as e:
+            transaction.rollback()
+            print(f"Error executing SQL: {sql_statement}\nParams: {params}\nError: {e}")
+            raise
+
+# --- Dimension Loading Functions ---
+
+def load_dim_date(target_engine):
+    """Loads data into tgt_dim_date from stg_date."""
+    print("Loading data into tgt_dim_date...")
+    # Assuming tgt_dim_date.date_key is the YYYYMMDD integer from stg_date.date_id
+    # and tgt_dim_date.date_id is also populated with the same YYYYMMDD value.
+    # The target table definition has date_key as PK (not auto-increment).
+    sql = f"""
+    MERGE INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date AS tgt
+    USING (
+        SELECT
+            date_id,          -- This is the YYYYMMDD value
+            full_date,
+            day_of_week,
+            day_of_month,
+            month,
+            month_name,
+            quarter,
+            year,
+            is_weekend,
+            is_holiday,
+            fiscal_year,
+            fiscal_quarter,
+            etl_timestamp AS insertion_date, -- Use staging timestamp or NOW()
+            etl_timestamp AS modification_date
+        FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date
+    ) AS src
+    ON tgt.date_key = src.date_id -- Match on the YYYYMMDD value
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.full_date = src.full_date,
+            tgt.day_of_week = src.day_of_week,
+            tgt.day_of_month = src.day_of_month,
+            tgt.month = src.month,
+            tgt.month_name = src.month_name,
+            tgt.quarter = src.quarter,
+            tgt.year = src.year,
+            tgt.is_weekend = src.is_weekend,
+            tgt.is_holiday = src.is_holiday,
+            tgt.fiscal_year = src.fiscal_year,
+            tgt.fiscal_quarter = src.fiscal_quarter,
+            tgt.modification_date = CURRENT_TIMESTAMP()
+    WHEN NOT MATCHED THEN
+        INSERT (
+            date_key, date_id, full_date, day_of_week, day_of_month,
+            month, month_name, quarter, year, is_weekend, is_holiday,
+            fiscal_year, fiscal_quarter, insertion_date, modification_date
+        ) VALUES (
+            src.date_id, src.date_id, src.full_date, src.day_of_week, src.day_of_month,
+            src.month, src.month_name, src.quarter, src.year, src.is_weekend, src.is_holiday,
+            src.fiscal_year, src.fiscal_quarter, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+        );
+    """
+    execute_sql(target_engine, sql)
+    print("tgt_dim_date loaded successfully.")
+
+def load_dim_customer(target_engine):
+    """Loads data into tgt_dim_customer from stg_customer (SCD Type 1 like)."""
+    print("Loading data into tgt_dim_customer...")
+    # tgt_dim_customer.customer_key is auto-increment.
+    # We match on customer_id (natural key).
+    sql = f"""
+    MERGE INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_customer tgt
+    USING (
+        SELECT
+            customer_id, customer_name, customer_age, age_group,
+            customer_segment, city, state, zip_code, region
+        FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_customer
+    ) src
+    ON tgt.customer_id = src.customer_id
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.customer_name = src.customer_name,
+            tgt.customer_age = src.customer_age,
+            tgt.age_group = src.age_group,
+            tgt.customer_segment = src.customer_segment,
+            tgt.city = src.city,
+            tgt.state = src.state,
+            tgt.zip_code = src.zip_code,
+            tgt.region = src.region,
+            tgt.modification_date = CURRENT_TIMESTAMP()
+    WHEN NOT MATCHED THEN
+        INSERT (
+            customer_id, customer_name, customer_age, age_group,
+            customer_segment, city, state, zip_code, region,
+            insertion_date, modification_date
+        ) VALUES (
+            src.customer_id, src.customer_name, src.customer_age, src.age_group,
+            src.customer_segment, src.city, src.state, src.zip_code, src.region,
+            CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+        );
+    """
+    execute_sql(target_engine, sql)
+    print("tgt_dim_customer loaded successfully.")
+
+def load_dim_supplier(target_engine):
+    """Loads data into tgt_dim_supplier from stg_supplier (SCD Type 1 like)."""
+    print("Loading data into tgt_dim_supplier...")
+    sql = f"""
+    MERGE INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_supplier tgt
+    USING (
+        SELECT
+            supplier_id, supplier_name, supplier_type,
+            contact_name, contact_phone, contact_email
+        FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_supplier
+    ) src
+    ON tgt.supplier_id = src.supplier_id
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.supplier_name = src.supplier_name,
+            tgt.supplier_type = src.supplier_type,
+            tgt.contact_name = src.contact_name,
+            tgt.contact_phone = src.contact_phone,
+            tgt.contact_email = src.contact_email,
+            tgt.modification_date = CURRENT_TIMESTAMP()
+    WHEN NOT MATCHED THEN
+        INSERT (
+            supplier_id, supplier_name, supplier_type,
+            contact_name, contact_phone, contact_email,
+            insertion_date, modification_date
+        ) VALUES (
+            src.supplier_id, src.supplier_name, src.supplier_type,
+            src.contact_name, src.contact_phone, src.contact_email,
+            CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+        );
+    """
+    execute_sql(target_engine, sql)
+    print("tgt_dim_supplier loaded successfully.")
+
+def load_dim_return_reason(target_engine):
+    """Loads data into tgt_dim_return_reason from stg_return_reason (SCD Type 1 like)."""
+    print("Loading data into tgt_dim_return_reason...")
+    sql = f"""
+    MERGE INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_return_reason tgt
+    USING (
+        SELECT
+            reason_code, reason_description, reason_category,
+            impact_level, is_controllable
+        FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_return_reason
+    ) src
+    ON tgt.reason_code = src.reason_code
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.reason_description = src.reason_description,
+            tgt.reason_category = src.reason_category,
+            tgt.impact_level = src.impact_level,
+            tgt.is_controllable = src.is_controllable,
+            tgt.modification_date = CURRENT_TIMESTAMP()
+    WHEN NOT MATCHED THEN
+        INSERT (
+            reason_code, reason_description, reason_category,
+            impact_level, is_controllable,
+            insertion_date, modification_date
+        ) VALUES (
+            src.reason_code, src.reason_description, src.reason_category,
+            src.impact_level, src.is_controllable,
+            CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+        );
+    """
+    execute_sql(target_engine, sql)
+    print("tgt_dim_return_reason loaded successfully.")
+
+def load_dim_product_scd2(target_engine):
+    """Loads data into tgt_dim_product using SCD Type 2 logic."""
+    print("Loading data into tgt_dim_product (SCD Type 2)...")
+
+    # Attributes to check for changes in Product dimension
+    # From etl_staging_loader product transformations
+    attributes_to_check = [
+        ("s.product_name", "t.product_name"),
+        ("s.product_category", "t.product_category"),
+        ("s.product_sub_category", "t.product_sub_category"),
+        ("s.product_container", "t.product_container"),
+        ("s.unit_price", "t.unit_price"),
+        ("s.price_tier", "t.price_tier"), # Derived in staging
+        ("s.product_base_margin", "t.product_base_margin"),
+        ("s.margin_percentage", "t.margin_percentage"), # Derived in staging
+        ("s.is_high_margin", "t.is_high_margin"), # Derived in staging
+        ("s.supplier_id", "t.supplier_id"),
+        ("s.supplier_name", "t.supplier_name") # From join in staging
+    ]
+    change_conditions = " OR ".join([f"NVL(TRIM({s_col}),'') != NVL(TRIM({t_col}),'')" for s_col, t_col in attributes_to_check])
+    # For numeric/boolean, NVL might not be needed or different comparison needed
+    # Simplified for now, assuming string-like comparisons after casting or direct numeric/boolean compare
+    # Snowflake handles type conversion in comparisons generally well.
+    # A more robust comparison would be: (s.col != t.col OR (s.col IS NULL AND t.col IS NOT NULL) OR (s.col IS NOT NULL AND t.col IS NULL))
+
+    # Step 1: Stage changes (New products and products with changed attributes)
+    # product_key in tgt_dim_product is auto-increment.
+    # version is managed manually for SCD2.
+    temp_changes_sql = f"""
+    CREATE OR REPLACE TEMPORARY TABLE temp_product_changes AS
+    SELECT
+        s.product_id, s.product_name, s.product_category, s.product_sub_category,
+        s.product_container, s.unit_price, s.price_tier, s.product_base_margin,
+        s.margin_percentage, s.is_high_margin, s.supplier_id, s.supplier_name,
+        t.product_key AS current_target_key,
+        t.version AS current_version,
+        CASE WHEN t.product_key IS NULL THEN 'NEW' ELSE 'CHANGED' END AS change_type
+    FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_product s
+    LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product t
+      ON s.product_id = t.product_id AND t.is_current = TRUE
+    WHERE t.product_key IS NULL OR ({change_conditions});
+    """
+    execute_sql(target_engine, temp_changes_sql)
+
+    # Step 2: Expire old records for 'CHANGED' products
+    expire_sql = f"""
+    UPDATE {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product
+    SET is_current = FALSE,
+        expiry_date = '{EXPIRY_DATE_FOR_OLD_RECORDS.isoformat()}',
+        modification_date = CURRENT_TIMESTAMP()
+    WHERE product_key IN (SELECT current_target_key FROM temp_product_changes WHERE change_type = 'CHANGED');
+    """
+    execute_sql(target_engine, expire_sql)
+
+    # Step 3: Insert new records and new versions of changed records
+    insert_sql = f"""
+    INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product (
+        product_id, product_name, product_category, product_sub_category,
+        product_container, unit_price, price_tier, product_base_margin,
+        margin_percentage, is_high_margin, supplier_id, supplier_name,
+        effective_date, expiry_date, is_current, version,
+        insertion_date, modification_date
     )
-    return create_engine(connection_string)
+    SELECT
+        src.product_id, src.product_name, src.product_category, src.product_sub_category,
+        src.product_container, src.unit_price, src.price_tier, src.product_base_margin,
+        src.margin_percentage, src.is_high_margin, src.supplier_id, src.supplier_name,
+        '{TODAY_DATE.isoformat()}' AS effective_date,
+        '{FAR_FUTURE_EXPIRY_DATE.isoformat()}' AS expiry_date,
+        TRUE AS is_current,
+        COALESCE(src.current_version, 0) + 1 AS version,
+        CURRENT_TIMESTAMP() AS insertion_date,
+        CURRENT_TIMESTAMP() AS modification_date
+    FROM temp_product_changes src;
+    """
+    execute_sql(target_engine, insert_sql)
+    print("tgt_dim_product (SCD Type 2) loaded successfully.")
 
-# For backward compatibility
-def get_engine():
-    """Get SQLAlchemy engine for Snowflake Target database (for backward compatibility)."""
-    return get_snowflake_target_engine()
+def load_dim_store_scd2(target_engine):
+    """Loads data into tgt_dim_store using SCD Type 2 logic."""
+    print("Loading data into tgt_dim_store (SCD Type 2)...")
 
-def create_tables(engine):
-    """Create target tables if they don't exist."""
-    # Check if target tables already exist
-    inspector = inspect(engine)
-    existing_tables = inspector.get_table_names()
-    
-    if 'tgt_dim_date' not in existing_tables:
-        create_target_tables(metadata)
-        metadata.create_all(engine)
-        print("Target tables created successfully!")
-    else:
-        print("Target tables already exist, skipping creation.")
+    attributes_to_check = [
+        ("s.store_name", "t.store_name"),
+        ("s.location", "t.location"),
+        ("s.city", "t.city"),
+        ("s.state", "t.state"),
+        ("s.zip_code", "t.zip_code"),
+        ("s.region", "t.region"),
+        ("s.market", "t.market") # Derived in staging
+    ]
+    change_conditions = " OR ".join([f"NVL(TRIM({s_col}),'') != NVL(TRIM({t_col}),'')" for s_col, t_col in attributes_to_check])
 
-def clean_database(engine):
-    """Clean up target tables before loading."""
-    with engine.begin() as conn:
-        conn.execute(text("DROP TABLE IF EXISTS tgt_fact_sales CASCADE"))
-        conn.execute(text("DROP TABLE IF EXISTS tgt_fact_inventory CASCADE"))
-        conn.execute(text("DROP TABLE IF EXISTS tgt_fact_returns CASCADE"))
-        conn.execute(text("DROP TABLE IF EXISTS tgt_dim_product CASCADE"))
-        conn.execute(text("DROP TABLE IF EXISTS tgt_dim_customer CASCADE"))
-        conn.execute(text("DROP TABLE IF EXISTS tgt_dim_store CASCADE"))
-        conn.execute(text("DROP TABLE IF EXISTS tgt_dim_supplier CASCADE"))
-        conn.execute(text("DROP TABLE IF EXISTS tgt_dim_return_reason CASCADE"))
-        conn.execute(text("DROP TABLE IF EXISTS tgt_dim_date CASCADE"))
-    print("Target tables cleaned successfully!")
+    temp_changes_sql = f"""
+    CREATE OR REPLACE TEMPORARY TABLE temp_store_changes AS
+    SELECT
+        s.store_id, s.store_name, s.location, s.city, s.state,
+        s.zip_code, s.region, s.market,
+        t.store_key AS current_target_key,
+        t.version AS current_version,
+        CASE WHEN t.store_key IS NULL THEN 'NEW' ELSE 'CHANGED' END AS change_type
+    FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_store s
+    LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store t
+      ON s.store_id = t.store_id AND t.is_current = TRUE
+    WHERE t.store_key IS NULL OR ({change_conditions});
+    """
+    execute_sql(target_engine, temp_changes_sql)
 
-def generate_date_id(date_obj):
-    """Generate a date ID from a date object in format YYYYMMDD."""
-    if date_obj is None:
-        return None
-    
-    if isinstance(date_obj, datetime):
-        return int(date_obj.strftime('%Y%m%d'))
-    elif isinstance(date_obj, str):
-        try:
-            date_obj = datetime.strptime(date_obj, '%Y-%m-%d')
-            return int(date_obj.strftime('%Y%m%d'))
-        except ValueError:
-            return None
-    else:
-        # Handle date objects directly
-        try:
-            return int(date_obj.strftime('%Y%m%d'))
-        except (AttributeError, ValueError):
-            return None
+    expire_sql = f"""
+    UPDATE {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store
+    SET is_current = FALSE,
+        expiry_date = '{EXPIRY_DATE_FOR_OLD_RECORDS.isoformat()}',
+        modification_date = CURRENT_TIMESTAMP()
+    WHERE store_key IN (SELECT current_target_key FROM temp_store_changes WHERE change_type = 'CHANGED');
+    """
+    execute_sql(target_engine, expire_sql)
 
-# Dimension loading functions
-def load_target_date_dimension(target_engine, staging_engine):
-    """Load date dimension from staging to target."""
-    print("Loading date dimension to target...")
-    
-    # Extract data from staging
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                date_key as staging_date_key, date_id, full_date, day_of_week, day_of_month, 
-                month, month_name, quarter, year, is_weekend, is_holiday,
-                fiscal_year, fiscal_quarter
-            FROM stg_date
-            ORDER BY full_date
-        """))
-        date_records = [dict(row._mapping) for row in result]
-    
-    if not date_records:
-        print("No date records found in staging.")
-        return {}
-    
-    # Check for existing records in target
-    existing_date_ids = set()
-    with engine.begin() as conn:
-        result = conn.execute(text("SELECT date_id FROM tgt_dim_date"))
-        for row in result:
-            existing_date_ids.add(row.date_id)
-    
-    # Transform and load data
-    new_records = []
-    date_map = {}
-    
-    for record in date_records:
-        date_id = record['date_id']
-        
-        # Skip if already exists
-        if date_id in existing_date_ids:
-            continue
-        
-        # Create target record
-        target_record = {
-            'date_id': date_id,
-            'full_date': record['full_date'],
-            'day_of_week': record['day_of_week'],
-            'day_of_month': record['day_of_month'],
-            'month': record['month'],
-            'month_name': record['month_name'],
-            'quarter': record['quarter'],
-            'year': record['year'],
-            'is_weekend': record['is_weekend'],
-            'is_holiday': record['is_holiday'],
-            'fiscal_year': record['fiscal_year'],
-            'fiscal_quarter': record['fiscal_quarter'],
-            'insertion_date': datetime.now(),
-            'modification_date': datetime.now()
-        }
-        new_records.append(target_record)
-    
-    # Insert new records
-    with engine.begin() as conn:
-        for record in new_records:
-            result = conn.execute(
-                text("""
-                    INSERT INTO tgt_dim_date (
-                        date_id, full_date, day_of_week, day_of_month,
-                        month, month_name, quarter, year, is_weekend, is_holiday,
-                        fiscal_year, fiscal_quarter, insertion_date, modification_date
-                    ) VALUES (
-                        :date_id, :full_date, :day_of_week, :day_of_month,
-                        :month, :month_name, :quarter, :year, :is_weekend, :is_holiday,
-                        :fiscal_year, :fiscal_quarter, :insertion_date, :modification_date
-                    )
-                    RETURNING date_key, date_id
-                """), 
-                record
-            )
-            row = result.fetchone()
-            date_map[row.date_id] = row.date_key
-    
-    # Get all date mappings
-    with engine.begin() as conn:
-        result = conn.execute(text("SELECT date_key, date_id FROM tgt_dim_date"))
-        for row in result:
-            date_map[row.date_id] = row.date_key
-    
-    print(f"Loaded {len(new_records)} new records into target date dimension.")
-    return date_map
+    insert_sql = f"""
+    INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store (
+        store_id, store_name, location, city, state, zip_code, region, market,
+        effective_date, expiry_date, is_current, version,
+        insertion_date, modification_date
+    )
+    SELECT
+        src.store_id, src.store_name, src.location, src.city, src.state, src.zip_code, src.region, src.market,
+        '{TODAY_DATE.isoformat()}' AS effective_date,
+        '{FAR_FUTURE_EXPIRY_DATE.isoformat()}' AS expiry_date,
+        TRUE AS is_current,
+        COALESCE(src.current_version, 0) + 1 AS version,
+        CURRENT_TIMESTAMP() AS insertion_date,
+        CURRENT_TIMESTAMP() AS modification_date
+    FROM temp_store_changes src;
+    """
+    execute_sql(target_engine, insert_sql)
+    print("tgt_dim_store (SCD Type 2) loaded successfully.")
 
-def load_target_product_dimension(target_engine, staging_engine):
-    """Load product dimension from staging to target with SCD Type 2."""
-    print("Loading product dimension to target with SCD Type 2...")
-    
-    # Extract data from staging
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                product_key as staging_product_key, product_id, product_name, 
-                product_category, product_sub_category, product_container,
-                unit_price, price_tier, product_base_margin, margin_percentage,
-                is_high_margin, supplier_id, supplier_name
-            FROM stg_product
-        """))
-        staging_records = [dict(row._mapping) for row in result]
-    
-    if not staging_records:
-        print("No product records found in staging.")
-        return {}
-    
-    # Get existing products from target
-    existing_products = {}
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                product_key, product_id, product_name, product_category, 
-                product_sub_category, product_container, unit_price, price_tier,
-                product_base_margin, margin_percentage, is_high_margin,
-                supplier_id, supplier_name, version, is_current
-            FROM tgt_dim_product
-            WHERE is_current = true
-        """))
-        for row in result:
-            existing_products[row.product_id] = dict(row._mapping)
-    
-    # Process each staging record
-    new_records = []
-    updated_records = []
-    product_map = {}
-    current_date = datetime.now().date()
-    
-    for record in staging_records:
-        product_id = record['product_id']
-        
-        if product_id in existing_products:
-            # Check if product has changed
-            existing = existing_products[product_id]
-            has_changed = False
-            
-            # Compare attributes that might change
-            attributes_to_compare = [
-                'product_name', 'product_category', 'product_sub_category', 
-                'product_container', 'unit_price', 'price_tier', 
-                'product_base_margin', 'margin_percentage', 'is_high_margin',
-                'supplier_id', 'supplier_name'
-            ]
-            
-            for attr in attributes_to_compare:
-                if record[attr] != existing[attr]:
-                    has_changed = True
-                    break
-            
-            if has_changed:
-                # SCD Type 2: Expire the current record
-                with engine.begin() as conn:
-                    conn.execute(
-                        text("""
-                            UPDATE tgt_dim_product
-                            SET is_current = false,
-                                expiry_date = :expiry_date,
-                                modification_date = :modification_date
-                            WHERE product_key = :product_key
-                        """),
-                        {
-                            'expiry_date': current_date - timedelta(days=1),
-                            'modification_date': datetime.now(),
-                            'product_key': existing['product_key']
-                        }
-                    )
-                
-                # Create new record with updated values
-                new_record = {
-                    'product_id': product_id,
-                    'product_name': record['product_name'],
-                    'product_category': record['product_category'],
-                    'product_sub_category': record['product_sub_category'],
-                    'product_container': record['product_container'],
-                    'unit_price': record['unit_price'],
-                    'price_tier': record['price_tier'],
-                    'product_base_margin': record['product_base_margin'],
-                    'margin_percentage': record['margin_percentage'],
-                    'is_high_margin': record['is_high_margin'],
-                    'supplier_id': record['supplier_id'],
-                    'supplier_name': record['supplier_name'],
-                    'effective_date': current_date,
-                    'expiry_date': FAR_FUTURE_DATE,
-                    'is_current': True,
-                    'version': existing['version'] + 1,
-                    'insertion_date': datetime.now(),
-                    'modification_date': datetime.now()
-                }
-                new_records.append(new_record)
-                updated_records.append(product_id)
-            else:
-                # No changes, use existing product key
-                product_map[product_id] = existing['product_key']
-        else:
-            # New product, create new record
-            new_record = {
-                'product_id': product_id,
-                'product_name': record['product_name'],
-                'product_category': record['product_category'],
-                'product_sub_category': record['product_sub_category'],
-                'product_container': record['product_container'],
-                'unit_price': record['unit_price'],
-                'price_tier': record['price_tier'],
-                'product_base_margin': record['product_base_margin'],
-                'margin_percentage': record['margin_percentage'],
-                'is_high_margin': record['is_high_margin'],
-                'supplier_id': record['supplier_id'],
-                'supplier_name': record['supplier_name'],
-                'effective_date': current_date,
-                'expiry_date': FAR_FUTURE_DATE,
-                'is_current': True,
-                'version': 1,
-                'insertion_date': datetime.now(),
-                'modification_date': datetime.now()
-            }
-            new_records.append(new_record)
-    
-    # Insert new records
-    with engine.begin() as conn:
-        for record in new_records:
-            result = conn.execute(
-                text("""
-                    INSERT INTO tgt_dim_product (
-                        product_id, product_name, product_category, product_sub_category,
-                        product_container, unit_price, price_tier, product_base_margin,
-                        margin_percentage, is_high_margin, supplier_id, supplier_name,
-                        effective_date, expiry_date, is_current, version,
-                        insertion_date, modification_date
-                    ) VALUES (
-                        :product_id, :product_name, :product_category, :product_sub_category,
-                        :product_container, :unit_price, :price_tier, :product_base_margin,
-                        :margin_percentage, :is_high_margin, :supplier_id, :supplier_name,
-                        :effective_date, :expiry_date, :is_current, :version,
-                        :insertion_date, :modification_date
-                    )
-                    RETURNING product_key, product_id
-                """),
-                record
-            )
-            row = result.fetchone()
-            product_map[row.product_id] = row.product_key
-    
-    # Get all current product mappings
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT product_key, product_id 
-            FROM tgt_dim_product 
-            WHERE is_current = true
-        """))
-        for row in result:
-            product_map[row.product_id] = row.product_key
-    
-    print(f"Loaded {len(new_records) - len(updated_records)} new products and updated {len(updated_records)} existing products.")
-    return product_map
 
-# Main function to load target layer
-def load_target_customer_dimension(target_engine, staging_engine):
-    """Load customer dimension from staging to target."""
-    print("Loading customer dimension to target...")
-    
-    # Extract data from staging
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                customer_key as staging_customer_key, customer_id, customer_name, 
-                customer_age, age_group, customer_segment, city, state, zip_code, region
-            FROM stg_customer
-        """))
-        staging_records = [dict(row._mapping) for row in result]
-    
-    if not staging_records:
-        print("No customer records found in staging.")
-        return {}
-    
-    # Get existing customers from target
-    existing_customers = {}
-    with engine.begin() as conn:
-        result = conn.execute(text("SELECT customer_key, customer_id FROM tgt_dim_customer"))
-        for row in result:
-            existing_customers[row.customer_id] = row.customer_key
-    
-    # Process each staging record
-    new_records = []
-    customer_map = {}
-    
-    for record in staging_records:
-        customer_id = record['customer_id']
-        
-        if customer_id in existing_customers:
-            # Customer already exists, use existing key
-            customer_map[customer_id] = existing_customers[customer_id]
-            
-            # Update customer if needed
-            with engine.begin() as conn:
-                conn.execute(
-                    text("""
-                        UPDATE tgt_dim_customer
-                        SET customer_name = :customer_name,
-                            customer_age = :customer_age,
-                            age_group = :age_group,
-                            customer_segment = :customer_segment,
-                            city = :city,
-                            state = :state,
-                            zip_code = :zip_code,
-                            region = :region,
-                            modification_date = :modification_date
-                        WHERE customer_id = :customer_id
-                    """),
-                    {
-                        'customer_id': customer_id,
-                        'customer_name': record['customer_name'],
-                        'customer_age': record['customer_age'],
-                        'age_group': record['age_group'],
-                        'customer_segment': record['customer_segment'],
-                        'city': record['city'],
-                        'state': record['state'],
-                        'zip_code': record['zip_code'],
-                        'region': record['region'],
-                        'modification_date': datetime.now()
-                    }
-                )
-        else:
-            # New customer, create new record
-            new_record = {
-                'customer_id': customer_id,
-                'customer_name': record['customer_name'],
-                'customer_age': record['customer_age'],
-                'age_group': record['age_group'],
-                'customer_segment': record['customer_segment'],
-                'city': record['city'],
-                'state': record['state'],
-                'zip_code': record['zip_code'],
-                'region': record['region'],
-                'insertion_date': datetime.now(),
-                'modification_date': datetime.now()
-            }
-            new_records.append(new_record)
-    
-    # Insert new records
-    with engine.begin() as conn:
-        for record in new_records:
-            result = conn.execute(
-                text("""
-                    INSERT INTO tgt_dim_customer (
-                        customer_id, customer_name, customer_age, age_group,
-                        customer_segment, city, state, zip_code, region,
-                        insertion_date, modification_date
-                    ) VALUES (
-                        :customer_id, :customer_name, :customer_age, :age_group,
-                        :customer_segment, :city, :state, :zip_code, :region,
-                        :insertion_date, :modification_date
-                    )
-                    RETURNING customer_key, customer_id
-                """),
-                record
-            )
-            row = result.fetchone()
-            customer_map[row.customer_id] = row.customer_key
-    
-    print(f"Loaded {len(new_records)} new customer records into target.")
-    return customer_map
+# --- Fact Table Loading Functions ---
 
-def load_target_supplier_dimension(target_engine, staging_engine):
-    """Load supplier dimension from staging to target."""
-    print("Loading supplier dimension to target...")
-    
-    # Extract data from staging
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                supplier_key as staging_supplier_key, supplier_id, supplier_name, 
-                supplier_type, contact_name, contact_phone, contact_email
-            FROM stg_supplier
-        """))
-        staging_records = [dict(row._mapping) for row in result]
-    
-    if not staging_records:
-        print("No supplier records found in staging.")
-        return {}
-    
-    # Get existing suppliers from target
-    existing_suppliers = {}
-    with engine.begin() as conn:
-        result = conn.execute(text("SELECT supplier_key, supplier_id FROM tgt_dim_supplier"))
-        for row in result:
-            existing_suppliers[row.supplier_id] = row.supplier_key
-    
-    # Process each staging record
-    new_records = []
-    supplier_map = {}
-    
-    for record in staging_records:
-        supplier_id = record['supplier_id']
-        
-        if supplier_id in existing_suppliers:
-            # Supplier already exists, use existing key
-            supplier_map[supplier_id] = existing_suppliers[supplier_id]
-            
-            # Update supplier if needed
-            with engine.begin() as conn:
-                conn.execute(
-                    text("""
-                        UPDATE tgt_dim_supplier
-                        SET supplier_name = :supplier_name,
-                            supplier_type = :supplier_type,
-                            contact_name = :contact_name,
-                            contact_phone = :contact_phone,
-                            contact_email = :contact_email,
-                            modification_date = :modification_date
-                        WHERE supplier_id = :supplier_id
-                    """),
-                    {
-                        'supplier_id': supplier_id,
-                        'supplier_name': record['supplier_name'],
-                        'supplier_type': record['supplier_type'],
-                        'contact_name': record['contact_name'],
-                        'contact_phone': record['contact_phone'],
-                        'contact_email': record['contact_email'],
-                        'modification_date': datetime.now()
-                    }
-                )
-        else:
-            # New supplier, create new record
-            new_record = {
-                'supplier_id': supplier_id,
-                'supplier_name': record['supplier_name'],
-                'supplier_type': record['supplier_type'],
-                'contact_name': record['contact_name'],
-                'contact_phone': record['contact_phone'],
-                'contact_email': record['contact_email'],
-                'insertion_date': datetime.now(),
-                'modification_date': datetime.now()
-            }
-            new_records.append(new_record)
-    
-    # Insert new records
-    with engine.begin() as conn:
-        for record in new_records:
-            result = conn.execute(
-                text("""
-                    INSERT INTO tgt_dim_supplier (
-                        supplier_id, supplier_name, supplier_type,
-                        contact_name, contact_phone, contact_email,
-                        insertion_date, modification_date
-                    ) VALUES (
-                        :supplier_id, :supplier_name, :supplier_type,
-                        :contact_name, :contact_phone, :contact_email,
-                        :insertion_date, :modification_date
-                    )
-                    RETURNING supplier_key, supplier_id
-                """),
-                record
-            )
-            row = result.fetchone()
-            supplier_map[row.supplier_id] = row.supplier_key
-    
-    print(f"Loaded {len(new_records)} new supplier records into target.")
-    return supplier_map
+def load_fact_sales(target_engine):
+    """Loads data into tgt_fact_sales from stg_sales."""
+    print("Loading data into tgt_fact_sales...")
+    # Fact key is auto-increment.
+    # This query joins staging fact with staging dimensions to get natural keys/dates,
+    # then joins with target dimensions to get target surrogate keys.
+    sql = f"""
+    INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_fact_sales (
+        sale_id, order_id, row_id,
+        transaction_date_key, product_key, store_key, customer_key,
+        order_priority, order_quantity, sales_amount, discount, discount_amount,
+        shipping_cost, gross_revenue, net_revenue, profit, profit_margin, is_profitable,
+        ship_date_key, ship_mode,
+        insertion_date, modification_date
+    )
+    SELECT
+        s.sale_id, s.order_id, s.row_id,
+        tgt_dt_trans.date_key AS transaction_date_key,
+        tgt_p.product_key AS product_key,
+        tgt_st.store_key AS store_key,
+        tgt_c.customer_key AS customer_key,
+        s.order_priority, s.order_quantity, s.sales_amount, s.discount, s.discount_amount,
+        s.shipping_cost, s.gross_revenue, s.net_revenue, s.profit, s.profit_margin, s.is_profitable,
+        tgt_dt_ship.date_key AS ship_date_key,
+        s.ship_mode,
+        CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+    FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_sales s
+    -- Joins to resolve surrogate keys from staging to natural keys/dates, then to target keys
+    JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_trans
+        ON s.transaction_date_key = sd_trans.date_key -- s.transaction_date_key is surrogate from stg_date
+    JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_trans
+        ON sd_trans.date_id = tgt_dt_trans.date_key -- sd_trans.date_id is YYYYMMDD
 
-def load_target_return_reason_dimension(target_engine, staging_engine):
-    """Load return reason dimension from staging to target."""
-    print("Loading return reason dimension to target...")
-    
-    # Extract data from staging
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                reason_key as staging_reason_key, reason_code, reason_description, 
-                reason_category, impact_level, is_controllable
-            FROM stg_return_reason
-        """))
-        staging_records = [dict(row._mapping) for row in result]
-    
-    if not staging_records:
-        print("No return reason records found in staging.")
-        return {}
-    
-    # Get existing reasons from target
-    existing_reasons = {}
-    with engine.begin() as conn:
-        result = conn.execute(text("SELECT reason_key, reason_code FROM tgt_dim_return_reason"))
-        for row in result:
-            existing_reasons[row.reason_code] = row.reason_key
-    
-    # Process each staging record
-    new_records = []
-    reason_map = {}
-    
-    for record in staging_records:
-        reason_code = record['reason_code']
-        
-        if reason_code in existing_reasons:
-            # Reason already exists, use existing key
-            reason_map[reason_code] = existing_reasons[reason_code]
-            
-            # Update reason if needed
-            with engine.begin() as conn:
-                conn.execute(
-                    text("""
-                        UPDATE tgt_dim_return_reason
-                        SET reason_description = :reason_description,
-                            reason_category = :reason_category,
-                            impact_level = :impact_level,
-                            is_controllable = :is_controllable,
-                            modification_date = :modification_date
-                        WHERE reason_code = :reason_code
-                    """),
-                    {
-                        'reason_code': reason_code,
-                        'reason_description': record['reason_description'],
-                        'reason_category': record['reason_category'],
-                        'impact_level': record['impact_level'],
-                        'is_controllable': record['is_controllable'],
-                        'modification_date': datetime.now()
-                    }
-                )
-        else:
-            # New reason, create new record
-            new_record = {
-                'reason_code': reason_code,
-                'reason_description': record['reason_description'],
-                'reason_category': record['reason_category'],
-                'impact_level': record['impact_level'],
-                'is_controllable': record['is_controllable'],
-                'insertion_date': datetime.now(),
-                'modification_date': datetime.now()
-            }
-            new_records.append(new_record)
-    
-    # Insert new records
-    with engine.begin() as conn:
-        for record in new_records:
-            result = conn.execute(
-                text("""
-                    INSERT INTO tgt_dim_return_reason (
-                        reason_code, reason_description, reason_category,
-                        impact_level, is_controllable,
-                        insertion_date, modification_date
-                    ) VALUES (
-                        :reason_code, :reason_description, :reason_category,
-                        :impact_level, :is_controllable,
-                        :insertion_date, :modification_date
-                    )
-                    RETURNING reason_key, reason_code
-                """),
-                record
-            )
-            row = result.fetchone()
-            reason_map[row.reason_code] = row.reason_key
-    
-    print(f"Loaded {len(new_records)} new return reason records into target.")
-    return reason_map
+    LEFT JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_ship
+        ON s.ship_date_key = sd_ship.date_key -- s.ship_date_key is surrogate from stg_date
+    LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_ship
+        ON sd_ship.date_id = tgt_dt_ship.date_key -- sd_ship.date_id is YYYYMMDD
 
-def load_target_store_dimension(target_engine, staging_engine):
-    """Load store dimension from staging to target with SCD Type 2."""
-    print("Loading store dimension to target with SCD Type 2...")
-    
-    # Extract data from staging
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                store_key as staging_store_key, store_id, store_name, location,
-                city, state, zip_code, region, market
-            FROM stg_store
-        """))
-        staging_records = [dict(row._mapping) for row in result]
-    
-    if not staging_records:
-        print("No store records found in staging.")
-        return {}
-    
-    # Get existing stores from target
-    existing_stores = {}
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                store_key, store_id, store_name, location, city, state, 
-                zip_code, region, market, version, is_current
-            FROM tgt_dim_store
-            WHERE is_current = true
-        """))
-        for row in result:
-            existing_stores[row.store_id] = dict(row._mapping)
-    
-    # Process each staging record
-    new_records = []
-    updated_records = []
-    store_map = {}
-    current_date = datetime.now().date()
-    
-    for record in staging_records:
-        store_id = record['store_id']
-        
-        if store_id in existing_stores:
-            # Check if store has changed
-            existing = existing_stores[store_id]
-            has_changed = False
-            
-            # Compare attributes that might change
-            attributes_to_compare = [
-                'store_name', 'location', 'city', 'state', 
-                'zip_code', 'region', 'market'
-            ]
-            
-            for attr in attributes_to_compare:
-                if record[attr] != existing[attr]:
-                    has_changed = True
-                    break
-            
-            if has_changed:
-                # SCD Type 2: Expire the current record
-                with engine.begin() as conn:
-                    conn.execute(
-                        text("""
-                            UPDATE tgt_dim_store
-                            SET is_current = false,
-                                expiry_date = :expiry_date,
-                                modification_date = :modification_date
-                            WHERE store_key = :store_key
-                        """),
-                        {
-                            'expiry_date': current_date - timedelta(days=1),
-                            'modification_date': datetime.now(),
-                            'store_key': existing['store_key']
-                        }
-                    )
-                
-                # Create new record with updated values
-                new_record = {
-                    'store_id': store_id,
-                    'store_name': record['store_name'],
-                    'location': record['location'],
-                    'city': record['city'],
-                    'state': record['state'],
-                    'zip_code': record['zip_code'],
-                    'region': record['region'],
-                    'market': record['market'],
-                    'effective_date': current_date,
-                    'expiry_date': FAR_FUTURE_DATE,
-                    'is_current': True,
-                    'version': existing['version'] + 1,
-                    'insertion_date': datetime.now(),
-                    'modification_date': datetime.now()
-                }
-                new_records.append(new_record)
-                updated_records.append(store_id)
-            else:
-                # No changes, use existing store key
-                store_map[store_id] = existing['store_key']
-        else:
-            # New store, create new record
-            new_record = {
-                'store_id': store_id,
-                'store_name': record['store_name'],
-                'location': record['location'],
-                'city': record['city'],
-                'state': record['state'],
-                'zip_code': record['zip_code'],
-                'region': record['region'],
-                'market': record['market'],
-                'effective_date': current_date,
-                'expiry_date': FAR_FUTURE_DATE,
-                'is_current': True,
-                'version': 1,
-                'insertion_date': datetime.now(),
-                'modification_date': datetime.now()
-            }
-            new_records.append(new_record)
-    
-    # Insert new records
-    with engine.begin() as conn:
-        for record in new_records:
-            result = conn.execute(
-                text("""
-                    INSERT INTO tgt_dim_store (
-                        store_id, store_name, location, city, state, zip_code, region, market,
-                        effective_date, expiry_date, is_current, version,
-                        insertion_date, modification_date
-                    ) VALUES (
-                        :store_id, :store_name, :location, :city, :state, :zip_code, :region, :market,
-                        :effective_date, :expiry_date, :is_current, :version,
-                        :insertion_date, :modification_date
-                    )
-                    RETURNING store_key, store_id
-                """),
-                record
-            )
-            row = result.fetchone()
-            store_map[row.store_id] = row.store_key
-    
-    # Get all current store mappings
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT store_key, store_id 
-            FROM tgt_dim_store 
-            WHERE is_current = true
-        """))
-        for row in result:
-            store_map[row.store_id] = row.store_key
-    
-    print(f"Loaded {len(new_records) - len(updated_records)} new stores and updated {len(updated_records)} existing stores.")
-    return store_map
+    JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_customer sc
+        ON s.customer_key = sc.customer_key
+    JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_customer tgt_c
+        ON sc.customer_id = tgt_c.customer_id -- sc.customer_id is natural key
 
-def load_target_sales_fact(target_engine, staging_engine, date_map, customer_map, product_map, store_map):
-    """Load sales fact from staging to target."""
-    print("Loading sales fact to target...")
-    
-    # Get staging to target dimension key mappings
-    staging_to_target = {}
-    
-    # Get staging date to target date mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.date_key as staging_key, t.date_key as target_key
-            FROM stg_date s
-            JOIN tgt_dim_date t ON s.date_id = t.date_id
-        """))
-        for row in result:
-            staging_to_target[('date', row.staging_key)] = row.target_key
-    
-    # Get staging customer to target customer mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.customer_key as staging_key, t.customer_key as target_key
-            FROM stg_customer s
-            JOIN tgt_dim_customer t ON s.customer_id = t.customer_id
-        """))
-        for row in result:
-            staging_to_target[('customer', row.staging_key)] = row.target_key
-    
-    # Get staging product to target product mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.product_key as staging_key, t.product_key as target_key
-            FROM stg_product s
-            JOIN tgt_dim_product t ON s.product_id = t.product_id
-            WHERE t.is_current = true
-        """))
-        for row in result:
-            staging_to_target[('product', row.staging_key)] = row.target_key
-    
-    # Get staging store to target store mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.store_key as staging_key, t.store_key as target_key
-            FROM stg_store s
-            JOIN tgt_dim_store t ON s.store_id = t.store_id
-            WHERE t.is_current = true
-        """))
-        for row in result:
-            staging_to_target[('store', row.staging_key)] = row.target_key
-    
-    print(f"Loaded dimension key mappings: {len(staging_to_target)} mappings found")
-    
-    # Extract data from staging
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                sale_id, transaction_date_key, customer_key, product_key, store_key,
-                order_priority, order_quantity, sales_amount, discount, discount_amount,
-                shipping_cost, gross_revenue, net_revenue, profit, profit_margin, 
-                is_profitable, ship_date_key, ship_mode
-            FROM stg_sales
-        """))
-        staging_records = [dict(row._mapping) for row in result]
-    
-    if not staging_records:
-        print("No sales records found in staging.")
-        return
-    
-    # Get existing sales from target
-    existing_sales = set()
-    with engine.begin() as conn:
-        result = conn.execute(text("SELECT sale_id FROM tgt_fact_sales"))
-        for row in result:
-            existing_sales.add(row.sale_id)
-    
-    # Process each staging record
-    new_records = []
-    skipped_records = 0
-    
-    for record in staging_records:
-        sale_id = record['sale_id']
-        
-        # Skip if already exists
-        if sale_id in existing_sales:
-            continue
-        
-        # Get dimension keys from direct mapping
-        date_key = staging_to_target.get(('date', record['transaction_date_key']))
-        customer_key = staging_to_target.get(('customer', record['customer_key']))
-        product_key = staging_to_target.get(('product', record['product_key']))
-        store_key = staging_to_target.get(('store', record['store_key']))
-        
-        # Skip if missing dimension keys
-        if not all([date_key, customer_key, product_key, store_key]):
-            print(f"Skipping sales record {sale_id} due to missing dimension keys.")
-            print(f"  Date key: {date_key}, Customer key: {customer_key}, Product key: {product_key}, Store key: {store_key}")
-            print(f"  Staging keys: Date={record['transaction_date_key']}, Customer={record['customer_key']}, Product={record['product_key']}, Store={record['store_key']}")
-            skipped_records += 1
-            continue
-        
-        # Create target record
-        target_record = {
-            'sale_id': sale_id,
-            'order_id': f"ORD-{sale_id[4:]}",  # Generate order ID from sale ID
-            'row_id': int(sale_id[4:]) if sale_id[4:].isdigit() else 0,  # Extract numeric part
-            'transaction_date_key': date_key,
-            'customer_key': customer_key,
-            'product_key': product_key,
-            'store_key': store_key,
-            'order_priority': record['order_priority'],
-            'order_quantity': record['order_quantity'],
-            'sales_amount': record['sales_amount'],
-            'discount': record['discount'],
-            'discount_amount': record['discount_amount'],
-            'shipping_cost': record['shipping_cost'],
-            'gross_revenue': record['gross_revenue'],
-            'net_revenue': record['net_revenue'],
-            'profit': record['profit'],
-            'profit_margin': record['profit_margin'],
-            'is_profitable': record['is_profitable'],
-            'ship_date_key': record['ship_date_key'],
-            'ship_mode': record['ship_mode'],
-            'insertion_date': datetime.now(),
-            'modification_date': datetime.now()
-        }
-        new_records.append(target_record)
-    
-    # Insert new records
-    with engine.begin() as conn:
-        for record in new_records:
-            conn.execute(
-                text("""
-                    INSERT INTO tgt_fact_sales (
-                        sale_id, order_id, row_id, transaction_date_key, product_key, store_key, customer_key,
-                        order_priority, order_quantity, sales_amount, discount, discount_amount,
-                        shipping_cost, gross_revenue, net_revenue, profit, profit_margin, is_profitable,
-                        ship_date_key, ship_mode, insertion_date, modification_date
-                    ) VALUES (
-                        :sale_id, :order_id, :row_id, :transaction_date_key, :product_key, :store_key, :customer_key,
-                        :order_priority, :order_quantity, :sales_amount, :discount, :discount_amount,
-                        :shipping_cost, :gross_revenue, :net_revenue, :profit, :profit_margin, :is_profitable,
-                        :ship_date_key, :ship_mode, :insertion_date, :modification_date
-                    )
-                """),
-                record
-            )
-    
-    print(f"Loaded {len(new_records)} new sales records into target. Skipped {skipped_records} records due to missing dimension keys.")
+    JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_product sp
+        ON s.product_key = sp.product_key
+    JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product tgt_p
+        ON sp.product_id = tgt_p.product_id -- sp.product_id is natural key
+        AND sd_trans.full_date >= tgt_p.effective_date AND sd_trans.full_date <= tgt_p.expiry_date -- SCD2 logic
 
-def load_target_inventory_fact(target_engine, staging_engine, date_map, product_map, store_map):
-    """Load inventory fact from staging to target."""
-    print("Loading inventory fact to target...")
-    
-    # Get staging to target dimension key mappings
-    staging_to_target = {}
-    
-    # Get staging date to target date mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.date_key as staging_key, t.date_key as target_key
-            FROM stg_date s
-            JOIN tgt_dim_date t ON s.date_id = t.date_id
-        """))
-        for row in result:
-            staging_to_target[('date', row.staging_key)] = row.target_key
-    
-    # Get staging product to target product mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.product_key as staging_key, t.product_key as target_key
-            FROM stg_product s
-            JOIN tgt_dim_product t ON s.product_id = t.product_id
-            WHERE t.is_current = true
-        """))
-        for row in result:
-            staging_to_target[('product', row.staging_key)] = row.target_key
-    
-    # Get staging store to target store mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.store_key as staging_key, t.store_key as target_key
-            FROM stg_store s
-            JOIN tgt_dim_store t ON s.store_id = t.store_id
-            WHERE t.is_current = true
-        """))
-        for row in result:
-            staging_to_target[('store', row.staging_key)] = row.target_key
-    
-    print(f"Loaded dimension key mappings: {len(staging_to_target)} mappings found")
-    
-    # Get data from staging layer
-    with engine.connect() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                inventory_id, date_key, product_key, store_key,
-                stock_level, min_stock_level, max_stock_level, reorder_point, 
-                last_restock_date_key, days_of_supply, stock_status, is_in_stock
-            FROM stg_inventory
-        """))
-        staging_records = [dict(row._mapping) for row in result]
-    
-    if not staging_records:
-        print("No inventory records found in staging.")
-        return
-    
-    # Get existing inventory from target
-    existing_inventory = set()
-    with engine.begin() as conn:
-        result = conn.execute(text("SELECT inventory_id FROM tgt_fact_inventory"))
-        for row in result:
-            existing_inventory.add(row.inventory_id)
-    
-    # Process each staging record
-    new_records = []
-    skipped_records = 0
-    
-    for record in staging_records:
-        inventory_id = record['inventory_id']
-        
-        # Skip if already exists
-        if inventory_id in existing_inventory:
-            continue
-        
-        # Get dimension keys from direct mapping
-        date_key = staging_to_target.get(('date', record['date_key']))
-        product_key = staging_to_target.get(('product', record['product_key']))
-        store_key = staging_to_target.get(('store', record['store_key']))
-        
-        # Skip if missing dimension keys
-        if not all([date_key, product_key, store_key]):
-            print(f"Skipping inventory record {inventory_id} due to missing dimension keys.")
-            print(f"  Date key: {date_key}, Product key: {product_key}, Store key: {store_key}")
-            print(f"  Staging keys: Date={record['date_key']}, Product={record['product_key']}, Store={record['store_key']}")
-            skipped_records += 1
-            continue
-        
-        # Create target record
-        target_record = {
-            'inventory_id': inventory_id,
-            'date_key': date_key,
-            'product_key': product_key,
-            'store_key': store_key,
-            'stock_level': record['stock_level'],
-            'min_stock_level': record['min_stock_level'],
-            'max_stock_level': record['max_stock_level'],
-            'reorder_point': record['reorder_point'],
-            'last_restock_date_key': record['last_restock_date_key'],
-            'days_of_supply': record['days_of_supply'],
-            'stock_status': record['stock_status'],
-            'is_in_stock': record['is_in_stock'],
-            'insertion_date': datetime.now(),
-            'modification_date': datetime.now()
-        }
-        new_records.append(target_record)
-    
-    # Insert new records
-    with engine.begin() as conn:
-        for record in new_records:
-            conn.execute(
-                text("""
-                    INSERT INTO tgt_fact_inventory (
-                        inventory_id, date_key, product_key, store_key,
-                        stock_level, min_stock_level, max_stock_level, reorder_point,
-                        last_restock_date_key, days_of_supply, stock_status, is_in_stock,
-                        insertion_date, modification_date
-                    ) VALUES (
-                        :inventory_id, :date_key, :product_key, :store_key,
-                        :stock_level, :min_stock_level, :max_stock_level, :reorder_point,
-                        :last_restock_date_key, :days_of_supply, :stock_status, :is_in_stock,
-                        :insertion_date, :modification_date
-                    )
-                """),
-                record
-            )
-    
-    print(f"Loaded {len(new_records)} new inventory records into target. Skipped {skipped_records} records due to missing dimension keys.")
+    JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_store sst
+        ON s.store_key = sst.store_key
+    JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store tgt_st
+        ON sst.store_id = tgt_st.store_id -- sst.store_id is natural key
+        AND sd_trans.full_date >= tgt_st.effective_date AND sd_trans.full_date <= tgt_st.expiry_date; -- SCD2 logic
+    """
+    execute_sql(target_engine, sql)
+    print("tgt_fact_sales loaded successfully.")
 
-def load_target_returns_fact(target_engine, staging_engine, date_map, product_map, store_map, reason_map):
-    """Load returns fact from staging to target."""
-    print("Loading returns fact to target...")
-    
-    # Get staging to target dimension key mappings
-    staging_to_target = {}
-    
-    # Get staging date to target date mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.date_key as staging_key, t.date_key as target_key
-            FROM stg_date s
-            JOIN tgt_dim_date t ON s.date_id = t.date_id
-        """))
-        for row in result:
-            staging_to_target[('date', row.staging_key)] = row.target_key
-    
-    # Get staging product to target product mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.product_key as staging_key, t.product_key as target_key
-            FROM stg_product s
-            JOIN tgt_dim_product t ON s.product_id = t.product_id
-            WHERE t.is_current = true
-        """))
-        for row in result:
-            staging_to_target[('product', row.staging_key)] = row.target_key
-    
-    # Get staging store to target store mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.store_key as staging_key, t.store_key as target_key
-            FROM stg_store s
-            JOIN tgt_dim_store t ON s.store_id = t.store_id
-            WHERE t.is_current = true
-        """))
-        for row in result:
-            staging_to_target[('store', row.staging_key)] = row.target_key
-    
-    # Get staging reason to target reason mapping
-    with engine.begin() as conn:
-        result = conn.execute(text("""
-            SELECT s.reason_key as staging_key, t.reason_key as target_key
-            FROM stg_return_reason s
-            JOIN tgt_dim_return_reason t ON s.reason_code = t.reason_code
-        """))
-        for row in result:
-            staging_to_target[('reason', row.staging_key)] = row.target_key
-    
-    print(f"Loaded dimension key mappings: {len(staging_to_target)} mappings found")
-    
-    # Get data from staging layer
-    with engine.connect() as conn:
-        result = conn.execute(text("""
-            SELECT 
-                return_id, return_date_key, product_key, store_key, reason_key,
-                reason_code, quantity_returned, return_amount, 
-                original_sale_id, days_since_sale as days_since_purchase
-            FROM stg_returns
-        """))
-        staging_records = [dict(row._mapping) for row in result]
-    
-    if not staging_records:
-        print("No return records found in staging.")
-        return
-    
-    # Get existing returns from target
-    existing_returns = set()
-    with engine.begin() as conn:
-        result = conn.execute(text("SELECT return_id FROM tgt_fact_returns"))
-        for row in result:
-            existing_returns.add(row.return_id)
-    
-    # Process each staging record
-    new_records = []
-    skipped_records = 0
-    
-    for record in staging_records:
-        return_id = record['return_id']
-        
-        # Skip if already exists
-        if return_id in existing_returns:
-            continue
-        
-        # Get dimension keys from direct mapping
-        date_key = staging_to_target.get(('date', record['return_date_key']))
-        product_key = staging_to_target.get(('product', record['product_key']))
-        store_key = staging_to_target.get(('store', record['store_key']))
-        reason_key = staging_to_target.get(('reason', record['reason_key']))
-        
-        # Skip if missing dimension keys
-        if not all([date_key, product_key, store_key]):
-            print(f"Skipping return record {return_id} due to missing dimension keys.")
-            print(f"  Date key: {date_key}, Product key: {product_key}, Store key: {store_key}")
-            print(f"  Staging keys: Date={record['return_date_key']}, Product={record['product_key']}, Store={record['store_key']}")
-            skipped_records += 1
-            continue
-        
-        # Create target record
-        target_record = {
-            'return_id': return_id,
-            'return_date_key': date_key,
-            'product_key': product_key,
-            'store_key': store_key,
-            'reason_key': reason_key,
-            'reason_code': record.get('reason_code', ''),
-            'quantity_returned': record['quantity_returned'],
-            'return_amount': record['return_amount'],
-            'avg_return_price': float(record['return_amount']) / float(record['quantity_returned']) if float(record['quantity_returned']) > 0 else 0,
-            'original_sale_id': record['original_sale_id'],
-            'original_sale_date_key': date_key - (record['days_since_purchase'] if record['days_since_purchase'] else 0),
-            'days_since_sale': record['days_since_purchase'],
-            'is_within_30_days': record['days_since_purchase'] <= 30 if record['days_since_purchase'] else False,
-            'return_condition': 'Normal',  # Default value
-            'insertion_date': datetime.now(),
-            'modification_date': datetime.now()
-        }
-        new_records.append(target_record)
-    
-    # Insert new records
-    with engine.begin() as conn:
-        for record in new_records:
-            conn.execute(
-                text("""
-                    INSERT INTO tgt_fact_returns (
-                        return_id, return_date_key, product_key, store_key, reason_key,
-                        reason_code, return_amount, quantity_returned, avg_return_price,
-                        original_sale_id, original_sale_date_key, days_since_sale, is_within_30_days,
-                        return_condition, insertion_date, modification_date
-                    ) VALUES (
-                        :return_id, :return_date_key, :product_key, :store_key, :reason_key,
-                        :reason_code, :return_amount, :quantity_returned, :avg_return_price,
-                        :original_sale_id, :original_sale_date_key, :days_since_sale, :is_within_30_days,
-                        :return_condition, :insertion_date, :modification_date
-                    )
-                """),
-                record
-            )
-    
-    print(f"Loaded {len(new_records)} new return records into target. Skipped {skipped_records} records due to missing dimension keys.")
+def load_fact_inventory(target_engine):
+    """Loads data into tgt_fact_inventory from stg_inventory."""
+    print("Loading data into tgt_fact_inventory...")
+    sql = f"""
+    INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_fact_inventory (
+        inventory_id, date_key, product_key, store_key,
+        stock_level, min_stock_level, max_stock_level, reorder_point,
+        last_restock_date_key, days_of_supply, stock_status, is_in_stock,
+        insertion_date, modification_date
+    )
+    SELECT
+        i.inventory_id,
+        tgt_dt_inv.date_key AS date_key,
+        tgt_p.product_key AS product_key,
+        tgt_st.store_key AS store_key,
+        i.stock_level, i.min_stock_level, i.max_stock_level, i.reorder_point,
+        tgt_dt_restock.date_key AS last_restock_date_key,
+        i.days_of_supply, i.stock_status, i.is_in_stock,
+        CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+    FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_inventory i
+    JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_inv
+        ON i.date_key = sd_inv.date_key -- i.date_key is surrogate stg_date.date_key
+    JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_inv
+        ON sd_inv.date_id = tgt_dt_inv.date_key
 
+    LEFT JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_restock
+        ON i.last_restock_date_key = sd_restock.date_key
+    LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_restock
+        ON sd_restock.date_id = tgt_dt_restock.date_key
+
+    JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_product sp
+        ON i.product_key = sp.product_key
+    JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product tgt_p
+        ON sp.product_id = tgt_p.product_id
+        AND sd_inv.full_date >= tgt_p.effective_date AND sd_inv.full_date <= tgt_p.expiry_date -- SCD2 logic
+
+    JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_store sst
+        ON i.store_key = sst.store_key
+    JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store tgt_st
+        ON sst.store_id = tgt_st.store_id
+        AND sd_inv.full_date >= tgt_st.effective_date AND sd_inv.full_date <= tgt_st.expiry_date; -- SCD2 logic
+    """
+    execute_sql(target_engine, sql)
+    print("tgt_fact_inventory loaded successfully.")
+
+def load_fact_returns(target_engine):
+    """Loads data into tgt_fact_returns from stg_returns."""
+    print("Loading data into tgt_fact_returns...")
+    sql = f"""
+    INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_fact_returns (
+        return_id, return_date_key, product_key, store_key, reason_key,
+        reason_code, return_amount, quantity_returned, avg_return_price,
+        original_sale_id, original_sale_date_key, days_since_sale,
+        is_within_30_days, return_condition,
+        insertion_date, modification_date
+    )
+    SELECT
+        r.return_id,
+        tgt_dt_return.date_key AS return_date_key,
+        tgt_p.product_key AS product_key,
+        tgt_st.store_key AS store_key,
+        tgt_rr.reason_key AS reason_key,
+        r.reason_code, -- Staging already has natural key for reason_code
+        r.return_amount, r.quantity_returned, r.avg_return_price,
+        r.original_sale_id,
+        tgt_dt_orig_sale.date_key AS original_sale_date_key,
+        r.days_since_sale, r.is_within_30_days, r.return_condition,
+        CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+    FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_returns r
+    JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_return
+        ON r.return_date_key = sd_return.date_key
+    JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_return
+        ON sd_return.date_id = tgt_dt_return.date_key
+
+    LEFT JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_orig_sale
+        ON r.original_sale_date_key = sd_orig_sale.date_key
+    LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_orig_sale
+        ON sd_orig_sale.date_id = tgt_dt_orig_sale.date_key
+
+    JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_product sp
+        ON r.product_key = sp.product_key
+    JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product tgt_p
+        ON sp.product_id = tgt_p.product_id
+        AND sd_return.full_date >= tgt_p.effective_date AND sd_return.full_date <= tgt_p.expiry_date
+
+    JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_store sst
+        ON r.store_key = sst.store_key
+    JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store tgt_st
+        ON sst.store_id = tgt_st.store_id
+        AND sd_return.full_date >= tgt_st.effective_date AND sd_return.full_date <= tgt_st.expiry_date
+    
+    LEFT JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_return_reason s_rr
+        ON r.reason_key = s_rr.reason_key -- r.reason_key is surrogate from stg_return_reason
+    LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_return_reason tgt_rr
+        ON s_rr.reason_code = tgt_rr.reason_code; -- s_rr.reason_code is natural key
+    """
+    execute_sql(target_engine, sql)
+    print("tgt_fact_returns loaded successfully.")
+
+# --- Main Execution ---
 def load_target_layer():
-    """Main function to load data from staging to target layer."""
-    print(f"Starting ETL process for target layer with batch ID: {ETL_BATCH_ID}")
+    main()
+
+def main():
+    """Main function to orchestrate the ETL process from Staging to Target."""
+    print(f"Starting Target layer ETL process with Batch ID: {ETL_BATCH_ID}")
     
-    # Get database engines for both Staging and Target
+    # Get database engines
     staging_engine = get_snowflake_staging_engine()
     target_engine = get_snowflake_target_engine()
     
-    # Create target tables if they don't exist
-    create_tables(target_engine)
-     
-    # Load dimension tables first - using both engines
-    # We'll read from Staging and write to Target
-    print("\nLoading dimension tables...")
-    date_map = load_target_date_dimension(target_engine, staging_engine)
-    customer_map = load_target_customer_dimension(target_engine, staging_engine)
-    supplier_map = load_target_supplier_dimension(target_engine, staging_engine)
-    reason_map = load_target_return_reason_dimension(target_engine, staging_engine)
-    product_map = load_target_product_dimension(target_engine, staging_engine)
-    store_map = load_target_store_dimension(target_engine, staging_engine)
+    # Load Dimension Tables
+    # Dimensions should be loaded first since facts will reference them
+
+    # Note: Cleaning/truncating target tables before load is not included here.
+    # This script assumes an append/SCD update model. For re-runnability with cleanup,
+    # add TRUNCATE statements or more sophisticated deletion logic.
+    print("\n--- Loading Dimension Tables ---")
+    load_dim_date(target_engine)
+    load_dim_customer(target_engine)
+    load_dim_supplier(target_engine)
+    load_dim_return_reason(target_engine)
+    load_dim_product_scd2(target_engine)
+    load_dim_store_scd2(target_engine)
+
+    # Load Fact Tables
+    # Ensure that facts are loaded after ALL dimensions are up-to-date.
+    # Add logic here to clear fact tables if this is a full refresh
+    # e.g. execute_sql(target_engine, f"TRUNCATE TABLE {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_fact_sales;") etc.
+    # For this example, we'll assume appends or that idempotency is handled by the INSERT INTO SELECT structure (if it were MERGE).
+    # Since these are plain INSERT INTO SELECT, running multiple times will duplicate fact data without prior cleanup.
+
+    print("\n--- Loading Fact Tables ---")
+    print("IMPORTANT: Ensure fact tables are appropriately cleaned if this is a re-run to avoid duplicates.")
+    # Example: execute_sql(target_engine, f"DELETE FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_fact_sales WHERE 1=1;") # Or more specific
     
-    # Load fact tables after dimensions
-    print("\nLoading fact tables...")
-    # Using direct dimension key mapping instead of the map dictionaries
-    load_target_sales_fact(target_engine, staging_engine, date_map, customer_map, product_map, store_map)
-    load_target_inventory_fact(target_engine, staging_engine, date_map, product_map, store_map)
-    load_target_returns_fact(target_engine, staging_engine, date_map, product_map, store_map, reason_map)
-    
-    print(f"\nTarget layer ETL process completed successfully with batch ID: {ETL_BATCH_ID}")
+    load_fact_sales(target_engine)
+    load_fact_inventory(target_engine)
+    load_fact_returns(target_engine)
+
+    print(f"\nTarget layer ETL process completed successfully for Batch ID: {ETL_BATCH_ID}")
 
 if __name__ == "__main__":
-    load_target_layer()
+    main()
