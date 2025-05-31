@@ -3,27 +3,46 @@
 
 """
 Walmart ETL Project - Staging Tables Setup
-This script creates the staging layer tables using SQLAlchemy and PostgreSQL.
+This script creates the staging layer tables using SQLAlchemy and Snowflake.
 """
 
+import os
 from sqlalchemy import (
-    MetaData, Table, Column, Integer, String, Float, Date, 
+    MetaData, Table, Column, Integer, String, Float, Date, DateTime,
     Boolean, ForeignKey, Numeric, CheckConstraint, func
 )
 from sqlalchemy import create_engine
-from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.sql import text
-
-# Import configuration
-from config import get_connection_string
 
 # Create metadata object
 metadata = MetaData()
 
-def get_engine():
-    """Get SQLAlchemy engine with connection string from config."""
-    connection_string = get_connection_string()
+# Snowflake connection parameters
+SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'ROJAN')
+SNOWFLAKE_PASSWORD = os.environ.get('SNOWFLAKE_PASSWORD', 'e!Mv5ashy5aVdNb')
+SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'GEBNTIK-YU16043')
+SNOWFLAKE_SCHEMA = os.environ.get('SNOWFLAKE_SCHEMA', 'PUBLIC')
+SNOWFLAKE_WAREHOUSE = os.environ.get('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
+SNOWFLAKE_ROLE = os.environ.get('SNOWFLAKE_ROLE', 'ACCOUNTADMIN')
+
+# Database-specific parameters
+SNOWFLAKE_DB_ODS = os.environ.get('SNOWFLAKE_DB_ODS', 'ODS_DB')
+SNOWFLAKE_DB_STAGING = os.environ.get('SNOWFLAKE_DB_STAGING', 'STAGING_DB')
+SNOWFLAKE_DB_TARGET = os.environ.get('SNOWFLAKE_DB_TARGET', 'TARGET_DB')
+
+# Function to get Snowflake Staging engine
+def get_snowflake_staging_engine():
+    """Create and return a SQLAlchemy engine for Snowflake Staging database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_STAGING}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
     return create_engine(connection_string)
+
+# For backward compatibility
+def get_engine():
+    """Get SQLAlchemy engine for Snowflake Staging database (for backward compatibility)."""
+    return get_snowflake_staging_engine()
 
 # Define staging layer tables
 def create_staging_tables(metadata):
@@ -46,7 +65,7 @@ def create_staging_tables(metadata):
         Column('fiscal_year', Integer),  # Derived in staging
         Column('fiscal_quarter', Integer),  # Derived in staging
         Column('etl_batch_id', String(50)),
-        Column('etl_timestamp', TIMESTAMP, default=func.now())
+        Column('etl_timestamp', DateTime, default=func.now())
     )
     
     # Staging Customer dimension
@@ -63,7 +82,7 @@ def create_staging_tables(metadata):
         Column('zip_code', String(20)),
         Column('region', String(50)),
         Column('etl_batch_id', String(50)),
-        Column('etl_timestamp', TIMESTAMP, default=func.now())
+        Column('etl_timestamp', DateTime, default=func.now())
     )
     
     # Staging Product dimension
@@ -83,7 +102,7 @@ def create_staging_tables(metadata):
         Column('supplier_id', String(20)),  # Original ID from ODS
         Column('supplier_name', String(100)),
         Column('etl_batch_id', String(50)),
-        Column('etl_timestamp', TIMESTAMP, default=func.now())
+        Column('etl_timestamp', DateTime, default=func.now())
     )
     
     # Staging Store dimension
@@ -99,7 +118,7 @@ def create_staging_tables(metadata):
         Column('region', String(50)),
         Column('market', String(50)),  # Derived in staging
         Column('etl_batch_id', String(50)),
-        Column('etl_timestamp', TIMESTAMP, default=func.now())
+        Column('etl_timestamp', DateTime, default=func.now())
     )
     
     # Staging Supplier dimension
@@ -113,7 +132,7 @@ def create_staging_tables(metadata):
         Column('contact_phone', String(20)),
         Column('contact_email', String(100)),
         Column('etl_batch_id', String(50)),
-        Column('etl_timestamp', TIMESTAMP, default=func.now())
+        Column('etl_timestamp', DateTime, default=func.now())
     )
     
     # Staging Return Reason dimension
@@ -126,7 +145,7 @@ def create_staging_tables(metadata):
         Column('impact_level', String(20)),  # Derived in staging
         Column('is_controllable', Boolean),  # Derived in staging
         Column('etl_batch_id', String(50)),
-        Column('etl_timestamp', TIMESTAMP, default=func.now())
+        Column('etl_timestamp', DateTime, default=func.now())
     )
     
     # Staging Sales fact
@@ -154,7 +173,7 @@ def create_staging_tables(metadata):
         Column('ship_date_key', Integer, ForeignKey('stg_date.date_key')),
         Column('ship_mode', String(50)),
         Column('etl_batch_id', String(50)),
-        Column('etl_timestamp', TIMESTAMP, default=func.now())
+        Column('etl_timestamp', DateTime, default=func.now())
     )
     
     # Staging Inventory fact
@@ -174,14 +193,14 @@ def create_staging_tables(metadata):
         Column('stock_status', String(20)),  # Derived in staging
         Column('is_in_stock', Boolean),  # Derived in staging
         Column('etl_batch_id', String(50)),
-        Column('etl_timestamp', TIMESTAMP, default=func.now())
+        Column('etl_timestamp', DateTime, default=func.now())
     )
     
     # Staging Returns fact
     stg_returns = Table(
         'stg_returns', metadata,
         Column('return_key', Integer, primary_key=True, autoincrement=True),
-        Column('return_id', String(50), nullable=False),
+        Column('return_id', String(50), nullable=False),  # Consistent with ODS table
         Column('return_date_key', Integer, ForeignKey('stg_date.date_key'), nullable=False),
         Column('product_key', Integer, ForeignKey('stg_product.product_key'), nullable=False),
         Column('store_key', Integer, ForeignKey('stg_store.store_key'), nullable=False),
@@ -196,7 +215,7 @@ def create_staging_tables(metadata):
         Column('is_within_30_days', Boolean),  # Derived in staging
         Column('return_condition', String(50)),
         Column('etl_batch_id', String(50)),
-        Column('etl_timestamp', TIMESTAMP, default=func.now())
+        Column('etl_timestamp', DateTime, default=func.now())
     )
     
     return {
@@ -214,7 +233,8 @@ def create_staging_tables(metadata):
 # Main function to create staging tables
 def main():
     """Main function to create staging tables."""
-    engine = get_engine()
+    # Get the Snowflake Staging engine
+    engine = get_snowflake_staging_engine()
     
     # Create staging tables
     staging_tables = create_staging_tables(metadata)
@@ -222,7 +242,7 @@ def main():
     # Create all tables in the database
     metadata.create_all(engine)
     
-    print("Staging tables created successfully!")
+    print("Staging tables created successfully in Snowflake Staging database!")
 
 if __name__ == "__main__":
     main()

@@ -23,7 +23,7 @@ if IN_DOCKER and not USE_LOCAL_POSTGRES:
     
     # File paths for Docker
     DATA_DIR = "/opt/airflow/walmart-etl/data"
-    CSV_FILE = os.path.join(DATA_DIR, "walmart Retail Data.csv")
+    CSV_FILE = os.path.join(DATA_DIR, "walmart_data.csv")
     # CSV_FILE = os.path.join(DATA_DIR, "scd_test_corrected.csv")
 elif IN_DOCKER and USE_LOCAL_POSTGRES:
     # Running in Docker, but want to use local Postgres
@@ -34,7 +34,7 @@ elif IN_DOCKER and USE_LOCAL_POSTGRES:
     DB_NAME = "walmart_etl"
     
     DATA_DIR = "/opt/airflow/walmart-etl/data"
-    CSV_FILE = os.path.join(DATA_DIR, "walmart Retail Data.csv")
+    CSV_FILE = os.path.join(DATA_DIR, "walmart_data.csv")
     # CSV_FILE = os.path.join(DATA_DIR, "scd_test_corrected.csv")
 else:
     # Local development environment
@@ -47,7 +47,7 @@ else:
     # File paths for local development
     PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
     DATA_DIR = os.path.join(PROJECT_DIR, "data")
-    CSV_FILE = os.path.join(DATA_DIR, "walmart Retail Data.csv")
+    CSV_FILE = os.path.join(DATA_DIR, "walmart_data.csv")
     # Uncomment below and comment above to use the smaller test file
     # CSV_FILE = os.path.join(DATA_DIR, "scd_test_corrected.csv")
 

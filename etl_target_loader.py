@@ -17,10 +17,30 @@ import numpy as np
 from datetime import datetime, timedelta, date
 from sqlalchemy import create_engine, text, MetaData, inspect
 from sqlalchemy.sql import text
-from config import get_connection_string
 
-# Import the target tables module
-from etl_target_tables import create_target_tables, metadata
+# Import the target tables module with fallback mechanisms
+try:
+    # Try direct import first
+    from etl_target_tables import create_target_tables, metadata
+except ImportError:
+    try:
+        # Try relative import
+        import sys
+        import os
+        # Add parent directory to path
+        parent_dir = os.path.dirname(os.path.abspath(__file__))
+        if parent_dir not in sys.path:
+            sys.path.insert(0, parent_dir)
+        # Try import again
+        from etl_target_tables import create_target_tables, metadata
+    except ImportError as e:
+        print(f"Error importing target tables module: {e}")
+        # Define fallback metadata
+        metadata = MetaData()
+        # Define fallback function
+        def create_target_tables():
+            print("Error: Could not import create_target_tables function")
+            return False
 
 # Generate a unique ETL batch ID for this run
 ETL_BATCH_ID = f"BATCH_{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -28,11 +48,41 @@ ETL_BATCH_ID = f"BATCH_{datetime.now().strftime('%Y%m%d%H%M%S')}"
 # Define the far future date for SCD Type 2 expiry
 FAR_FUTURE_DATE = date(9999, 12, 31)
 
-# Helper functions
-def get_engine():
-    """Get SQLAlchemy engine with connection string from config."""
-    connection_string = get_connection_string()
+# Snowflake connection parameters
+SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'ROJAN')
+SNOWFLAKE_PASSWORD = os.environ.get('SNOWFLAKE_PASSWORD', 'e!Mv5ashy5aVdNb')
+SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'GEBNTIK-YU16043')
+SNOWFLAKE_SCHEMA = os.environ.get('SNOWFLAKE_SCHEMA', 'PUBLIC')
+SNOWFLAKE_WAREHOUSE = os.environ.get('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
+SNOWFLAKE_ROLE = os.environ.get('SNOWFLAKE_ROLE', 'ACCOUNTADMIN')
+
+# Database-specific parameters
+SNOWFLAKE_DB_ODS = os.environ.get('SNOWFLAKE_DB_ODS', 'ODS_DB')
+SNOWFLAKE_DB_STAGING = os.environ.get('SNOWFLAKE_DB_STAGING', 'STAGING_DB')
+SNOWFLAKE_DB_TARGET = os.environ.get('SNOWFLAKE_DB_TARGET', 'TARGET_DB')
+
+# Function to get Snowflake Staging engine
+def get_snowflake_staging_engine():
+    """Create and return a SQLAlchemy engine for Snowflake Staging database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_STAGING}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
     return create_engine(connection_string)
+
+# Function to get Snowflake Target engine
+def get_snowflake_target_engine():
+    """Create and return a SQLAlchemy engine for Snowflake Target database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_TARGET}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
+    return create_engine(connection_string)
+
+# For backward compatibility
+def get_engine():
+    """Get SQLAlchemy engine for Snowflake Target database (for backward compatibility)."""
+    return get_snowflake_target_engine()
 
 def create_tables(engine):
     """Create target tables if they don't exist."""
@@ -82,7 +132,7 @@ def generate_date_id(date_obj):
             return None
 
 # Dimension loading functions
-def load_target_date_dimension(engine):
+def load_target_date_dimension(target_engine, staging_engine):
     """Load date dimension from staging to target."""
     print("Loading date dimension to target...")
     
@@ -169,7 +219,7 @@ def load_target_date_dimension(engine):
     print(f"Loaded {len(new_records)} new records into target date dimension.")
     return date_map
 
-def load_target_product_dimension(engine):
+def load_target_product_dimension(target_engine, staging_engine):
     """Load product dimension from staging to target with SCD Type 2."""
     print("Loading product dimension to target with SCD Type 2...")
     
@@ -338,7 +388,7 @@ def load_target_product_dimension(engine):
     return product_map
 
 # Main function to load target layer
-def load_target_customer_dimension(engine):
+def load_target_customer_dimension(target_engine, staging_engine):
     """Load customer dimension from staging to target."""
     print("Loading customer dimension to target...")
     
@@ -444,7 +494,7 @@ def load_target_customer_dimension(engine):
     print(f"Loaded {len(new_records)} new customer records into target.")
     return customer_map
 
-def load_target_supplier_dimension(engine):
+def load_target_supplier_dimension(target_engine, staging_engine):
     """Load supplier dimension from staging to target."""
     print("Loading supplier dimension to target...")
     
@@ -541,7 +591,7 @@ def load_target_supplier_dimension(engine):
     print(f"Loaded {len(new_records)} new supplier records into target.")
     return supplier_map
 
-def load_target_return_reason_dimension(engine):
+def load_target_return_reason_dimension(target_engine, staging_engine):
     """Load return reason dimension from staging to target."""
     print("Loading return reason dimension to target...")
     
@@ -635,7 +685,7 @@ def load_target_return_reason_dimension(engine):
     print(f"Loaded {len(new_records)} new return reason records into target.")
     return reason_map
 
-def load_target_store_dimension(engine):
+def load_target_store_dimension(target_engine, staging_engine):
     """Load store dimension from staging to target with SCD Type 2."""
     print("Loading store dimension to target with SCD Type 2...")
     
@@ -785,7 +835,7 @@ def load_target_store_dimension(engine):
     print(f"Loaded {len(new_records) - len(updated_records)} new stores and updated {len(updated_records)} existing stores.")
     return store_map
 
-def load_target_sales_fact(engine, date_map, customer_map, product_map, store_map):
+def load_target_sales_fact(target_engine, staging_engine, date_map, customer_map, product_map, store_map):
     """Load sales fact from staging to target."""
     print("Loading sales fact to target...")
     
@@ -933,7 +983,7 @@ def load_target_sales_fact(engine, date_map, customer_map, product_map, store_ma
     
     print(f"Loaded {len(new_records)} new sales records into target. Skipped {skipped_records} records due to missing dimension keys.")
 
-def load_target_inventory_fact(engine, date_map, product_map, store_map):
+def load_target_inventory_fact(target_engine, staging_engine, date_map, product_map, store_map):
     """Load inventory fact from staging to target."""
     print("Loading inventory fact to target...")
     
@@ -1061,7 +1111,7 @@ def load_target_inventory_fact(engine, date_map, product_map, store_map):
     
     print(f"Loaded {len(new_records)} new inventory records into target. Skipped {skipped_records} records due to missing dimension keys.")
 
-def load_target_returns_fact(engine, date_map, product_map, store_map, reason_map):
+def load_target_returns_fact(target_engine, staging_engine, date_map, product_map, store_map, reason_map):
     """Load returns fact from staging to target."""
     print("Loading returns fact to target...")
     
@@ -1206,24 +1256,29 @@ def load_target_layer():
     """Main function to load data from staging to target layer."""
     print(f"Starting ETL process for target layer with batch ID: {ETL_BATCH_ID}")
     
-    # Get database engine
-    engine = get_engine()
+    # Get database engines for both Staging and Target
+    staging_engine = get_snowflake_staging_engine()
+    target_engine = get_snowflake_target_engine()
+    
+    # Create target tables if they don't exist
+    create_tables(target_engine)
      
-    # Load dimension tables first
+    # Load dimension tables first - using both engines
+    # We'll read from Staging and write to Target
     print("\nLoading dimension tables...")
-    date_map = load_target_date_dimension(engine)
-    customer_map = load_target_customer_dimension(engine)
-    supplier_map = load_target_supplier_dimension(engine)
-    reason_map = load_target_return_reason_dimension(engine)
-    product_map = load_target_product_dimension(engine)
-    store_map = load_target_store_dimension(engine)
+    date_map = load_target_date_dimension(target_engine, staging_engine)
+    customer_map = load_target_customer_dimension(target_engine, staging_engine)
+    supplier_map = load_target_supplier_dimension(target_engine, staging_engine)
+    reason_map = load_target_return_reason_dimension(target_engine, staging_engine)
+    product_map = load_target_product_dimension(target_engine, staging_engine)
+    store_map = load_target_store_dimension(target_engine, staging_engine)
     
     # Load fact tables after dimensions
     print("\nLoading fact tables...")
     # Using direct dimension key mapping instead of the map dictionaries
-    load_target_sales_fact(engine, date_map, customer_map, product_map, store_map)
-    load_target_inventory_fact(engine, date_map, product_map, store_map)
-    load_target_returns_fact(engine, date_map, product_map, store_map, reason_map)
+    load_target_sales_fact(target_engine, staging_engine, date_map, customer_map, product_map, store_map)
+    load_target_inventory_fact(target_engine, staging_engine, date_map, product_map, store_map)
+    load_target_returns_fact(target_engine, staging_engine, date_map, product_map, store_map, reason_map)
     
     print(f"\nTarget layer ETL process completed successfully with batch ID: {ETL_BATCH_ID}")
 

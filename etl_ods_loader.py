@@ -14,10 +14,86 @@ import random
 from datetime import datetime, timedelta
 from sqlalchemy.sql import text
 import uuid
+import tempfile
 
 # Import configuration and table definitions
-from config import CSV_FILE, get_connection_string
-from etl_ods_tables import get_engine, metadata, create_ods_tables
+import os
+
+# Define the CSV file path - use forward slashes for Linux compatibility
+CSV_FILE = os.environ.get('CSV_FILE', 'data/walmart_data.csv')
+
+# Import table definitions
+from etl_ods_tables import get_snowflake_ods_engine, metadata, create_ods_tables
+
+# Helper function for Snowflake-compatible upserts
+def snowflake_upsert(engine, table_name, records, key_column, update_columns=None):
+    """
+    Perform a Snowflake-compatible upsert operation using a temporary table and MERGE statement.
+    
+    Args:
+        engine: SQLAlchemy engine connected to Snowflake
+        table_name: Target table name
+        records: List of dictionaries containing the records to insert/update
+        key_column: Primary key column name for matching
+        update_columns: List of column names to update if record exists (for UPDATE operations)
+                       If None, performs INSERT only for new records (equivalent to ON CONFLICT DO NOTHING)
+    """
+    if not records:
+        print(f"No records to upsert into {table_name}")
+        return 0
+        
+    # Create a temporary table name with random suffix to avoid conflicts
+    temp_table_name = f"temp_{table_name}_{uuid.uuid4().hex[:8]}"
+    
+    # Convert records to DataFrame
+    df_to_load = pd.DataFrame(records)
+    
+    # Use pandas to_sql to create and load the temp table
+    df_to_load.to_sql(temp_table_name, engine, index=False, if_exists='replace')
+    
+    # Build the MERGE statement
+    with engine.begin() as conn:
+        if update_columns:
+            # For upsert with updates (ON CONFLICT DO UPDATE SET)
+            update_clause = ", ".join([f"target.{col} = source.{col}" for col in update_columns])
+            conn.execute(text(f"""
+                MERGE INTO {table_name} target
+                USING {temp_table_name} source
+                ON target.{key_column} = source.{key_column}
+                WHEN MATCHED THEN
+                    UPDATE SET {update_clause}
+                WHEN NOT MATCHED THEN
+                    INSERT ({', '.join(df_to_load.columns)})
+                    VALUES ({', '.join([f'source.{col}' for col in df_to_load.columns])})
+            """))
+        else:
+            # For insert-only (ON CONFLICT DO NOTHING)
+            conn.execute(text(f"""
+                MERGE INTO {table_name} target
+                USING {temp_table_name} source
+                ON target.{key_column} = source.{key_column}
+                WHEN NOT MATCHED THEN
+                    INSERT ({', '.join(df_to_load.columns)})
+                    VALUES ({', '.join([f'source.{col}' for col in df_to_load.columns])})
+            """))
+        
+        # Drop the temporary table
+        conn.execute(text(f"DROP TABLE IF EXISTS {temp_table_name}"))
+    
+    return len(records)
+
+# Snowflake connection parameters
+SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'ROJAN')
+SNOWFLAKE_PASSWORD = os.environ.get('SNOWFLAKE_PASSWORD', 'e!Mv5ashy5aVdNb')
+SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'GEBNTIK-YU16043')
+SNOWFLAKE_SCHEMA = os.environ.get('SNOWFLAKE_SCHEMA', 'PUBLIC')
+SNOWFLAKE_WAREHOUSE = os.environ.get('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
+SNOWFLAKE_ROLE = os.environ.get('SNOWFLAKE_ROLE', 'ACCOUNTADMIN')
+
+# Database-specific parameters
+SNOWFLAKE_DB_ODS = os.environ.get('SNOWFLAKE_DB_ODS', 'ODS_DB')
+SNOWFLAKE_DB_STAGING = os.environ.get('SNOWFLAKE_DB_STAGING', 'STAGING_DB')
+SNOWFLAKE_DB_TARGET = os.environ.get('SNOWFLAKE_DB_TARGET', 'TARGET_DB')
 # ID Generation Functions
 def generate_date_id(date_obj):
     """Generate a date ID in the format YYYYMMDD."""
@@ -169,23 +245,15 @@ def load_ods_date_dimension(engine, df):
         }
         date_records.append(record)
     
-    # Insert into ODS date dimension
-    if date_records:
-        with engine.begin() as conn:  # Using begin() to auto-commit the transaction
-            conn.execute(text("""
-                INSERT INTO ods_date (
-                    date_id, full_date, day_of_week, day_of_month, 
-                    month, month_name, quarter, year, is_holiday, 
-                    source_system, load_timestamp
-                ) VALUES (
-                    :date_id, :full_date, :day_of_week, :day_of_month, 
-                    :month, :month_name, :quarter, :year, :is_holiday, 
-                    :source_system, :load_timestamp
-                )
-                ON CONFLICT (date_id) DO NOTHING
-            """), date_records)
-        
-        print(f"Loaded {len(date_records)} records into ods_date.")
+    # Insert into ODS date dimension using the Snowflake-compatible upsert helper
+    records_loaded = snowflake_upsert(
+        engine=engine,
+        table_name='ods_date',
+        records=date_records,
+        key_column='date_id'
+    )
+    
+    print(f"Loaded {records_loaded} records into ods_date.")
 
 def load_ods_customer_dimension(engine, df):
     """Load customer dimension into ODS layer.
@@ -223,27 +291,21 @@ def load_ods_customer_dimension(engine, df):
         }
         customer_records.append(record)
     
-    # Insert into ODS customer dimension
-    if customer_records:
-        with engine.begin() as conn:  # Using begin() to auto-commit the transaction
-            conn.execute(text("""
-                INSERT INTO ods_customer (
-                    customer_id, customer_name, customer_age, customer_segment,
-                    city, state, zip_code, region, source_system, load_timestamp
-                ) VALUES (
-                    :customer_id, :customer_name, :customer_age, :customer_segment,
-                    :city, :state, :zip_code, :region, :source_system, :load_timestamp
-                )
-                ON CONFLICT (customer_id) DO NOTHING
-            """), customer_records)
-        
-        print(f"Loaded {len(customer_records)} records into ods_customer with primary locations.")
-        
-        # Log information about customers with multiple locations
-        customer_location_counts = df.groupby('Customer Name')['City'].nunique()
-        multi_location_customers = customer_location_counts[customer_location_counts > 1].count()
-        print(f"Note: {multi_location_customers} customers appear in multiple locations in the source data.")
-        print(f"Each customer has been assigned their most frequent location.")
+    # Insert into ODS customer dimension using the Snowflake-compatible upsert helper
+    records_loaded = snowflake_upsert(
+        engine=engine,
+        table_name='ods_customer',
+        records=customer_records,
+        key_column='customer_id'
+    )
+    
+    print(f"Loaded {records_loaded} records into ods_customer with primary locations.")
+    
+    # Log information about customers with multiple locations
+    customer_location_counts = df.groupby('Customer Name')['City'].nunique()
+    multi_location_customers = customer_location_counts[customer_location_counts > 1].count()
+    print(f"Note: {multi_location_customers} customers appear in multiple locations in the source data.")
+    print(f"Each customer has been assigned their most frequent location.")
 
 
 def load_ods_supplier_dimension(engine, df):
@@ -326,23 +388,15 @@ def load_ods_supplier_dimension(engine, df):
         }
         supplier_records.append(record)
     
-    # Insert into ODS supplier dimension
-    if supplier_records:
-        with engine.begin() as conn:
-            conn.execute(text("""
-                INSERT INTO ods_supplier (
-                    supplier_id, supplier_name, contact_person, email, phone,
-                    address, city, state, zip_code, contract_start_date,
-                    source_system, load_timestamp
-                ) VALUES (
-                    :supplier_id, :supplier_name, :contact_person, :email, :phone,
-                    :address, :city, :state, :zip_code, :contract_start_date,
-                    :source_system, :load_timestamp
-                )
-                ON CONFLICT (supplier_id) DO NOTHING
-            """), supplier_records)
-        
-        print(f"Loaded {len(supplier_records)} records into ods_supplier.")
+    # Insert into ODS supplier dimension using the Snowflake-compatible upsert helper
+    records_loaded = snowflake_upsert(
+        engine=engine,
+        table_name='ods_supplier',
+        records=supplier_records,
+        key_column='supplier_id'
+    )
+    
+    print(f"Loaded {records_loaded} records into ods_supplier.")
     
     return category_supplier_map
 
@@ -390,25 +444,17 @@ def load_ods_product_dimension(engine, df, category_supplier_map):
         }
         product_records.append(record)
     
-    # Insert into ODS product dimension
-    if product_records:
-        with engine.begin() as conn:  # Using begin() to auto-commit the transaction
-            conn.execute(text("""
-                INSERT INTO ods_product (
-                    product_id, product_name, product_category, product_sub_category,
-                    product_container, product_base_margin, unit_price, supplier_id,
-                    source_system, load_timestamp
-                ) VALUES (
-                    :product_id, :product_name, :product_category, :product_sub_category,
-                    :product_container, :product_base_margin, :unit_price, :supplier_id,
-                    :source_system, :load_timestamp
-                )
-                ON CONFLICT (product_id) DO UPDATE SET
-                    supplier_id = EXCLUDED.supplier_id,
-                    load_timestamp = EXCLUDED.load_timestamp
-            """), product_records)
-        
-        print(f"Loaded {len(product_records)} records into ods_product.")
+    # Insert into ODS product dimension using the Snowflake-compatible upsert helper
+    # This is an upsert operation that updates supplier_id and load_timestamp if the record exists
+    records_loaded = snowflake_upsert(
+        engine=engine,
+        table_name='ods_product',
+        records=product_records,
+        key_column='product_id',
+        update_columns=['supplier_id', 'load_timestamp']
+    )
+    
+    print(f"Loaded {records_loaded} records into ods_product.")
 
 def load_ods_store_dimension(engine, df):
     """Load store dimension into ODS layer."""
@@ -432,21 +478,15 @@ def load_ods_store_dimension(engine, df):
         }
         store_records.append(record)
     
-    # Insert into ODS store dimension
-    if store_records:
-        with engine.begin() as conn:  # Using begin() to auto-commit the transaction
-            conn.execute(text("""
-                INSERT INTO ods_store (
-                    store_id, store_name, city, state, zip_code,
-                    region, source_system, load_timestamp
-                ) VALUES (
-                    :store_id, :store_name, :city, :state, :zip_code,
-                    :region, :source_system, :load_timestamp
-                )
-                ON CONFLICT (store_id) DO NOTHING
-            """), store_records)
-        
-        print(f"Loaded {len(store_records)} records into ods_store.")
+    # Insert into ODS store dimension using the Snowflake-compatible upsert helper
+    records_loaded = snowflake_upsert(
+        engine=engine,
+        table_name='ods_store',
+        records=store_records,
+        key_column='store_id'
+    )
+    
+    print(f"Loaded {records_loaded} records into ods_store.")
 
 def get_dimension_mappings(engine):
     """Get mappings from dimension tables for use in fact loading.
@@ -551,27 +591,17 @@ def load_ods_sales_fact(engine, df, customer_map, product_map, store_map):
         }
         sales_records.append(record)
     
-    # Insert into ODS sales fact
-    if sales_records:
-        with engine.begin() as conn:  # Using begin() to auto-commit the transaction
-            conn.execute(text("""
-                INSERT INTO ods_sales (
-                    sale_id, order_id, row_id, transaction_date, product_id, store_id, customer_id,
-                    order_priority, order_quantity, sales_amount, discount, profit, shipping_cost,
-                    ship_date, ship_mode, transaction_city, transaction_state, transaction_zip,
-                    product_base_margin, source_system, load_timestamp
-                ) VALUES (
-                    :sale_id, :order_id, :row_id, :transaction_date, :product_id, :store_id, :customer_id,
-                    :order_priority, :order_quantity, :sales_amount, :discount, :profit, :shipping_cost,
-                    :ship_date, :ship_mode, :transaction_city, :transaction_state, :transaction_zip,
-                    :product_base_margin, :source_system, :load_timestamp
-                )
-                ON CONFLICT (sale_id) DO NOTHING
-            """), sales_records)
-        
-        print(f"Loaded {len(sales_records)} records into ods_sales.")
-        if skipped_records > 0:
-            print(f"Skipped {skipped_records} records due to missing dimension keys or invalid dates.")
+    # Insert into ODS sales fact using the Snowflake-compatible upsert helper
+    records_loaded = snowflake_upsert(
+        engine=engine,
+        table_name='ods_sales',
+        records=sales_records,
+        key_column='sale_id'
+    )
+    
+    print(f"Loaded {records_loaded} records into ods_sales.")
+    if skipped_records > 0:
+        print(f"Skipped {skipped_records} records due to missing dimension keys or invalid dates.")
 
 def load_ods_return_reason_dimension(engine):
     """Load return reason dimension into ODS layer.
@@ -605,21 +635,15 @@ def load_ods_return_reason_dimension(engine):
         }
         reason_records.append(record)
     
-    # Insert into ODS return reason dimension
-    if reason_records:
-        with engine.begin() as conn:
-            conn.execute(text("""
-                INSERT INTO ods_return_reason (
-                    reason_code, reason_description, category,
-                    source_system, load_timestamp
-                ) VALUES (
-                    :reason_code, :reason_description, :category,
-                    :source_system, :load_timestamp
-                )
-                ON CONFLICT (reason_code) DO NOTHING
-            """), reason_records)
-        
-        print(f"Loaded {len(reason_records)} records into ods_return_reason.")
+    # Insert into ODS return reason dimension using the Snowflake-compatible upsert helper
+    records_loaded = snowflake_upsert(
+        engine=engine,
+        table_name='ods_return_reason',
+        records=reason_records,
+        key_column='reason_code'
+    )
+    
+    print(f"Loaded {records_loaded} records into ods_return_reason.")
     
     return {reason['code']: generate_return_reason_id(reason['code']) for reason in reasons}
 
@@ -685,23 +709,15 @@ def load_ods_returns_fact(engine, df, customer_map, product_map, store_map, reas
         return_records.append(record)
         return_count += 1
     
-    # Insert into ODS returns fact
-    if return_records:
-        with engine.begin() as conn:
-            conn.execute(text("""
-                INSERT INTO ods_returns (
-                    return_id, return_date, product_id, store_id,
-                    reason_code, return_amount, quantity_returned, original_sale_id,
-                    original_sale_date, return_condition, source_system, load_timestamp
-                ) VALUES (
-                    :return_id, :return_date, :product_id, :store_id,
-                    :reason_code, :return_amount, :quantity_returned, :original_sale_id,
-                    :original_sale_date, :return_condition, :source_system, :load_timestamp
-                )
-                ON CONFLICT (return_id) DO NOTHING
-            """), return_records)
-        
-        print(f"Loaded {len(return_records)} records into ods_returns.")
+    # Insert into ODS returns fact using the Snowflake-compatible upsert helper
+    records_loaded = snowflake_upsert(
+        engine=engine,
+        table_name='ods_returns',
+        records=return_records,
+        key_column='return_id'
+    )
+    
+    print(f"Loaded {records_loaded} records into ods_returns.")
 
 def load_ods_inventory_fact(engine, df):
     """Load inventory fact into ODS layer.
@@ -759,39 +775,26 @@ def load_ods_inventory_fact(engine, df):
                 inventory_records.append(record)
                 
                 # Batch insert to avoid memory issues
-                if len(inventory_records) >= 1000:
-                    with engine.begin() as conn:
-                        conn.execute(text("""
-                            INSERT INTO ods_inventory (
-                                inventory_id, product_id, store_id, inventory_date,
-                                stock_level, min_stock_level, max_stock_level,
-                                reorder_point, last_restock_date, source_system, load_timestamp
-                            ) VALUES (
-                                :inventory_id, :product_id, :store_id, :inventory_date,
-                                :stock_level, :min_stock_level, :max_stock_level,
-                                :reorder_point, :last_restock_date, :source_system, :load_timestamp
-                            )
-                            ON CONFLICT (inventory_id) DO NOTHING
-                        """), inventory_records)
-                    print(f"Loaded {len(inventory_records)} records into ods_inventory.")
+                if len(inventory_records) >= 10000:
+                    # Use Snowflake-compatible upsert helper for batch inserts
+                    records_loaded = snowflake_upsert(
+                        engine=engine,
+                        table_name='ods_inventory',
+                        records=inventory_records,
+                        key_column='inventory_id'
+                    )
+                    print(f"Loaded {records_loaded} records into ods_inventory.")
                     inventory_records = []
     
-    # Insert any remaining inventory records
+    # Insert any remaining inventory records using the Snowflake-compatible upsert helper
     if inventory_records:
-        with engine.begin() as conn:
-            conn.execute(text("""
-                INSERT INTO ods_inventory (
-                    inventory_id, product_id, store_id, inventory_date,
-                    stock_level, min_stock_level, max_stock_level,
-                    reorder_point, last_restock_date, source_system, load_timestamp
-                ) VALUES (
-                    :inventory_id, :product_id, :store_id, :inventory_date,
-                    :stock_level, :min_stock_level, :max_stock_level,
-                    :reorder_point, :last_restock_date, :source_system, :load_timestamp
-                )
-                ON CONFLICT (inventory_id) DO NOTHING
-            """), inventory_records)
-        print(f"Loaded {len(inventory_records)} records into ods_inventory.")
+        records_loaded = snowflake_upsert(
+            engine=engine,
+            table_name='ods_inventory',
+            records=inventory_records,
+            key_column='inventory_id'
+        )
+        print(f"Loaded {records_loaded} records into ods_inventory.")
 
 def load_ods_layer(engine, df):
     """Load data into ODS layer tables."""
@@ -940,8 +943,7 @@ def verify_data_loading(engine):
             # If we have returns, check the date range
             months = conn.execute(text("""
                 SELECT
-                    EXTRACT(MONTH FROM AGE(MAX(return_date), MIN(return_date))) +
-                    EXTRACT(YEAR FROM AGE(MAX(return_date), MIN(return_date))) * 12
+                    DATEDIFF('MONTH', MIN(return_date), MAX(return_date))
                 FROM ods_returns
             """)).scalar() or 0
             # Add 1 to include the current month
@@ -955,8 +957,8 @@ def verify_data_loading(engine):
 
 def main():
     """Main function to run the ETL process."""
-    # Get database engine
-    engine = get_engine()
+    # Get Snowflake ODS database engine
+    engine = get_snowflake_ods_engine()
      
     # Load data from CSV file
     df = load_csv_to_dataframe()
@@ -972,7 +974,7 @@ def main():
     # Verify data loading
     verify_data_loading(engine)
     
-    print("ETL process completed successfully!")
+    print("ETL process completed successfully in Snowflake ODS database!")
 
 if __name__ == "__main__":
     main()

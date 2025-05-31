@@ -23,12 +23,56 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.hooks.base import BaseHook
 
-# Add parent directory to sys.path to allow imports from parent modules
+# Add paths for module imports
+# First, add the parent directory (for local development)
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, parent_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+# Add the Docker mount path (for Docker environment)
+docker_project_root = "/opt/airflow/walmart-etl"
+if os.path.exists(docker_project_root) and docker_project_root not in sys.path:
+    sys.path.insert(0, docker_project_root)
+    
+# Add the Airflow dags folder parent (another way modules might be found)
+dags_parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if dags_parent not in sys.path:
+    sys.path.insert(0, dags_parent)
+    
+# Add the current working directory
+cwd = os.getcwd()
+if cwd not in sys.path:
+    sys.path.insert(0, cwd)
+
+# Print debug info
+print(f"Current working directory: {os.getcwd()}")
+print(f"Files in DAGs directory: {os.listdir(os.path.dirname(__file__))}")
+print(f"Parent directory: {parent_dir}")
+print(f"Parent directory contents: {os.listdir(parent_dir)}")
+print(f"Docker project root exists: {os.path.exists(docker_project_root)}")
+if os.path.exists(docker_project_root):
+    print(f"Docker project root contents: {os.listdir(docker_project_root)}")
+print(f"Python path: {sys.path}")
 
 # Define database connection parameters based on environment
-# These match the parameters in config.py
+# Using Snowflake for all database connections
+USE_SNOWFLAKE = True  # Always use Snowflake
+
+# Common Snowflake connection parameters
+SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'airflow')
+SNOWFLAKE_PASSWORD = os.environ.get('SNOWFLAKE_PASSWORD', 'e!Mv5ashy5aVdNb')
+SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'airflow')
+SNOWFLAKE_SCHEMA = os.environ.get('SNOWFLAKE_SCHEMA', 'PUBLIC')
+SNOWFLAKE_WAREHOUSE = os.environ.get('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
+SNOWFLAKE_ROLE = os.environ.get('SNOWFLAKE_ROLE', 'ACCOUNTADMIN')
+
+# Database-specific parameters
+SNOWFLAKE_DB_ODS = os.environ.get('SNOWFLAKE_DB_ODS', 'ODS_DB')
+SNOWFLAKE_DB_STAGING = os.environ.get('SNOWFLAKE_DB_STAGING', 'STAGING_DB')
+SNOWFLAKE_DB_TARGET = os.environ.get('SNOWFLAKE_DB_TARGET', 'TARGET_DB')
+
+# Comment out PostgreSQL connection parameters
+'''
 IN_DOCKER = os.environ.get('IN_DOCKER', 'True').lower() in ('true', '1', 't')
 USE_LOCAL_POSTGRES = os.environ.get('USE_LOCAL_POSTGRES', 'False').lower() in ('true', '1', 't')
 
@@ -53,8 +97,12 @@ else:
     DB_HOST = "localhost"
     DB_PORT = "5432"
     DB_NAME = "walmart_etl"
+'''
 
-# Function to get connection string (matches the one in config.py)
+from sqlalchemy import create_engine
+
+# Comment out PostgreSQL connection functions
+'''
 def get_connection_string():
     """Return the database connection string based on environment."""
     return f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
@@ -74,6 +122,32 @@ def get_engine():
         connection_string = get_connection_string()
         from sqlalchemy import create_engine
         return create_engine(connection_string)
+'''
+
+# Functions to get Snowflake connection engines for each database
+def get_snowflake_ods_engine():
+    """Return the Snowflake engine for ODS database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_ODS}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
+    return create_engine(connection_string)
+
+def get_snowflake_staging_engine():
+    """Return the Snowflake engine for Staging database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_STAGING}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
+    return create_engine(connection_string)
+
+def get_snowflake_target_engine():
+    """Return the Snowflake engine for Target database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_TARGET}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
+    return create_engine(connection_string)
 
 # Function to clear staging tables
 def clear_staging_tables():
@@ -81,7 +155,8 @@ def clear_staging_tables():
     try:
         print("Clearing staging tables...")
         from sqlalchemy import text
-        engine = get_engine()
+        # Use the Snowflake staging engine
+        engine = get_snowflake_staging_engine()
         
         with engine.begin() as conn:
             # Truncate all staging tables
@@ -99,57 +174,96 @@ def clear_staging_tables():
     except Exception as e:
         print(f"Error clearing staging tables: {e}")
         # Print more detailed connection information for debugging
-        print(f"Connection parameters: Host={DB_HOST}, Port={DB_PORT}, DB={DB_NAME}, User={DB_USER}")
-        print(f"IN_DOCKER={IN_DOCKER}, USE_LOCAL_POSTGRES={USE_LOCAL_POSTGRES}")
+        print(f"Snowflake connection parameters: Account={SNOWFLAKE_ACCOUNT}, DB={SNOWFLAKE_DB_STAGING}, User={SNOWFLAKE_USER}")
+        print(f"USE_SNOWFLAKE={USE_SNOWFLAKE}")
 
+# Direct import of ETL modules
+# First try to import directly using the sys.path we've set up
 try:
-    from etl_ods_tables import main as create_ods_tables
+    # Try to import the modules directly
+    print("Attempting direct imports of ETL modules...")
+    import etl_ods_tables
+    import etl_ods_loader
+    import etl_staging_tables
+    import etl_staging_loader
+    import etl_target_tables
+    import etl_target_loader
+    
+    # Get the main functions with their correct names
+    # Note: Each module has a different main function name
+    create_ods_tables = etl_ods_tables.main
+    load_ods_data = etl_ods_loader.main
+    create_staging_tables = etl_staging_tables.main
+    load_staging_data = etl_staging_loader.load_staging_layer  # This module uses load_staging_layer
+    create_target_tables = etl_target_tables.main
+    load_target_data = etl_target_loader.load_target_layer  # This module uses load_target_layer
+    
+    print("Successfully imported all ETL modules directly!")
+    
 except ImportError as e:
-    print(f"Warning: Could not import etl_ods_tables module: {e}")
-    def create_ods_tables():
-        print("Failed to import create_ods_tables function")
-        # No fallback implementation provided to avoid complexity
-        # This would require recreating the entire module's functionality
-
-try:
-    from etl_ods_loader import main as load_ods_data
-except ImportError as e:
-    print(f"Warning: Could not import etl_ods_loader module: {e}")
-    def load_ods_data():
-        print("Failed to import load_ods_data function")
-        # No fallback implementation provided to avoid complexity
-
-try:
-    from etl_staging_tables import main as create_staging_tables
-except ImportError as e:
-    print(f"Warning: Could not import etl_staging_tables module: {e}")
-    def create_staging_tables():
-        print("Failed to import create_staging_tables function")
-        # No fallback implementation provided to avoid complexity
-
-try:
-    from etl_staging_loader import main as load_staging_data
-except ImportError as e:
-    print(f"Warning: Could not import etl_staging_loader module: {e}")
-    def load_staging_data():
-        print("Failed to import load_staging_data function")
-        # No fallback implementation provided to avoid complexity
-
-try:
-    from etl_target_tables import main as create_target_tables
-except ImportError as e:
-    print(f"Warning: Could not import etl_target_tables module: {e}")
-    def create_target_tables():
-        print("Failed to import create_target_tables function")
-        # No fallback implementation provided to avoid complexity
-
-try:
-    from etl_target_loader import main as load_target_data
-except ImportError as e:
-    print(f"Warning: Could not import etl_target_loader module: {e}")
-    def load_target_data():
-        print("Failed to import load_target_data function")
-        # No fallback implementation provided to avoid complexity
+    print(f"Direct import failed: {e}")
+    print("Falling back to manual module loading...")
+    
+    # If direct import fails, try to load the modules manually
+    import importlib.util
+    import os.path
+    
+    def load_module_from_file(module_name):
+        """Load a module from a file path"""
+        # Try different possible locations for the module
+        possible_paths = [
+            # Docker path
+            os.path.join('/opt/airflow/walmart-etl', f"{module_name}.py"),
+            # Local path relative to DAG file
+            os.path.join(parent_dir, f"{module_name}.py"),
+            # Current working directory
+            os.path.join(os.getcwd(), f"{module_name}.py")
+        ]
+        
+        for path in possible_paths:
+            if os.path.exists(path):
+                print(f"Loading {module_name} from {path}")
+                spec = importlib.util.spec_from_file_location(module_name, path)
+                if spec:
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+                    return module
+        
+        # If module not found, return a dummy module with appropriate functions
+        print(f"Could not find {module_name}.py in any of the expected locations")
+        class DummyModule:
+            @staticmethod
+            def main(*args, **kwargs):
+                print(f"Error: {module_name} module not found")
+                return False
+                
+            @staticmethod
+            def load_staging_layer(*args, **kwargs):
+                print(f"Error: {module_name} module not found")
+                return False
+                
+            @staticmethod
+            def load_target_layer(*args, **kwargs):
+                print(f"Error: {module_name} module not found")
+                return False
+        
+        return DummyModule()
+    
+    # Load all modules
+    etl_ods_tables_module = load_module_from_file('etl_ods_tables')
+    etl_ods_loader_module = load_module_from_file('etl_ods_loader')
+    etl_staging_tables_module = load_module_from_file('etl_staging_tables')
+    etl_staging_loader_module = load_module_from_file('etl_staging_loader')
+    etl_target_tables_module = load_module_from_file('etl_target_tables')
+    etl_target_loader_module = load_module_from_file('etl_target_loader')
+    
+    # Get the main functions with their correct names
+    create_ods_tables = etl_ods_tables_module.main
+    load_ods_data = etl_ods_loader_module.main
+    create_staging_tables = etl_staging_tables_module.main
+    load_staging_data = etl_staging_loader_module.load_staging_layer  # This module uses load_staging_layer
+    create_target_tables = etl_target_tables_module.main
+    load_target_data = etl_target_loader_module.load_target_layer  # This module uses load_target_layer
 
 # Default arguments for the DAG
 default_args = {

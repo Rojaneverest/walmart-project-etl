@@ -3,7 +3,7 @@
 
 """
 Walmart ETL Project - Target Tables Setup
-This script creates the target layer tables using SQLAlchemy and PostgreSQL.
+This script creates the target layer tables using SQLAlchemy and Snowflake.
 These tables implement the final dimensional model with SCD Type 2 for appropriate dimensions.
 """
 
@@ -15,17 +15,34 @@ from sqlalchemy import (
     Float, Date, DateTime, Boolean, Text, ForeignKey, Numeric, 
     CheckConstraint, func
 )
-from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.sql import text
 
-# Import configuration
-from config import get_connection_string
+# Snowflake connection parameters
+SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'ROJAN')
+SNOWFLAKE_PASSWORD = os.environ.get('SNOWFLAKE_PASSWORD', 'e!Mv5ashy5aVdNb')
+SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'GEBNTIK-YU16043')
+SNOWFLAKE_SCHEMA = os.environ.get('SNOWFLAKE_SCHEMA', 'PUBLIC')
+SNOWFLAKE_WAREHOUSE = os.environ.get('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
+SNOWFLAKE_ROLE = os.environ.get('SNOWFLAKE_ROLE', 'ACCOUNTADMIN')
 
-# Create SQLAlchemy engine
-def get_engine():
-    """Create and return a SQLAlchemy engine for PostgreSQL."""
-    connection_string = get_connection_string()
+# Database-specific parameters
+SNOWFLAKE_DB_ODS = os.environ.get('SNOWFLAKE_DB_ODS', 'ODS_DB')
+SNOWFLAKE_DB_STAGING = os.environ.get('SNOWFLAKE_DB_STAGING', 'STAGING_DB')
+SNOWFLAKE_DB_TARGET = os.environ.get('SNOWFLAKE_DB_TARGET', 'TARGET_DB')
+
+# Create Snowflake engine for TARGET database
+def get_snowflake_target_engine():
+    """Create and return a SQLAlchemy engine for Snowflake TARGET database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_TARGET}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
     return create_engine(connection_string)
+
+# For backward compatibility
+def get_engine():
+    """Create and return a SQLAlchemy engine for Snowflake TARGET database (for backward compatibility)."""
+    return get_snowflake_target_engine()
 
 # Create metadata object
 metadata = MetaData()
@@ -50,8 +67,8 @@ def create_target_tables(metadata):
         Column('is_holiday', Boolean, nullable=False, default=False),
         Column('fiscal_year', Integer, nullable=False, default=2025),
         Column('fiscal_quarter', Integer, nullable=False, default=1),
-        Column('insertion_date', TIMESTAMP, nullable=False, default=func.now()),
-        Column('modification_date', TIMESTAMP, nullable=False, default=func.now())
+        Column('insertion_date', DateTime, nullable=False, default=func.now()),
+        Column('modification_date', DateTime, nullable=False, default=func.now())
     )
     
     # Target Customer dimension
@@ -67,8 +84,8 @@ def create_target_tables(metadata):
         Column('state', String(50), nullable=False, default='Unknown'),
         Column('zip_code', String(20), nullable=False, default='00000'),
         Column('region', String(50), nullable=False, default='Unknown'),
-        Column('insertion_date', TIMESTAMP, nullable=False, default=func.now()),
-        Column('modification_date', TIMESTAMP, nullable=False, default=func.now())
+        Column('insertion_date', DateTime, nullable=False, default=func.now()),
+        Column('modification_date', DateTime, nullable=False, default=func.now())
     )
     
     # Target Supplier dimension
@@ -81,8 +98,8 @@ def create_target_tables(metadata):
         Column('contact_name', String(100), nullable=False, default='Unknown'),
         Column('contact_phone', String(20), nullable=False, default='000-000-0000'),
         Column('contact_email', String(100), nullable=False, default='unknown@example.com'),
-        Column('insertion_date', TIMESTAMP, nullable=False, default=func.now()),
-        Column('modification_date', TIMESTAMP, nullable=False, default=func.now())
+        Column('insertion_date', DateTime, nullable=False, default=func.now()),
+        Column('modification_date', DateTime, nullable=False, default=func.now())
     )
     
     # Target Return Reason dimension
@@ -94,8 +111,8 @@ def create_target_tables(metadata):
         Column('reason_category', String(50), nullable=False, default='Uncategorized'),
         Column('impact_level', String(20), nullable=False, default='Medium'),
         Column('is_controllable', Boolean, nullable=False, default=False),
-        Column('insertion_date', TIMESTAMP, nullable=False, default=func.now()),
-        Column('modification_date', TIMESTAMP, nullable=False, default=func.now())
+        Column('insertion_date', DateTime, nullable=False, default=func.now()),
+        Column('modification_date', DateTime, nullable=False, default=func.now())
     )
     
     # Target Product dimension (SCD Type 2)
@@ -119,8 +136,8 @@ def create_target_tables(metadata):
         Column('expiry_date', Date, nullable=False),     # When this version expires (9999-12-31 for current)
         Column('is_current', Boolean, nullable=False, default=True),  # Flag for current version
         Column('version', Integer, nullable=False, default=1),  # Version number
-        Column('insertion_date', TIMESTAMP, nullable=False, default=func.now()),
-        Column('modification_date', TIMESTAMP, nullable=False, default=func.now())
+        Column('insertion_date', DateTime, nullable=False, default=func.now()),
+        Column('modification_date', DateTime, nullable=False, default=func.now())
     )
     
     # Target Store dimension (SCD Type 2)
@@ -140,8 +157,8 @@ def create_target_tables(metadata):
         Column('expiry_date', Date, nullable=False),     # When this version expires (9999-12-31 for current)
         Column('is_current', Boolean, nullable=False, default=True),  # Flag for current version
         Column('version', Integer, nullable=False, default=1),  # Version number
-        Column('insertion_date', TIMESTAMP, nullable=False, default=func.now()),
-        Column('modification_date', TIMESTAMP, nullable=False, default=func.now())
+        Column('insertion_date', DateTime, nullable=False, default=func.now()),
+        Column('modification_date', DateTime, nullable=False, default=func.now())
     )
     
     # Target Sales fact
@@ -168,15 +185,15 @@ def create_target_tables(metadata):
         Column('is_profitable', Boolean, nullable=False, default=True),
         Column('ship_date_key', Integer, ForeignKey('tgt_dim_date.date_key')),
         Column('ship_mode', String(50), nullable=False, default='Standard'),
-        Column('insertion_date', TIMESTAMP, nullable=False, default=func.now()),
-        Column('modification_date', TIMESTAMP, nullable=False, default=func.now())
+        Column('insertion_date', DateTime, nullable=False, default=func.now()),
+        Column('modification_date', DateTime, nullable=False, default=func.now())
     )
     
     # Target Inventory fact
     tgt_fact_inventory = Table(
         'tgt_fact_inventory', metadata,
         Column('inventory_key', Integer, primary_key=True, autoincrement=True),
-        Column('inventory_id', String(20), nullable=False),
+        Column('inventory_id', String(50), nullable=False),  # Match ODS table size
         Column('date_key', Integer, ForeignKey('tgt_dim_date.date_key'), nullable=False),
         Column('product_key', Integer, ForeignKey('tgt_dim_product.product_key'), nullable=False),
         Column('store_key', Integer, ForeignKey('tgt_dim_store.store_key'), nullable=False),
@@ -188,15 +205,15 @@ def create_target_tables(metadata):
         Column('days_of_supply', Integer),
         Column('stock_status', String(20), nullable=False, default='In Stock'),
         Column('is_in_stock', Boolean, nullable=False, default=True),
-        Column('insertion_date', TIMESTAMP, nullable=False, default=func.now()),
-        Column('modification_date', TIMESTAMP, nullable=False, default=func.now())
+        Column('insertion_date', DateTime, nullable=False, default=func.now()),
+        Column('modification_date', DateTime, nullable=False, default=func.now())
     )
     
     # Target Returns fact
     tgt_fact_returns = Table(
         'tgt_fact_returns', metadata,
         Column('return_key', Integer, primary_key=True, autoincrement=True),
-        Column('return_id', String(20), nullable=False),
+        Column('return_id', String(50), nullable=False),  # Match ODS table size
         Column('return_date_key', Integer, ForeignKey('tgt_dim_date.date_key'), nullable=False),
         Column('product_key', Integer, ForeignKey('tgt_dim_product.product_key'), nullable=False),
         Column('store_key', Integer, ForeignKey('tgt_dim_store.store_key'), nullable=False),
@@ -210,8 +227,8 @@ def create_target_tables(metadata):
         Column('days_since_sale', Integer),
         Column('is_within_30_days', Boolean, nullable=False, default=False),
         Column('return_condition', String(50), nullable=False, default='Unknown'),
-        Column('insertion_date', TIMESTAMP, nullable=False, default=func.now()),
-        Column('modification_date', TIMESTAMP, nullable=False, default=func.now())
+        Column('insertion_date', DateTime, nullable=False, default=func.now()),
+        Column('modification_date', DateTime, nullable=False, default=func.now())
     )
     
     return {
@@ -251,13 +268,16 @@ def clean_database(engine):
 # Main function
 def main():
     """Main function to create target tables."""
-    engine = get_engine()
+    # Get the Snowflake TARGET engine
+    engine = get_snowflake_target_engine()
     
     # Clean up existing tables
     clean_database(engine)
     
     # Create target tables
     create_tables(engine)
+    
+    print("All target tables created successfully in Snowflake TARGET database!")
 
 if __name__ == "__main__":
     main()

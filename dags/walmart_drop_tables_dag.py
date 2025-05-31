@@ -18,7 +18,24 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, parent_dir)
 
 # Define database connection parameters based on environment
-# These match the parameters in config.py
+# Using Snowflake for all database connections
+USE_SNOWFLAKE = True  # Always use Snowflake
+
+# Common Snowflake connection parameters
+SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'ROJAN')
+SNOWFLAKE_PASSWORD = os.environ.get('SNOWFLAKE_PASSWORD', 'e!Mv5ashy5aVdNb')
+SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'GEBNTIK-YU16043')
+SNOWFLAKE_SCHEMA = os.environ.get('SNOWFLAKE_SCHEMA', 'PUBLIC')
+SNOWFLAKE_WAREHOUSE = os.environ.get('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
+SNOWFLAKE_ROLE = os.environ.get('SNOWFLAKE_ROLE', 'ACCOUNTADMIN')
+
+# Database-specific parameters
+SNOWFLAKE_DB_ODS = os.environ.get('SNOWFLAKE_DB_ODS', 'ODS_DB')
+SNOWFLAKE_DB_STAGING = os.environ.get('SNOWFLAKE_DB_STAGING', 'STAGING_DB')
+SNOWFLAKE_DB_TARGET = os.environ.get('SNOWFLAKE_DB_TARGET', 'TARGET_DB')
+
+# Comment out PostgreSQL connection parameters
+'''
 IN_DOCKER = os.environ.get('IN_DOCKER', 'False').lower() in ('true', '1', 't')
 USE_LOCAL_POSTGRES = os.environ.get('USE_LOCAL_POSTGRES', 'False').lower() in ('true', '1', 't')
 
@@ -43,11 +60,42 @@ else:
     DB_HOST = "localhost"
     DB_PORT = "5432"
     DB_NAME = "walmart_etl"
+'''
 
-# Function to get connection string (matches the one in config.py)
+from sqlalchemy import create_engine
+
+# Comment out PostgreSQL connection function
+'''
 def get_connection_string():
     """Return the database connection string based on environment."""
     return f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+'''
+
+# Functions to get Snowflake connection engines for each database
+def get_snowflake_ods_engine():
+    """Return the Snowflake engine for ODS database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_ODS}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
+    return create_engine(connection_string)
+
+def get_snowflake_staging_engine():
+    """Return the Snowflake engine for Staging database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_STAGING}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
+    return create_engine(connection_string)
+
+def get_snowflake_target_engine():
+    """Return the Snowflake engine for Target database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_TARGET}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
+    return create_engine(connection_string)
+
 
 # Import the drop_all_tables function
 try:
@@ -57,15 +105,18 @@ except ImportError as e:
     def drop_all_tables():
         print("Fallback: Using local drop_all_tables function")
         try:
-            # Use the local get_connection_string function
-            from sqlalchemy import create_engine, text
-            connection_string = get_connection_string()
-            engine = create_engine(connection_string)
+            # Use the Snowflake engines
+            from sqlalchemy import text
+            ods_engine = get_snowflake_ods_engine()
+            staging_engine = get_snowflake_staging_engine()
+            target_engine = get_snowflake_target_engine()
             
             # Implement basic drop tables functionality
-            print("Dropping all tables in the database...")
-            with engine.begin() as conn:
-                # Drop staging tables first
+            print("Dropping all tables in the databases...")
+            
+            # Drop staging tables
+            print("Dropping staging tables...")
+            with staging_engine.begin() as conn:
                 conn.execute(text("DROP TABLE IF EXISTS stg_sales CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS stg_inventory CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS stg_returns CASCADE"))
@@ -75,8 +126,10 @@ except ImportError as e:
                 conn.execute(text("DROP TABLE IF EXISTS stg_supplier CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS stg_return_reason CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS stg_date CASCADE"))
-                
-                # Drop ODS tables
+            
+            # Drop ODS tables
+            print("Dropping ODS tables...")
+            with ods_engine.begin() as conn:
                 conn.execute(text("DROP TABLE IF EXISTS ods_sales CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS ods_inventory CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS ods_returns CASCADE"))
@@ -86,8 +139,10 @@ except ImportError as e:
                 conn.execute(text("DROP TABLE IF EXISTS ods_supplier CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS ods_return_reason CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS ods_date CASCADE"))
-                
-                # Drop target tables
+            
+            # Drop target tables
+            print("Dropping target tables...")
+            with target_engine.begin() as conn:
                 conn.execute(text("DROP TABLE IF EXISTS tgt_fact_sales CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS tgt_fact_inventory CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS tgt_fact_returns CASCADE"))

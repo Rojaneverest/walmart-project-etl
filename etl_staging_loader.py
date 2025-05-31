@@ -18,18 +18,69 @@ import numpy as np
 from datetime import datetime, timedelta
 from sqlalchemy import create_engine, text, MetaData
 from sqlalchemy.sql import text
-from config import get_connection_string
 
-# Import the staging tables module
-from etl_staging_tables import create_staging_tables, metadata
+# Import the staging tables module with fallback mechanisms
+try:
+    # Try direct import first
+    from etl_staging_tables import create_staging_tables, metadata
+except ImportError:
+    try:
+        # Try relative import
+        import sys
+        import os
+        # Add parent directory to path
+        parent_dir = os.path.dirname(os.path.abspath(__file__))
+        if parent_dir not in sys.path:
+            sys.path.insert(0, parent_dir)
+        # Try import again
+        from etl_staging_tables import create_staging_tables, metadata
+    except ImportError as e:
+        print(f"Error importing staging tables module: {e}")
+        # Define fallback metadata
+        metadata = MetaData()
+        # Define fallback function
+        def create_staging_tables():
+            print("Error: Could not import create_staging_tables function")
+            return False
 
 # Generate a unique ETL batch ID for this run
 ETL_BATCH_ID = f"BATCH_{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
-def get_engine():
-    """Get SQLAlchemy engine with connection string from config."""
-    connection_string = get_connection_string()
+# Snowflake connection parameters
+SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'ROJAN')
+SNOWFLAKE_PASSWORD = os.environ.get('SNOWFLAKE_PASSWORD', 'e!Mv5ashy5aVdNb')
+SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'GEBNTIK-YU16043')
+SNOWFLAKE_SCHEMA = os.environ.get('SNOWFLAKE_SCHEMA', 'PUBLIC')
+SNOWFLAKE_WAREHOUSE = os.environ.get('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
+SNOWFLAKE_ROLE = os.environ.get('SNOWFLAKE_ROLE', 'ACCOUNTADMIN')
+
+# Database-specific parameters
+SNOWFLAKE_DB_ODS = os.environ.get('SNOWFLAKE_DB_ODS', 'ODS_DB')
+SNOWFLAKE_DB_STAGING = os.environ.get('SNOWFLAKE_DB_STAGING', 'STAGING_DB')
+SNOWFLAKE_DB_TARGET = os.environ.get('SNOWFLAKE_DB_TARGET', 'TARGET_DB')
+
+# Function to get Snowflake ODS engine
+def get_snowflake_ods_engine():
+    """Create and return a SQLAlchemy engine for Snowflake ODS database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_ODS}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
     return create_engine(connection_string)
+
+# Function to get Snowflake Staging engine
+def get_snowflake_staging_engine():
+    """Create and return a SQLAlchemy engine for Snowflake Staging database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_STAGING}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
+    return create_engine(connection_string)
+
+# For backward compatibility
+def get_engine():
+    """Get SQLAlchemy engine for Snowflake Staging database (for backward compatibility)."""
+    return get_snowflake_staging_engine()
 
 def clean_database(engine):
     """Clean up staging tables before loading."""
@@ -74,12 +125,12 @@ def generate_date_id(date_obj):
             return None
 
 # Dimension loading functions
-def load_staging_date_dimension(engine):
+def load_staging_date_dimension(staging_engine, ods_engine):
     """Load date dimension from ODS to staging with transformations."""
     print("Loading date dimension to staging...")
     
     # Extract data from ODS
-    with engine.begin() as conn:
+    with ods_engine.begin() as conn:
         result = conn.execute(text("""
             SELECT 
                 date_id, full_date, day_of_week, day_of_month, 
@@ -198,12 +249,12 @@ def load_staging_date_dimension(engine):
     print(f"Loaded {len(staging_records)} records into staging date dimension.")
     return date_map
 
-def load_staging_customer_dimension(engine):
+def load_staging_customer_dimension(staging_engine, ods_engine):
     """Load customer dimension from ODS to staging with transformations."""
     print("Loading customer dimension to staging...")
     
     # Extract data from ODS
-    with engine.begin() as conn:
+    with ods_engine.begin() as conn:
         result = conn.execute(text("""
             SELECT 
                 customer_id, customer_name, customer_age, customer_segment,
@@ -293,12 +344,12 @@ def load_staging_customer_dimension(engine):
     print(f"Loaded {len(staging_records)} records into staging customer dimension.")
     return customer_map
 
-def load_staging_product_dimension(engine):
+def load_staging_product_dimension(staging_engine, ods_engine):
     """Load product dimension from ODS to staging with transformations."""
     print("Loading product dimension to staging...")
     
     # Extract data from ODS
-    with engine.begin() as conn:
+    with ods_engine.begin() as conn:
         result = conn.execute(text("""
             SELECT 
                 p.product_id, p.product_name, p.product_category, p.product_sub_category,
@@ -390,12 +441,12 @@ def load_staging_product_dimension(engine):
     print(f"Loaded {len(staging_records)} product records to staging.")
     return product_map
 
-def load_staging_store_dimension(engine):
+def load_staging_store_dimension(staging_engine, ods_engine):
     """Load store dimension from ODS to staging with transformations."""
     print("Loading store dimension to staging...")
     
     # Extract data from ODS
-    with engine.begin() as conn:
+    with ods_engine.begin() as conn:
         result = conn.execute(text("""
             SELECT 
                 store_id, store_name, location, city, state, zip_code, region
@@ -472,12 +523,12 @@ def load_staging_store_dimension(engine):
     print(f"Loaded {len(staging_records)} store records to staging.")
     return store_map
 
-def load_staging_supplier_dimension(engine):
+def load_staging_supplier_dimension(staging_engine, ods_engine):
     """Load supplier dimension from ODS to staging with transformations."""
     print("Loading supplier dimension to staging...")
     
     # Extract data from ODS
-    with engine.begin() as conn:
+    with ods_engine.begin() as conn:
         result = conn.execute(text("""
             SELECT 
                 supplier_id, supplier_name, contact_person, phone, email
@@ -550,12 +601,12 @@ def load_staging_supplier_dimension(engine):
     print(f"Loaded {len(staging_records)} supplier records to staging.")
     return supplier_map
 
-def load_staging_return_reason_dimension(engine):
+def load_staging_return_reason_dimension(staging_engine, ods_engine):
     """Load return reason dimension from ODS to staging with transformations."""
     print("Loading return reason dimension to staging...")
     
     # Extract data from ODS
-    with engine.begin() as conn:
+    with ods_engine.begin() as conn:
         result = conn.execute(text("""
             SELECT 
                 reason_code, reason_description, category
@@ -627,12 +678,12 @@ def load_staging_return_reason_dimension(engine):
     return reason_map
 
 # Fact table loading functions
-def load_staging_sales_fact(engine, date_map, customer_map, product_map, store_map):
+def load_staging_sales_fact(staging_engine, ods_engine, date_map, customer_map, product_map, store_map):
     """Load sales fact from ODS to staging with transformations."""
     print("Loading sales fact to staging...")
     
     # Extract data from ODS
-    with engine.begin() as conn:
+    with ods_engine.begin() as conn:
         result = conn.execute(text("""
             SELECT 
                 s.sale_id, s.order_id, s.row_id, s.transaction_date, s.ship_date,
@@ -768,12 +819,12 @@ def load_staging_sales_fact(engine, date_map, customer_map, product_map, store_m
     print(f"Loaded {len(staging_records)} sales records to staging.")
     return sales_map
 
-def load_staging_returns_fact(engine, date_map, product_map, store_map, reason_map=None):
+def load_staging_returns_fact(staging_engine, ods_engine, date_map, product_map, store_map, reason_map=None):
     """Load returns fact from ODS to staging with transformations."""
     print("Loading returns fact to staging...")
     
     # Extract data from ODS
-    with engine.begin() as conn:
+    with ods_engine.begin() as conn:
         result = conn.execute(text("""
             SELECT 
                 r.return_id, r.return_date, r.product_id, r.store_id, r.reason_code,
@@ -912,12 +963,12 @@ def load_staging_returns_fact(engine, date_map, product_map, store_map, reason_m
     print(f"Loaded {len(staging_records)} returns records to staging.")
     return returns_map
 
-def load_staging_inventory_fact(engine, date_map, product_map, store_map):
+def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_map, store_map):
     """Load inventory fact from ODS to staging with transformations."""
     print("Loading inventory fact to staging...")
     
     # Extract data from ODS
-    with engine.begin() as conn:
+    with ods_engine.begin() as conn:
         result = conn.execute(text("""
             SELECT 
                 i.inventory_id, i.inventory_date, i.product_id, i.store_id, i.stock_level,
@@ -1125,26 +1176,32 @@ def load_staging_layer():
     """Main function to load data from ODS to staging layer."""
     print(f"Starting ETL process for staging layer with batch ID: {ETL_BATCH_ID}")
     
-    # Get database engine
-    engine = get_engine()
+    # Get database engines for both ODS and Staging
+    ods_engine = get_snowflake_ods_engine()
+    staging_engine = get_snowflake_staging_engine()
+    
+    # Clean and create staging tables in the staging database
+    clean_database(staging_engine)
+    create_tables(staging_engine)
       
-    # Load dimension tables first
+    # Load dimension tables first - using both engines
+    # We'll read from ODS and write to Staging
     print("\nLoading dimension tables...")
-    date_map = load_staging_date_dimension(engine)
-    customer_map = load_staging_customer_dimension(engine)
-    product_map = load_staging_product_dimension(engine)
-    store_map = load_staging_store_dimension(engine)
-    supplier_map = load_staging_supplier_dimension(engine)
-    reason_map = load_staging_return_reason_dimension(engine)
+    date_map = load_staging_date_dimension(staging_engine, ods_engine)
+    customer_map = load_staging_customer_dimension(staging_engine, ods_engine)
+    product_map = load_staging_product_dimension(staging_engine, ods_engine)
+    store_map = load_staging_store_dimension(staging_engine, ods_engine)
+    supplier_map = load_staging_supplier_dimension(staging_engine, ods_engine)
+    reason_map = load_staging_return_reason_dimension(staging_engine, ods_engine)
     
     # Load fact tables using dimension mappings
     print("\nLoading fact tables...")
-    sales_map = load_staging_sales_fact(engine, date_map, customer_map, product_map, store_map)
-    returns_map = load_staging_returns_fact(engine, date_map, product_map, store_map, reason_map)
-    inventory_map = load_staging_inventory_fact(engine, date_map, product_map, store_map)
+    sales_map = load_staging_sales_fact(staging_engine, ods_engine, date_map, customer_map, product_map, store_map)
+    returns_map = load_staging_returns_fact(staging_engine, ods_engine, date_map, product_map, store_map, reason_map)
+    inventory_map = load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_map, store_map)
     
     # Verify the data loaded into staging
-    verify_staging_data(engine)
+    verify_staging_data(staging_engine)
     
     print(f"\nStaging layer ETL process completed successfully with batch ID: {ETL_BATCH_ID}")
 

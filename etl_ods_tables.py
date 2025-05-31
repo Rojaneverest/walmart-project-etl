@@ -4,7 +4,7 @@
 """
 Walmart ETL Project - Database Tables Setup
 This script creates the tables for the ODS, staging, and target layers
-using SQLAlchemy and PostgreSQL.
+using SQLAlchemy and Snowflake.
 """
 
 import os
@@ -15,17 +15,34 @@ from sqlalchemy import (
     Float, Date, DateTime, Boolean, Text, ForeignKey, Numeric, 
     CheckConstraint, func
 )
-from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.sql import text
 
-# Import configuration
-from config import get_connection_string
+# Snowflake connection parameters
+SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'ROJAN')
+SNOWFLAKE_PASSWORD = os.environ.get('SNOWFLAKE_PASSWORD', 'e!Mv5ashy5aVdNb')
+SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'GEBNTIK-YU16043')
+SNOWFLAKE_SCHEMA = os.environ.get('SNOWFLAKE_SCHEMA', 'PUBLIC')
+SNOWFLAKE_WAREHOUSE = os.environ.get('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
+SNOWFLAKE_ROLE = os.environ.get('SNOWFLAKE_ROLE', 'ACCOUNTADMIN')
 
-# Create SQLAlchemy engine
-def get_engine():
-    """Create and return a SQLAlchemy engine for PostgreSQL."""
-    connection_string = get_connection_string()
+# Database-specific parameters
+SNOWFLAKE_DB_ODS = os.environ.get('SNOWFLAKE_DB_ODS', 'ODS_DB')
+SNOWFLAKE_DB_STAGING = os.environ.get('SNOWFLAKE_DB_STAGING', 'STAGING_DB')
+SNOWFLAKE_DB_TARGET = os.environ.get('SNOWFLAKE_DB_TARGET', 'TARGET_DB')
+
+# Create Snowflake engine for ODS database
+def get_snowflake_ods_engine():
+    """Create and return a SQLAlchemy engine for Snowflake ODS database."""
+    connection_string = (
+        f"snowflake://{SNOWFLAKE_USER}:{SNOWFLAKE_PASSWORD}@{SNOWFLAKE_ACCOUNT}/"
+        f"{SNOWFLAKE_DB_ODS}/{SNOWFLAKE_SCHEMA}?warehouse={SNOWFLAKE_WAREHOUSE}&role={SNOWFLAKE_ROLE}"
+    )
     return create_engine(connection_string)
+
+# For backward compatibility
+def get_engine():
+    """Create and return a SQLAlchemy engine for Snowflake ODS database (for backward compatibility)."""
+    return get_snowflake_ods_engine()
 
 # Create metadata object
 metadata = MetaData()
@@ -48,7 +65,7 @@ def create_ods_tables(metadata):
         Column('is_holiday', Boolean),
         # Removed holiday_name as specified
         Column('source_system', String(50)),
-        Column('load_timestamp', TIMESTAMP, default=func.now())
+        Column('load_timestamp', DateTime, default=func.now())
     )
     
     # ODS Customer dimension
@@ -67,7 +84,7 @@ def create_ods_tables(metadata):
         Column('region', String(50)),
         # Removed country as specified
         Column('source_system', String(50)),
-        Column('load_timestamp', TIMESTAMP, default=func.now())
+        Column('load_timestamp', DateTime, default=func.now())
     )
     
     # ODS Product dimension
@@ -82,7 +99,7 @@ def create_ods_tables(metadata):
         Column('unit_price', Numeric(10, 2)),
         Column('supplier_id', String(20), ForeignKey('ods_supplier.supplier_id')),
         Column('source_system', String(50)),
-        Column('load_timestamp', TIMESTAMP, default=func.now())
+        Column('load_timestamp', DateTime, default=func.now())
     )
     
     # ODS Store dimension
@@ -99,7 +116,7 @@ def create_ods_tables(metadata):
         # Removed opening_date as specified
         # Removed remodeling_date as specified
         Column('source_system', String(50)),
-        Column('load_timestamp', TIMESTAMP, default=func.now())
+        Column('load_timestamp', DateTime, default=func.now())
     )
     
     # ODS Supplier dimension
@@ -117,7 +134,7 @@ def create_ods_tables(metadata):
         Column('contract_start_date', Date),
         # Removed supplier_rating as specified
         Column('source_system', String(50)),
-        Column('load_timestamp', TIMESTAMP, default=func.now())
+        Column('load_timestamp', DateTime, default=func.now())
     )
     
     # ODS Return Reason dimension
@@ -127,7 +144,7 @@ def create_ods_tables(metadata):
         Column('reason_description', String(200)),
         Column('category', String(50)),
         Column('source_system', String(50)),
-        Column('load_timestamp', TIMESTAMP, default=func.now())
+        Column('load_timestamp', DateTime, default=func.now())
     )
     
     # ODS Sales fact
@@ -154,32 +171,32 @@ def create_ods_tables(metadata):
         Column('transaction_zip', String(20)),
         Column('product_base_margin', Float),
         Column('source_system', String(50)),
-        Column('load_timestamp', TIMESTAMP, default=func.now())
+        Column('load_timestamp', DateTime, default=func.now())
     )
     
     # ODS Inventory fact
     ods_inventory = Table(
         'ods_inventory', metadata,
-        Column('inventory_id', String(50), primary_key=True),  # Increased from 20 to 50 characters
+        Column('inventory_id', String(50), primary_key=True),
         Column('inventory_date', Date),
-        Column('product_id', String(50), ForeignKey('ods_product.product_id')),  # Increased from 20 to 50 characters
-        Column('store_id', String(50), ForeignKey('ods_store.store_id')),  # Increased from 20 to 50 characters
+        Column('product_id', String(20), ForeignKey('ods_product.product_id')),  # Match product_id size
+        Column('store_id', String(20), ForeignKey('ods_store.store_id')),  # Match store_id size
         Column('stock_level', Integer),
         Column('min_stock_level', Integer),
         Column('max_stock_level', Integer),
         Column('reorder_point', Integer),
         Column('last_restock_date', Date),
         Column('source_system', String(50)),
-        Column('load_timestamp', TIMESTAMP, default=func.now())
+        Column('load_timestamp', DateTime, default=func.now())
     )
     
     # ODS Returns fact
     ods_returns = Table(
         'ods_returns', metadata,
-        Column('return_id', String(50), primary_key=True),  # Increased from 20 to 50 characters
+        Column('return_id', String(50), primary_key=True),
         Column('return_date', Date),
-        Column('product_id', String(50), ForeignKey('ods_product.product_id')),  # Increased from 20 to 50 characters
-        Column('store_id', String(50), ForeignKey('ods_store.store_id')),  # Increased from 20 to 50 characters
+        Column('product_id', String(20), ForeignKey('ods_product.product_id')),  # Match product_id size
+        Column('store_id', String(20), ForeignKey('ods_store.store_id')),  # Match store_id size
         Column('reason_code', String(20), ForeignKey('ods_return_reason.reason_code')),
         Column('return_amount', Numeric(12, 2)),
         Column('quantity_returned', Integer),
@@ -187,7 +204,7 @@ def create_ods_tables(metadata):
         Column('original_sale_date', Date),  # Added missing column
         Column('return_condition', String(50)),
         Column('source_system', String(50)),
-        Column('load_timestamp', TIMESTAMP, default=func.now())
+        Column('load_timestamp', DateTime, default=func.now())
     )
     
     return {
@@ -205,7 +222,8 @@ def create_ods_tables(metadata):
 # Main function to create all tables
 def main():
     """Main function to create all tables."""
-    engine = get_engine()
+    # Get the Snowflake ODS engine
+    engine = get_snowflake_ods_engine()
     
     # Create ODS tables
     ods_tables = create_ods_tables(metadata)
@@ -213,7 +231,7 @@ def main():
     # Create all tables in the database
     metadata.create_all(engine)
     
-    print("All tables created successfully!")
+    print("All ODS tables created successfully in Snowflake ODS database!")
 
 if __name__ == "__main__":
     main()
