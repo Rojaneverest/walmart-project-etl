@@ -54,7 +54,7 @@ def create_ods_tables(metadata):
     # ODS Date dimension
     ods_date = Table(
         'ods_date', metadata,
-        Column('date_id', Integer, primary_key=True),
+        Column('date_id', Integer),  # Removed primary key constraint
         Column('full_date', Date, nullable=False),
         Column('day_of_week', String(10)),
         Column('day_of_month', Integer),
@@ -71,7 +71,7 @@ def create_ods_tables(metadata):
     # ODS Customer dimension
     ods_customer = Table(
         'ods_customer', metadata,
-        Column('customer_id', String(20), primary_key=True),
+        Column('customer_id', String(20)),  # Removed primary key constraint
         Column('customer_name', String(100)),
         Column('customer_age', String(10)),  # Using string as it might have missing values
         Column('customer_segment', String(50)),
@@ -90,14 +90,14 @@ def create_ods_tables(metadata):
     # ODS Product dimension
     ods_product = Table(
         'ods_product', metadata,
-        Column('product_id', String(20), primary_key=True),
+        Column('product_id', String(20)),  # Removed primary key constraint
         Column('product_name', String(200)),
         Column('product_category', String(50)),
         Column('product_sub_category', String(50)),
         Column('product_container', String(50)),
         Column('product_base_margin', Float),
         Column('unit_price', Numeric(10, 2)),
-        Column('supplier_id', String(20), ForeignKey('ods_supplier.supplier_id')),
+        Column('supplier_id', String(20)),  # Removed foreign key constraint
         Column('source_system', String(50)),
         Column('load_timestamp', DateTime, default=func.now())
     )
@@ -105,7 +105,7 @@ def create_ods_tables(metadata):
     # ODS Store dimension
     ods_store = Table(
         'ods_store', metadata,
-        Column('store_id', String(20), primary_key=True),  # Using 20 characters for consistency
+        Column('store_id', String(20)),  # Removed primary key constraint
         Column('store_name', String(100)),
         Column('location', String(200)),
         Column('city', String(50)),
@@ -122,7 +122,7 @@ def create_ods_tables(metadata):
     # ODS Supplier dimension
     ods_supplier = Table(
         'ods_supplier', metadata,
-        Column('supplier_id', String(20), primary_key=True),
+        Column('supplier_id', String(20)),  # Removed primary key constraint
         Column('supplier_name', String(100)),
         Column('contact_person', String(100)),
         Column('email', String(100)),
@@ -140,7 +140,7 @@ def create_ods_tables(metadata):
     # ODS Return Reason dimension
     ods_return_reason = Table(
         'ods_return_reason', metadata,
-        Column('reason_code', String(20), primary_key=True),
+        Column('reason_code', String(20)),  # Removed primary key constraint
         Column('reason_description', String(200)),
         Column('category', String(50)),
         Column('source_system', String(50)),
@@ -150,13 +150,13 @@ def create_ods_tables(metadata):
     # ODS Sales fact
     ods_sales = Table(
         'ods_sales', metadata,
-        Column('sale_id', String(20), primary_key=True),
+        Column('sale_id', String(20)),  # Removed primary key constraint
         Column('order_id', String(20)),
         Column('row_id', Integer),
         Column('transaction_date', Date),
-        Column('product_id', String(20), ForeignKey('ods_product.product_id')),
-        Column('store_id', String(20), ForeignKey('ods_store.store_id')),
-        Column('customer_id', String(20), ForeignKey('ods_customer.customer_id')),
+        Column('product_id', String(20)),  # Removed foreign key constraint
+        Column('store_id', String(20)),  # Removed foreign key constraint
+        Column('customer_id', String(20)),  # Removed foreign key constraint
         Column('order_priority', String(20)),
         Column('order_quantity', Integer),
         Column('sales_amount', Numeric(12, 2)),
@@ -177,10 +177,10 @@ def create_ods_tables(metadata):
     # ODS Inventory fact
     ods_inventory = Table(
         'ods_inventory', metadata,
-        Column('inventory_id', String(50), primary_key=True),
+        Column('inventory_id', String(50)),  # Removed primary key constraint
         Column('inventory_date', Date),
-        Column('product_id', String(20), ForeignKey('ods_product.product_id')),  # Match product_id size
-        Column('store_id', String(20), ForeignKey('ods_store.store_id')),  # Match store_id size
+        Column('product_id', String(20)),  # Removed foreign key constraint
+        Column('store_id', String(20)),  # Removed foreign key constraint
         Column('stock_level', Integer),
         Column('min_stock_level', Integer),
         Column('max_stock_level', Integer),
@@ -193,14 +193,14 @@ def create_ods_tables(metadata):
     # ODS Returns fact
     ods_returns = Table(
         'ods_returns', metadata,
-        Column('return_id', String(50), primary_key=True),
+        Column('return_id', String(50)),  # Removed primary key constraint
         Column('return_date', Date),
-        Column('product_id', String(20), ForeignKey('ods_product.product_id')),  # Match product_id size
-        Column('store_id', String(20), ForeignKey('ods_store.store_id')),  # Match store_id size
-        Column('reason_code', String(20), ForeignKey('ods_return_reason.reason_code')),
+        Column('product_id', String(20)),  # Removed foreign key constraint
+        Column('store_id', String(20)),  # Removed foreign key constraint
+        Column('reason_code', String(20)),  # Removed foreign key constraint
         Column('return_amount', Numeric(12, 2)),
         Column('quantity_returned', Integer),
-        Column('original_sale_id', String(20), ForeignKey('ods_sales.sale_id')),
+        Column('original_sale_id', String(20)),  # Removed foreign key constraint
         Column('original_sale_date', Date),  # Added missing column
         Column('return_condition', String(50)),
         Column('source_system', String(50)),

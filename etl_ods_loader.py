@@ -15,18 +15,23 @@ from datetime import datetime, timedelta
 from sqlalchemy.sql import text
 import uuid
 import tempfile
-
+from dotenv import load_dotenv
+load_dotenv()  
 # Import configuration and table definitions
 import os
 
 # Define the CSV file path - use forward slashes for Linux compatibility
-CSV_FILE = os.environ.get('CSV_FILE', 'data/walmart_data.csv')
+CSV_FILE = os.environ.get('CSV_FILE', 'data/scd_test_2.csv')
 
+print(f"Environment CSV_FILE: {os.environ.get('CSV_FILE')}")
+print(f"Using CSV file: {CSV_FILE}")
+print(f"Loading CSV from: {os.path.abspath(CSV_FILE)}")
+print(f"File exists: {os.path.exists(CSV_FILE)}")
 # Import table definitions
 from etl_ods_tables import get_snowflake_ods_engine, metadata, create_ods_tables
 
 # Helper function for Snowflake-compatible upserts
-def snowflake_upsert(engine, table_name, records, key_column, update_columns=None):
+def snowflake_upsert(engine, table_name, records, key_column, update_columns=None, allow_duplicate_ids=True):
     """
     Perform a Snowflake-compatible upsert operation using a temporary table and MERGE statement.
     
@@ -37,6 +42,9 @@ def snowflake_upsert(engine, table_name, records, key_column, update_columns=Non
         key_column: Primary key column name for matching
         update_columns: List of column names to update if record exists (for UPDATE operations)
                        If None, performs INSERT only for new records (equivalent to ON CONFLICT DO NOTHING)
+        allow_duplicate_ids: If True, allows records with the same ID but different column values to be 
+                           inserted as separate rows. This is useful for the ODS layer where we want to 
+                           capture all data as-is and handle SCD logic in later stages.
     """
     if not records:
         print(f"No records to upsert into {table_name}")
@@ -48,22 +56,32 @@ def snowflake_upsert(engine, table_name, records, key_column, update_columns=Non
     # Convert records to DataFrame
     df_to_load = pd.DataFrame(records)
     
-    # Handle potential duplicates in the source data by keeping the latest record for each key
-    # This prevents the 'Duplicate row detected during DML action' error in Snowflake
-    if key_column in df_to_load.columns:
-        # If there are duplicates, keep the last occurrence (assuming it's the most recent)
-        # Sort by load_timestamp if available to ensure we keep the most recent record
-        if 'load_timestamp' in df_to_load.columns:
-            df_to_load = df_to_load.sort_values('load_timestamp')
-        df_to_load = df_to_load.drop_duplicates(subset=[key_column], keep='last')
-        print(f"Removed duplicate keys in {key_column} for {table_name}. {len(records) - len(df_to_load)} duplicates removed.")
+    # Only remove exact duplicates (all columns identical) to prevent Snowflake errors
+    # but allow rows with the same ID but different values in other columns
+    original_count = len(df_to_load)
+    df_to_load = df_to_load.drop_duplicates()
+    if len(df_to_load) < original_count:
+        print(f"Removed {original_count - len(df_to_load)} exact duplicate rows from {table_name} (all columns identical).")
     
     # Use pandas to_sql to create and load the temp table
     df_to_load.to_sql(temp_table_name, engine, index=False, if_exists='replace')
     
-    # Build the MERGE statement
+    # Build the SQL statement based on the operation type
     with engine.begin() as conn:
-        if update_columns:
+        if allow_duplicate_ids:
+            # For ODS layer: Insert all records directly without checking for existing IDs
+            # This allows multiple rows with the same ID but different column values
+            # We use a direct INSERT instead of MERGE to bypass key-based matching
+            columns_list = ', '.join(df_to_load.columns)
+            values_list = ', '.join([f'source.{col}' for col in df_to_load.columns])
+            
+            conn.execute(text(f"""
+                INSERT INTO {table_name} ({columns_list})
+                SELECT {values_list} FROM {temp_table_name} source
+            """))
+            print(f"Inserted all {len(df_to_load)} records into {table_name} allowing duplicate IDs.")
+            
+        elif update_columns:
             # For upsert with updates (ON CONFLICT DO UPDATE SET)
             update_clause = ", ".join([f"target.{col} = source.{col}" for col in update_columns])
             conn.execute(text(f"""
@@ -190,6 +208,10 @@ def generate_sale_id(order_id, row_id):
 def load_csv_to_dataframe():
     """Load CSV file into a pandas DataFrame."""
     try:
+        abs_path = os.path.abspath(CSV_FILE)
+        print(f"Attempting to load CSV from: {abs_path}")
+        if os.path.exists(abs_path):
+            print(f"File size: {os.path.getsize(abs_path)} bytes")
         df = pd.read_csv(CSV_FILE)
         print(f"Loaded {len(df)} rows from CSV file.")
         return df
