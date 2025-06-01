@@ -82,14 +82,12 @@ def execute_sql(engine, sql_statement, params=None):
 def load_dim_date(target_engine):
     """Loads data into tgt_dim_date from stg_date."""
     print("Loading data into tgt_dim_date...")
-    # Assuming tgt_dim_date.date_key is the YYYYMMDD integer from stg_date.date_id
-    # and tgt_dim_date.date_id is also populated with the same YYYYMMDD value.
-    # The target table definition has date_key as PK (not auto-increment).
+    
     sql = f"""
     MERGE INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date AS tgt
     USING (
-        SELECT
-            date_id,          -- This is the YYYYMMDD value
+        SELECT 
+            date_id,
             full_date,
             day_of_week,
             day_of_month,
@@ -101,11 +99,31 @@ def load_dim_date(target_engine):
             is_holiday,
             fiscal_year,
             fiscal_quarter,
-            etl_timestamp AS insertion_date, -- Use staging timestamp or NOW()
-            etl_timestamp AS modification_date
-        FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date
+            etl_timestamp
+        FROM (
+            SELECT 
+                date_id,
+                full_date,
+                day_of_week,
+                day_of_month,
+                month,
+                month_name,
+                quarter,
+                year,
+                is_weekend,
+                is_holiday,
+                fiscal_year,
+                fiscal_quarter,
+                etl_timestamp,
+                ROW_NUMBER() OVER (
+                    PARTITION BY date_id 
+                    ORDER BY etl_timestamp DESC, full_date DESC
+                ) as rn
+            FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date
+        ) ranked
+        WHERE rn = 1
     ) AS src
-    ON tgt.date_key = src.date_id -- Match on the YYYYMMDD value
+    ON tgt.date_id = src.date_id
     WHEN MATCHED THEN
         UPDATE SET
             tgt.full_date = src.full_date,
@@ -122,30 +140,42 @@ def load_dim_date(target_engine):
             tgt.modification_date = CURRENT_TIMESTAMP()
     WHEN NOT MATCHED THEN
         INSERT (
-            date_key, date_id, full_date, day_of_week, day_of_month,
+            date_id, full_date, day_of_week, day_of_month,
             month, month_name, quarter, year, is_weekend, is_holiday,
             fiscal_year, fiscal_quarter, insertion_date, modification_date
         ) VALUES (
-            src.date_id, src.date_id, src.full_date, src.day_of_week, src.day_of_month,
+            src.date_id, src.full_date, src.day_of_week, src.day_of_month,
             src.month, src.month_name, src.quarter, src.year, src.is_weekend, src.is_holiday,
             src.fiscal_year, src.fiscal_quarter, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
-        );
+        )
     """
+    
     execute_sql(target_engine, sql)
     print("tgt_dim_date loaded successfully.")
 
 def load_dim_customer(target_engine):
     """Loads data into tgt_dim_customer from stg_customer (SCD Type 1 like)."""
     print("Loading data into tgt_dim_customer...")
-    # tgt_dim_customer.customer_key is auto-increment.
-    # We match on customer_id (natural key).
+    
+
+    # Main MERGE with deduplication
     sql = f"""
     MERGE INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_customer tgt
     USING (
         SELECT
             customer_id, customer_name, customer_age, age_group,
             customer_segment, city, state, zip_code, region
-        FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_customer
+        FROM (
+            SELECT
+                customer_id, customer_name, customer_age, age_group,
+                customer_segment, city, state, zip_code, region,
+                ROW_NUMBER() OVER (
+                    PARTITION BY customer_id 
+                    ORDER BY customer_name ASC, city ASC  -- Choose your business logic here
+                ) as rn
+            FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_customer
+        ) ranked
+        WHERE rn = 1
     ) src
     ON tgt.customer_id = src.customer_id
     WHEN MATCHED THEN
@@ -170,19 +200,31 @@ def load_dim_customer(target_engine):
             CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
         );
     """
+    
     execute_sql(target_engine, sql)
     print("tgt_dim_customer loaded successfully.")
 
 def load_dim_supplier(target_engine):
     """Loads data into tgt_dim_supplier from stg_supplier (SCD Type 1 like)."""
     print("Loading data into tgt_dim_supplier...")
+    
     sql = f"""
     MERGE INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_supplier tgt
     USING (
         SELECT
             supplier_id, supplier_name, supplier_type,
             contact_name, contact_phone, contact_email
-        FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_supplier
+        FROM (
+            SELECT
+                supplier_id, supplier_name, supplier_type,
+                contact_name, contact_phone, contact_email,
+                ROW_NUMBER() OVER (
+                    PARTITION BY supplier_id 
+                    ORDER BY supplier_name ASC, contact_name ASC
+                ) as rn
+            FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_supplier
+        ) ranked
+        WHERE rn = 1
     ) src
     ON tgt.supplier_id = src.supplier_id
     WHEN MATCHED THEN
@@ -204,19 +246,32 @@ def load_dim_supplier(target_engine):
             CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
         );
     """
+    
     execute_sql(target_engine, sql)
     print("tgt_dim_supplier loaded successfully.")
+
 
 def load_dim_return_reason(target_engine):
     """Loads data into tgt_dim_return_reason from stg_return_reason (SCD Type 1 like)."""
     print("Loading data into tgt_dim_return_reason...")
+    
     sql = f"""
     MERGE INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_return_reason tgt
     USING (
         SELECT
             reason_code, reason_description, reason_category,
             impact_level, is_controllable
-        FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_return_reason
+        FROM (
+            SELECT
+                reason_code, reason_description, reason_category,
+                impact_level, is_controllable,
+                ROW_NUMBER() OVER (
+                    PARTITION BY reason_code 
+                    ORDER BY reason_description ASC, reason_category ASC
+                ) as rn
+            FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_return_reason
+        ) ranked
+        WHERE rn = 1
     ) src
     ON tgt.reason_code = src.reason_code
     WHEN MATCHED THEN
@@ -237,67 +292,59 @@ def load_dim_return_reason(target_engine):
             CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
         );
     """
+    
     execute_sql(target_engine, sql)
     print("tgt_dim_return_reason loaded successfully.")
 
 def load_dim_product_scd2(target_engine):
-    """Loads data into tgt_dim_product using SCD Type 2 logic."""
-    print("Loading data into tgt_dim_product (SCD Type 2)...")
+    """Loads data into tgt_dim_product using SCD Type 2 logic with proper handling of current records only."""
+    print("Loading data into tgt_dim_product (SCD Type 2) using current records only...")
 
-    # Attributes to check for changes in Product dimension
-    # From etl_staging_loader product transformations
-    attributes_to_check = [
-        ("s.product_name", "t.product_name"),
-        ("s.product_category", "t.product_category"),
-        ("s.product_sub_category", "t.product_sub_category"),
-        ("s.product_container", "t.product_container"),
-        ("s.unit_price", "t.unit_price"),
-        ("s.price_tier", "t.price_tier"), # Derived in staging
-        ("s.product_base_margin", "t.product_base_margin"),
-        ("s.margin_percentage", "t.margin_percentage"), # Derived in staging
-        ("s.is_high_margin", "t.is_high_margin"), # Derived in staging
-        ("s.supplier_id", "t.supplier_id"),
-        ("s.supplier_name", "t.supplier_name") # From join in staging
-    ]
-    change_conditions = " OR ".join([f"NVL(TRIM({s_col}),'') != NVL(TRIM({t_col}),'')" for s_col, t_col in attributes_to_check])
-    # For numeric/boolean, NVL might not be needed or different comparison needed
-    # Simplified for now, assuming string-like comparisons after casting or direct numeric/boolean compare
-    # Snowflake handles type conversion in comparisons generally well.
-    # A more robust comparison would be: (s.col != t.col OR (s.col IS NULL AND t.col IS NOT NULL) OR (s.col IS NOT NULL AND t.col IS NULL))
-
-    # Step 1: Stage changes (New products and products with changed attributes)
-    # product_key in tgt_dim_product is auto-increment.
-    # version is managed manually for SCD2.
-    temp_changes_sql = f"""
-    CREATE OR REPLACE TEMPORARY TABLE temp_product_changes AS
-    SELECT
-        s.product_id, s.product_name, s.product_category, s.product_sub_category,
-        s.product_container, s.unit_price, s.price_tier, s.product_base_margin,
-        s.margin_percentage, s.is_high_margin, s.supplier_id, s.supplier_name,
-        t.product_key AS current_target_key,
-        t.version AS current_version,
-        CASE WHEN t.product_key IS NULL THEN 'NEW' ELSE 'CHANGED' END AS change_type
-    FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_product s
-    LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product t
-      ON s.product_id = t.product_id AND t.is_current = TRUE
-    WHERE t.product_key IS NULL OR ({change_conditions});
+    # Step 1: Create staging table with ONLY CURRENT/LATEST records from ODS
+    staging_sql = f"""
+    CREATE OR REPLACE TEMPORARY TABLE temp_product_stage AS
+    SELECT 
+        product_id, product_name, product_category, product_sub_category,
+        product_container, unit_price, price_tier, product_base_margin,
+        margin_percentage, is_high_margin, supplier_id, supplier_name,
+        etl_batch_id, etl_timestamp
+    FROM (
+        SELECT *,
+            ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY etl_timestamp DESC) as rn
+        FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_product
+    ) ranked
+    WHERE rn = 1;  -- Only get the latest version of each product
     """
-    execute_sql(target_engine, temp_changes_sql)
 
-    # Step 2: Expire old records for 'CHANGED' products
-    expire_sql = f"""
+    # Step 2: Expire old records for changed products
+    expire_old_records_sql = f"""
     UPDATE {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product
-    SET is_current = FALSE,
+    SET 
+        is_current = FALSE,
         expiry_date = '{EXPIRY_DATE_FOR_OLD_RECORDS.isoformat()}',
         modification_date = CURRENT_TIMESTAMP()
-    WHERE product_key IN (SELECT current_target_key FROM temp_product_changes WHERE change_type = 'CHANGED');
+    WHERE product_id IN (
+        SELECT s.product_id
+        FROM temp_product_stage s
+        JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product d
+          ON s.product_id = d.product_id AND d.is_current = TRUE
+        WHERE 
+            -- Check if any tracked columns have changed
+            CONCAT(COALESCE(s.product_name, ''), '|', COALESCE(s.product_category, ''), '|', COALESCE(s.product_sub_category, ''), '|',
+                   COALESCE(s.product_container, ''), '|', COALESCE(s.unit_price::VARCHAR, ''), '|', COALESCE(s.price_tier, ''), '|',
+                   COALESCE(s.product_base_margin::VARCHAR, ''), '|', COALESCE(s.margin_percentage::VARCHAR, ''), '|',
+                   COALESCE(s.is_high_margin::VARCHAR, ''), '|', COALESCE(s.supplier_id, ''), '|', COALESCE(s.supplier_name, ''))
+            <>
+            CONCAT(COALESCE(d.product_name, ''), '|', COALESCE(d.product_category, ''), '|', COALESCE(d.product_sub_category, ''), '|',
+                   COALESCE(d.product_container, ''), '|', COALESCE(d.unit_price::VARCHAR, ''), '|', COALESCE(d.price_tier, ''), '|',
+                   COALESCE(d.product_base_margin::VARCHAR, ''), '|', COALESCE(d.margin_percentage::VARCHAR, ''), '|',
+                   COALESCE(d.is_high_margin::VARCHAR, ''), '|', COALESCE(d.supplier_id, ''), '|', COALESCE(d.supplier_name, ''))
+    )
+    AND is_current = TRUE;
     """
-    execute_sql(target_engine, expire_sql)
 
-    # Step 3: Insert new records and new versions of changed records
-    # For new records, use a very early effective date to ensure it covers all transaction dates
-    # For changed records, use the current date as the effective date
-    insert_sql = f"""
+    # Step 3: Insert new versions for changed products and completely new products
+    insert_current_records_sql = f"""
     INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product (
         product_id, product_name, product_category, product_sub_category,
         product_container, unit_price, price_tier, product_base_margin,
@@ -306,86 +353,307 @@ def load_dim_product_scd2(target_engine):
         insertion_date, modification_date
     )
     SELECT
-        src.product_id, src.product_name, src.product_category, src.product_sub_category,
-        src.product_container, src.unit_price, src.price_tier, src.product_base_margin,
-        src.margin_percentage, src.is_high_margin, src.supplier_id, src.supplier_name,
+        s.product_id, s.product_name, s.product_category, s.product_sub_category,
+        s.product_container, s.unit_price, s.price_tier, s.product_base_margin,
+        s.margin_percentage, s.is_high_margin, s.supplier_id, s.supplier_name,
         CASE 
-            WHEN src.change_type = 'NEW' THEN '2000-01-01' -- Use a very early date for new records
-            ELSE '{TODAY_DATE.isoformat()}' -- Use current date for changed records
-        END AS effective_date,
-        '{FAR_FUTURE_EXPIRY_DATE.isoformat()}' AS expiry_date,
-        TRUE AS is_current,
-        COALESCE(src.current_version, 0) + 1 AS version,
-        CURRENT_TIMESTAMP() AS insertion_date,
-        CURRENT_TIMESTAMP() AS modification_date
-    FROM temp_product_changes src;
+            WHEN expired_products.product_id IS NOT NULL THEN '{TODAY_DATE.isoformat()}'  -- Changed product
+            ELSE '2000-01-01'  -- New product
+        END as effective_date,
+        '9999-12-31' as expiry_date,
+        TRUE as is_current,
+        COALESCE(max_versions.max_version, 0) + 1 as version,
+        CURRENT_TIMESTAMP() as insertion_date,
+        CURRENT_TIMESTAMP() as modification_date
+    FROM temp_product_stage s
+    LEFT JOIN (
+        -- Products that were just expired (changed products)
+        SELECT DISTINCT product_id 
+        FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product 
+        WHERE is_current = FALSE 
+        AND expiry_date = '{EXPIRY_DATE_FOR_OLD_RECORDS.isoformat()}'
+    ) expired_products ON s.product_id = expired_products.product_id
+    LEFT JOIN (
+        -- Get the highest version for each product
+        SELECT 
+            product_id, 
+            MAX(version) as max_version
+        FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product
+        GROUP BY product_id
+    ) max_versions ON s.product_id = max_versions.product_id
+    WHERE 
+        -- Insert if it's a new product OR if it's a changed existing product
+        max_versions.product_id IS NULL  -- Completely new product
+        OR expired_products.product_id IS NOT NULL;  -- Changed existing product
     """
-    execute_sql(target_engine, insert_sql)
-    print("tgt_dim_product (SCD Type 2) loaded successfully.")
+
+    # Step 4: Cleanup staging table
+    cleanup_sql = "DROP TABLE IF EXISTS temp_product_stage;"
+
+    # Execute all steps
+    with target_engine.connect() as connection:
+        transaction = connection.begin()
+        try:
+            print("Step 1: Creating temporary staging table with latest records only...")
+            connection.execute(text(staging_sql))
+            
+            # --- LOGGING: Inspect temp_product_stage ---
+            print("\n--- temp_product_stage content (latest records only) ---")
+            sample_data_query = "SELECT product_id, product_name, unit_price, supplier_name, etl_timestamp FROM temp_product_stage ORDER BY product_id;"
+            sample_data = connection.execute(text(sample_data_query)).fetchall()
+            for row in sample_data:
+                print(f"  {row}")
+            staging_count = connection.execute(text('SELECT COUNT(*) FROM temp_product_stage')).scalar()
+            print(f"Total LATEST records in temp_product_stage: {staging_count}")
+            
+            # Show what's in the original staging table for comparison
+            original_staging_count = connection.execute(text(f'SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_product')).scalar()
+            print(f"Total records in original stg_product (includes history): {original_staging_count}")
+            print("-------------------------------------------\n")
+
+            # --- LOGGING: Pre-operation counts in target ---
+            print("\n--- Pre-operation counts in tgt_dim_product ---")
+            initial_current_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product WHERE is_current = TRUE")).scalar()
+            initial_total_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product")).scalar()
+            print(f"  Initial current records: {initial_current_count}")
+            print(f"  Initial total records: {initial_total_count}")
+            
+            # Show current products in dim table
+            if initial_current_count > 0:
+                print("  Current products in dim table:")
+                current_products = connection.execute(text(f"SELECT product_id, product_name, version FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product WHERE is_current = TRUE ORDER BY product_id")).fetchall()
+                for row in current_products:
+                    print(f"    {row}")
+            print("-------------------------------------------\n")
+
+            print("Step 2: Expiring old records for changed products...")
+            expire_result = connection.execute(text(expire_old_records_sql))
+            print(f"Records expired: {expire_result.rowcount}")
+
+            # --- LOGGING: Post-expire counts ---
+            print("\n--- Post-expire counts in tgt_dim_product ---")
+            expired_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product WHERE is_current = FALSE AND expiry_date = '{EXPIRY_DATE_FOR_OLD_RECORDS.isoformat()}'")).scalar()
+            current_after_expire_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product WHERE is_current = TRUE")).scalar()
+            print(f"  Records expired in this run: {expired_count}")
+            print(f"  Current records after expire: {current_after_expire_count}")
+            
+            if expired_count > 0:
+                print("  Products that were expired:")
+                expired_products = connection.execute(text(f"SELECT product_id, product_name, version FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product WHERE is_current = FALSE AND expiry_date = '{EXPIRY_DATE_FOR_OLD_RECORDS.isoformat()}'")).fetchall()
+                for row in expired_products:
+                    print(f"    {row}")
+            print("-------------------------------------------\n")
+
+            print("Step 3: Inserting current records (new and updated versions)...")
+            insert_result = connection.execute(text(insert_current_records_sql))
+            print(f"Records inserted: {insert_result.rowcount}")
+
+            # --- LOGGING: Final counts ---
+            print("\n--- Final counts in tgt_dim_product ---")
+            final_current_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product WHERE is_current = TRUE")).scalar()
+            final_total_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product")).scalar()
+            new_products_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product WHERE is_current = TRUE AND effective_date = '2000-01-01' AND version = 1")).scalar()
+            updated_products_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product WHERE is_current = TRUE AND effective_date = '{TODAY_DATE.isoformat()}'")).scalar()
+            
+            print(f"  Final current records: {final_current_count}")
+            print(f"  Final total records: {final_total_count}")
+            print(f"  New products added: {new_products_count}")
+            print(f"  Updated product versions: {updated_products_count}")
+            
+            print("  Final current products in dim table:")
+            final_products = connection.execute(text(f"SELECT product_id, product_name, version, effective_date, is_current FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product WHERE is_current = TRUE ORDER BY product_id, version")).fetchall()
+            for row in final_products:
+                print(f"    {row}")
+            print("-------------------------------------------\n")
+            
+            print("Step 4: Cleaning up staging table...")
+            connection.execute(text(cleanup_sql))
+            
+            transaction.commit()
+            print("tgt_dim_product (SCD Type 2) loaded successfully.")
+            
+        except Exception as e:
+            print(f"Error during SCD Type 2 operation for tgt_dim_product. Rolling back transaction.")
+            transaction.rollback()
+            print(f"Error details: {e}")
+            raise
+
+
 
 def load_dim_store_scd2(target_engine):
-    """Loads data into tgt_dim_store using SCD Type 2 logic."""
-    print("Loading data into tgt_dim_store (SCD Type 2)...")
+    """Loads data into tgt_dim_store using SCD Type 2 logic with proper handling of current records only."""
+    print("Loading data into tgt_dim_store (SCD Type 2) using current records only...")
 
-    attributes_to_check = [
-        ("s.store_name", "t.store_name"),
-        ("s.location", "t.location"),
-        ("s.city", "t.city"),
-        ("s.state", "t.state"),
-        ("s.zip_code", "t.zip_code"),
-        ("s.region", "t.region"),
-        ("s.market", "t.market") # Derived in staging
-    ]
-    change_conditions = " OR ".join([f"NVL(TRIM({s_col}),'') != NVL(TRIM({t_col}),'')" for s_col, t_col in attributes_to_check])
-
-    temp_changes_sql = f"""
-    CREATE OR REPLACE TEMPORARY TABLE temp_store_changes AS
-    SELECT
-        s.store_id, s.store_name, s.location, s.city, s.state,
-        s.zip_code, s.region, s.market,
-        t.store_key AS current_target_key,
-        t.version AS current_version,
-        CASE WHEN t.store_key IS NULL THEN 'NEW' ELSE 'CHANGED' END AS change_type
-    FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_store s
-    LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store t
-      ON s.store_id = t.store_id AND t.is_current = TRUE
-    WHERE t.store_key IS NULL OR ({change_conditions});
+    # Step 1: Create staging table with ONLY CURRENT/LATEST records from ODS
+    staging_sql = f"""
+    CREATE OR REPLACE TEMPORARY TABLE temp_store_stage AS
+    SELECT 
+        store_id, store_name, location, city, state, zip_code, region, market,
+        etl_batch_id, etl_timestamp
+    FROM (
+        SELECT *,
+            ROW_NUMBER() OVER (PARTITION BY store_id ORDER BY etl_timestamp DESC) as rn
+        FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_store
+    ) ranked
+    WHERE rn = 1;  -- Only get the latest version of each store
     """
-    execute_sql(target_engine, temp_changes_sql)
 
-    expire_sql = f"""
+    # Step 2: Expire old records for changed stores
+    expire_old_records_sql = f"""
     UPDATE {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store
-    SET is_current = FALSE,
+    SET 
+        is_current = FALSE,
         expiry_date = '{EXPIRY_DATE_FOR_OLD_RECORDS.isoformat()}',
         modification_date = CURRENT_TIMESTAMP()
-    WHERE store_key IN (SELECT current_target_key FROM temp_store_changes WHERE change_type = 'CHANGED');
+    WHERE store_id IN (
+        SELECT s.store_id
+        FROM temp_store_stage s
+        JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store d
+          ON s.store_id = d.store_id AND d.is_current = TRUE
+        WHERE 
+            -- Check if any tracked columns have changed
+            CONCAT(COALESCE(s.store_name, ''), '|', COALESCE(s.location, ''), '|', COALESCE(s.city, ''), '|',
+                   COALESCE(s.state, ''), '|', COALESCE(s.zip_code, ''), '|', COALESCE(s.region, ''), '|',
+                   COALESCE(s.market, ''))
+            <>
+            CONCAT(COALESCE(d.store_name, ''), '|', COALESCE(d.location, ''), '|', COALESCE(d.city, ''), '|',
+                   COALESCE(d.state, ''), '|', COALESCE(d.zip_code, ''), '|', COALESCE(d.region, ''), '|',
+                   COALESCE(d.market, ''))
+    )
+    AND is_current = TRUE;
     """
-    execute_sql(target_engine, expire_sql)
 
-    # For new records, use a very early effective date to ensure it covers all transaction dates
-    # For changed records, use the current date as the effective date
-    insert_sql = f"""
+    # Step 3: Insert new versions for changed stores and completely new stores
+    insert_current_records_sql = f"""
     INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store (
         store_id, store_name, location, city, state, zip_code, region, market,
         effective_date, expiry_date, is_current, version,
         insertion_date, modification_date
     )
     SELECT
-        src.store_id, src.store_name, src.location, src.city, src.state, src.zip_code, src.region, src.market,
+        s.store_id, s.store_name, s.location, s.city, s.state, s.zip_code, 
+        s.region, s.market,
         CASE 
-            WHEN src.change_type = 'NEW' THEN '2000-01-01' -- Use a very early date for new records
-            ELSE '{TODAY_DATE.isoformat()}' -- Use current date for changed records
-        END AS effective_date,
-        '{FAR_FUTURE_EXPIRY_DATE.isoformat()}' AS expiry_date,
-        TRUE AS is_current,
-        COALESCE(src.current_version, 0) + 1 AS version,
-        CURRENT_TIMESTAMP() AS insertion_date,
-        CURRENT_TIMESTAMP() AS modification_date
-    FROM temp_store_changes src;
+            WHEN expired_stores.store_id IS NOT NULL THEN '{TODAY_DATE.isoformat()}'  -- Changed store
+            ELSE '2000-01-01'  -- New store
+        END as effective_date,
+        '9999-12-31' as expiry_date,
+        TRUE as is_current,
+        COALESCE(max_versions.max_version, 0) + 1 as version,
+        CURRENT_TIMESTAMP() as insertion_date,
+        CURRENT_TIMESTAMP() as modification_date
+    FROM temp_store_stage s
+    LEFT JOIN (
+        -- Stores that were just expired (changed stores)
+        SELECT DISTINCT store_id 
+        FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store 
+        WHERE is_current = FALSE 
+        AND expiry_date = '{EXPIRY_DATE_FOR_OLD_RECORDS.isoformat()}'
+    ) expired_stores ON s.store_id = expired_stores.store_id
+    LEFT JOIN (
+        -- Get the highest version for each store
+        SELECT 
+            store_id, 
+            MAX(version) as max_version
+        FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store
+        GROUP BY store_id
+    ) max_versions ON s.store_id = max_versions.store_id
+    WHERE 
+        -- Insert if it's a new store OR if it's a changed existing store
+        max_versions.store_id IS NULL  -- Completely new store
+        OR expired_stores.store_id IS NOT NULL;  -- Changed existing store
     """
-    execute_sql(target_engine, insert_sql)
 
-# --- Fact Table Loading Functions ---
+    # Step 4: Cleanup staging table
+    cleanup_sql = "DROP TABLE IF EXISTS temp_store_stage;"
+
+    # Execute all steps
+    with target_engine.connect() as connection:
+        transaction = connection.begin()
+        try:
+            print("Step 1: Creating temporary staging table with latest records only...")
+            connection.execute(text(staging_sql))
+            
+            # --- LOGGING: Inspect temp_store_stage ---
+            print("\n--- temp_store_stage content (latest records only) ---")
+            sample_data_query = "SELECT store_id, store_name, city, state, etl_timestamp FROM temp_store_stage ORDER BY store_id;"
+            sample_data = connection.execute(text(sample_data_query)).fetchall()
+            for row in sample_data:
+                print(f"  {row}")
+            staging_count = connection.execute(text('SELECT COUNT(*) FROM temp_store_stage')).scalar()
+            print(f"Total LATEST records in temp_store_stage: {staging_count}")
+            
+            # Show what's in the original staging table for comparison
+            original_staging_count = connection.execute(text(f'SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_store')).scalar()
+            print(f"Total records in original stg_store (includes history): {original_staging_count}")
+            print("-------------------------------------------\n")
+
+            # --- LOGGING: Pre-operation counts in target ---
+            print("\n--- Pre-operation counts in tgt_dim_store ---")
+            initial_current_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store WHERE is_current = TRUE")).scalar()
+            initial_total_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store")).scalar()
+            print(f"  Initial current records: {initial_current_count}")
+            print(f"  Initial total records: {initial_total_count}")
+            
+            # Show current stores in dim table
+            if initial_current_count > 0:
+                print("  Current stores in dim table:")
+                current_stores = connection.execute(text(f"SELECT store_id, store_name, city, version FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store WHERE is_current = TRUE ORDER BY store_id")).fetchall()
+                for row in current_stores:
+                    print(f"    {row}")
+            print("-------------------------------------------\n")
+
+            print("Step 2: Expiring old records for changed stores...")
+            expire_result = connection.execute(text(expire_old_records_sql))
+            print(f"Records expired: {expire_result.rowcount}")
+
+            # --- LOGGING: Post-expire counts ---
+            print("\n--- Post-expire counts in tgt_dim_store ---")
+            expired_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store WHERE is_current = FALSE AND expiry_date = '{EXPIRY_DATE_FOR_OLD_RECORDS.isoformat()}'")).scalar()
+            current_after_expire_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store WHERE is_current = TRUE")).scalar()
+            print(f"  Records expired in this run: {expired_count}")
+            print(f"  Current records after expire: {current_after_expire_count}")
+            
+            if expired_count > 0:
+                print("  Stores that were expired:")
+                expired_stores = connection.execute(text(f"SELECT store_id, store_name, city, version FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store WHERE is_current = FALSE AND expiry_date = '{EXPIRY_DATE_FOR_OLD_RECORDS.isoformat()}'")).fetchall()
+                for row in expired_stores:
+                    print(f"    {row}")
+            print("-------------------------------------------\n")
+
+            print("Step 3: Inserting current records (new and updated versions)...")
+            insert_result = connection.execute(text(insert_current_records_sql))
+            print(f"Records inserted: {insert_result.rowcount}")
+
+            # --- LOGGING: Final counts ---
+            print("\n--- Final counts in tgt_dim_store ---")
+            final_current_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store WHERE is_current = TRUE")).scalar()
+            final_total_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store")).scalar()
+            new_stores_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store WHERE is_current = TRUE AND effective_date = '2000-01-01' AND version = 1")).scalar()
+            updated_stores_count = connection.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store WHERE is_current = TRUE AND effective_date = '{TODAY_DATE.isoformat()}'")).scalar()
+            
+            print(f"  Final current records: {final_current_count}")
+            print(f"  Final total records: {final_total_count}")
+            print(f"  New stores added: {new_stores_count}")
+            print(f"  Updated store versions: {updated_stores_count}")
+            
+            print("  Final current stores in dim table:")
+            final_stores = connection.execute(text(f"SELECT store_id, store_name, city, version, effective_date, is_current FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store WHERE is_current = TRUE ORDER BY store_id, version")).fetchall()
+            for row in final_stores:
+                print(f"    {row}")
+            print("-------------------------------------------\n")
+            
+            print("Step 4: Cleaning up staging table...")
+            connection.execute(text(cleanup_sql))
+            
+            transaction.commit()
+            print("tgt_dim_store (SCD Type 2) loaded successfully.")
+            
+        except Exception as e:
+            print(f"Error during SCD Type 2 operation for tgt_dim_store. Rolling back transaction.")
+            transaction.rollback()
+            print(f"Error details: {e}")
+            raise
 
 def load_fact_sales(target_engine):
     """Loads data into tgt_fact_sales from stg_sales."""

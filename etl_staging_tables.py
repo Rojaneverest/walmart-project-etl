@@ -52,7 +52,7 @@ def create_staging_tables(metadata):
     stg_date = Table(
         'stg_date', metadata,
         Column('date_key', Integer, primary_key=True, autoincrement=True),
-        Column('date_id', Integer, nullable=False, unique=True),  # Original ID from ODS
+        Column('date_id', Integer, nullable=False),  # Original ID from ODS
         Column('full_date', Date, nullable=False),
         Column('day_of_week', String(10)),
         Column('day_of_month', Integer),

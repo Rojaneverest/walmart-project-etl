@@ -21,7 +21,7 @@ load_dotenv()
 import os
 
 # Define the CSV file path - use forward slashes for Linux compatibility
-CSV_FILE = os.environ.get('CSV_FILE', 'data/scd_test_2.csv')
+CSV_FILE = '/opt/airflow/walmart-etl/data/scd_test_corrected.csv'
 
 print(f"Environment CSV_FILE: {os.environ.get('CSV_FILE')}")
 print(f"Using CSV file: {CSV_FILE}")

@@ -54,8 +54,8 @@ def create_target_tables(metadata):
     # Target Date dimension
     tgt_dim_date = Table(
         'tgt_dim_date', metadata,
-        Column('date_key', Integer, primary_key=True),
-        Column('date_id', Integer, nullable=False),
+        Column('date_key', Integer, primary_key=True, autoincrement=True),
+        Column('date_id', Integer, nullable=False, unique=True),
         Column('full_date', Date, nullable=False),
         Column('day_of_week', String(10), nullable=False, default='Unknown'),
         Column('day_of_month', Integer, nullable=False, default=1),
@@ -270,10 +270,7 @@ def main():
     """Main function to create target tables."""
     # Get the Snowflake TARGET engine
     engine = get_snowflake_target_engine()
-    
-    # Clean up existing tables
-    clean_database(engine)
-    
+        
     # Create target tables
     create_tables(engine)
     

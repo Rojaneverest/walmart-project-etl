@@ -1110,58 +1110,60 @@ def load_staging_returns_fact(staging_engine, ods_engine, date_map, product_map,
     print(f"Loaded {len(staging_records)} returns records to staging.")
     return returns_map
 
+import math # Import math for ceiling division
+
 def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_map, store_map):
     """Load inventory fact from ODS to staging with transformations.
-    
+
     Ensures that inventory records are only loaded for dates that exist in the
     staging date dimension (which comes from ODS date dimension).
     """
     print("Loading inventory fact to staging...")
-    
+
     # Extract data from ODS
     with ods_engine.begin() as conn:
         result = conn.execute(text("""
-            SELECT 
+            SELECT
                 i.inventory_id, i.inventory_date, i.product_id, i.store_id, i.stock_level,
                 i.min_stock_level, i.max_stock_level, i.reorder_point, i.last_restock_date
             FROM ods_inventory i
         """))
         inventory_records = [dict(row._mapping) for row in result]
-    
+
     if not inventory_records:
         print("No inventory records found in ODS.")
         return {}
-    
+
     print(f"Found {len(inventory_records)} inventory records in ODS.")
     print(f"Date map size: {len(date_map)}")
     print(f"Product map size: {len(product_map)}")
     print(f"Store map size: {len(store_map)}")
-    
+
     # Print date range in date_map for debugging
     if date_map:
         date_ids = sorted(date_map.keys())
         print(f"Date map range: {min(date_ids)} to {max(date_ids)}")
         print(f"Sample date_map keys: {date_ids[:5]}")
-        
+
         # Get a sample of dates from inventory records for comparison
-        sample_inventory_dates = [generate_date_id(record['inventory_date']) 
-                                 for record in inventory_records[:5] 
-                                 if record['inventory_date']]
+        sample_inventory_dates = [generate_date_id(record['inventory_date'])
+                                  for record in inventory_records[:5]
+                                  if record['inventory_date']]
         print(f"Sample inventory date IDs: {sample_inventory_dates}")
-        
+
         # Check if any sample inventory dates are missing from date_map
         missing_sample_dates = [date_id for date_id in sample_inventory_dates if date_id not in date_map]
         if missing_sample_dates:
             print(f"WARNING: Some sample inventory dates are missing from date_map: {missing_sample_dates}")
         else:
             print("All sample inventory dates are present in date_map.")
-            
+
         # Verify that date_map keys match the expected format
         for date_id in date_ids[:5]:
             if not (isinstance(date_id, int) or (isinstance(date_id, str) and date_id.isdigit())):
                 print(f"WARNING: Unexpected date_id format in date_map: {date_id}, type: {type(date_id)}")
                 break
-    
+
     # Transform data and create surrogate keys
     staging_records = []
     inventory_map = {}
@@ -1169,12 +1171,12 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
     missing_date_keys = 0
     missing_product_keys = 0
     missing_store_keys = 0
-    
+
     for record in inventory_records:
         # Get dimension keys
         date_id = generate_date_id(record['inventory_date']) if record['inventory_date'] else None
         date_key = date_map.get(date_id)
-        
+
         if date_id and not date_key:
             missing_date_keys += 1
             if missing_date_keys <= 5:  # Limit debug output
@@ -1182,24 +1184,24 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
                 # Print a few keys from date_map for debugging
                 if missing_date_keys == 1:
                     print(f"Sample date_map keys: {list(date_map.keys())[:5]}")
-        
+
         # For last restock date, use None if not found in date_map
         # This prevents records from being skipped due to missing last_restock_date_key
         last_restock_date_id = generate_date_id(record['last_restock_date']) if record['last_restock_date'] else None
         last_restock_date_key = date_map.get(last_restock_date_id)
-        
+
         product_key = product_map.get(record['product_id'])
         if record['product_id'] and not product_key:
             missing_product_keys += 1
             if missing_product_keys <= 5:  # Limit debug output
                 print(f"DEBUG: Missing product key for product_id {record['product_id']}")
-        
+
         store_key = store_map.get(record['store_id'])
         if record['store_id'] and not store_key:
             missing_store_keys += 1
             if missing_store_keys <= 5:  # Limit debug output
                 print(f"DEBUG: Missing store key for store_id {record['store_id']}")
-        
+
         # Skip records with missing REQUIRED dimension keys (date, product, store)
         # Last restock date key is optional and can be NULL
         if not all([date_key, product_key, store_key]):
@@ -1207,19 +1209,19 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
             if skipped_records <= 10:  # Limit output
                 print(f"Skipping inventory record {record['inventory_id']} due to missing dimension keys.")
             continue
-        
+
         # Handle nulls and transformations
         stock_level = int(record['stock_level']) if record['stock_level'] is not None else 0
         min_stock_level = int(record['min_stock_level']) if record['min_stock_level'] is not None else 0
         max_stock_level = int(record['max_stock_level']) if record['max_stock_level'] is not None else 0
         reorder_point = int(record['reorder_point']) if record['reorder_point'] is not None else 0
-        
+
         # Calculate days of supply (business rule)
         days_of_supply = None
         if stock_level > 0 and min_stock_level > 0:
             # Simple calculation, could be more complex based on sales velocity
             days_of_supply = int(stock_level / min_stock_level * 30)  # Assuming min_stock_level is monthly minimum
-        
+
         # Determine stock status
         if stock_level <= 0:
             stock_status = 'Out of Stock'
@@ -1231,10 +1233,10 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
             stock_status = 'Overstocked'
         else:
             stock_status = 'In Stock'
-        
+
         # Determine if in stock
         is_in_stock = stock_level > 0
-        
+
         # Create staging record
         staging_record = {
             'inventory_id': record['inventory_id'],
@@ -1253,11 +1255,25 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
             'etl_timestamp': datetime.now()
         }
         staging_records.append(staging_record)
-    
+
     # Load data into staging using batch processing
+    # Define a batch size, well within Snowflake's limit
+    BATCH_SIZE = 50000 # You can adjust this based on testing, but 10k is a safe start
+
+    if not staging_records:
+        print("No staging records to load after transformation.")
+        return {}
+
+    num_batches = math.ceil(len(staging_records) / BATCH_SIZE)
+    print(f"Loading {len(staging_records)} records in {num_batches} batches...")
+
     with staging_engine.begin() as conn:
-        if staging_records:
-            # Batch insert all records at once
+        for i in range(num_batches):
+            start_index = i * BATCH_SIZE
+            end_index = min((i + 1) * BATCH_SIZE, len(staging_records))
+            batch = staging_records[start_index:end_index]
+
+            print(f"Inserting batch {i+1}/{num_batches} (records {start_index} to {end_index-1})...")
             conn.execute(
                 text("""
                     INSERT INTO stg_inventory (
@@ -1272,23 +1288,27 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
                         :etl_batch_id, :etl_timestamp
                     )
                 """),
-                staging_records
+                batch
             )
-            
-            # Get all inventory_ids to fetch
-            inventory_ids = [record['inventory_id'] for record in staging_records]
-            
-            # Fetch all keys in a single query
-            # Use parameterized query with IN clause for better security and performance
-            placeholders = ', '.join([f"'{inventory_id}'" for inventory_id in inventory_ids])
-            result = conn.execute(
-                text(f"SELECT inventory_key, inventory_id FROM stg_inventory WHERE inventory_id IN ({placeholders})")
-            )
-            
-            # Build the mapping dictionary
-            for row in result:
-                inventory_map[row.inventory_id] = row.inventory_key
-    
+
+        # After all batches are inserted, fetch the keys
+        # This part still needs to be efficient, consider fetching keys in smaller chunks
+        # if the total number of inventory_ids for the IN clause is too large.
+        # However, for 300,000 records, the IN clause with 300,000 IDs will still hit the limit.
+
+        # A better approach for fetching the inventory_map after batch inserts
+        # is to query the staging table directly for all records inserted in this batch.
+        # If ETL_BATCH_ID is unique per run, this is efficient.
+
+        print("Fetching inventory keys from staging table...")
+        result = conn.execute(
+            text(f"SELECT inventory_key, inventory_id FROM stg_inventory WHERE etl_batch_id = :etl_batch_id"),
+            {'etl_batch_id': ETL_BATCH_ID}
+        )
+
+        for row in result:
+            inventory_map[row.inventory_id] = row.inventory_key
+
     print(f"Loaded {len(staging_records)} inventory records to staging.")
     return inventory_map
 
