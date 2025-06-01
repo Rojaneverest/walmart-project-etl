@@ -59,9 +59,9 @@ print(f"Python path: {sys.path}")
 USE_SNOWFLAKE = True  # Always use Snowflake
 
 # Common Snowflake connection parameters
-SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'airflow')
+SNOWFLAKE_USER = os.environ.get('SNOWFLAKE_USER', 'ROJAN')
 SNOWFLAKE_PASSWORD = os.environ.get('SNOWFLAKE_PASSWORD', 'e!Mv5ashy5aVdNb')
-SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'airflow')
+SNOWFLAKE_ACCOUNT = os.environ.get('SNOWFLAKE_ACCOUNT', 'GEBNTIK-YU16043')
 SNOWFLAKE_SCHEMA = os.environ.get('SNOWFLAKE_SCHEMA', 'PUBLIC')
 SNOWFLAKE_WAREHOUSE = os.environ.get('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
 SNOWFLAKE_ROLE = os.environ.get('SNOWFLAKE_ROLE', 'ACCOUNTADMIN')
@@ -160,15 +160,15 @@ def clear_staging_tables():
         
         with engine.begin() as conn:
             # Truncate all staging tables
-            conn.execute(text("TRUNCATE TABLE stg_sales CASCADE"))
-            conn.execute(text("TRUNCATE TABLE stg_inventory CASCADE"))
-            conn.execute(text("TRUNCATE TABLE stg_returns CASCADE"))
-            conn.execute(text("TRUNCATE TABLE stg_product CASCADE"))
-            conn.execute(text("TRUNCATE TABLE stg_customer CASCADE"))
-            conn.execute(text("TRUNCATE TABLE stg_store CASCADE"))
-            conn.execute(text("TRUNCATE TABLE stg_supplier CASCADE"))
-            conn.execute(text("TRUNCATE TABLE stg_return_reason CASCADE"))
-            conn.execute(text("TRUNCATE TABLE stg_date CASCADE"))
+            conn.execute(text("TRUNCATE TABLE stg_sales"))
+            conn.execute(text("TRUNCATE TABLE stg_inventory"))
+            conn.execute(text("TRUNCATE TABLE stg_returns"))
+            conn.execute(text("TRUNCATE TABLE stg_product"))
+            conn.execute(text("TRUNCATE TABLE stg_customer"))
+            conn.execute(text("TRUNCATE TABLE stg_store"))
+            conn.execute(text("TRUNCATE TABLE stg_supplier"))
+            conn.execute(text("TRUNCATE TABLE stg_return_reason"))
+            conn.execute(text("TRUNCATE TABLE stg_date"))
         
         print("All staging tables cleared successfully!")
     except Exception as e:
