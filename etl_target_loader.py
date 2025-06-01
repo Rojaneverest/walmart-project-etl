@@ -295,6 +295,8 @@ def load_dim_product_scd2(target_engine):
     execute_sql(target_engine, expire_sql)
 
     # Step 3: Insert new records and new versions of changed records
+    # For new records, use a very early effective date to ensure it covers all transaction dates
+    # For changed records, use the current date as the effective date
     insert_sql = f"""
     INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_product (
         product_id, product_name, product_category, product_sub_category,
@@ -307,7 +309,10 @@ def load_dim_product_scd2(target_engine):
         src.product_id, src.product_name, src.product_category, src.product_sub_category,
         src.product_container, src.unit_price, src.price_tier, src.product_base_margin,
         src.margin_percentage, src.is_high_margin, src.supplier_id, src.supplier_name,
-        '{TODAY_DATE.isoformat()}' AS effective_date,
+        CASE 
+            WHEN src.change_type = 'NEW' THEN '2000-01-01' -- Use a very early date for new records
+            ELSE '{TODAY_DATE.isoformat()}' -- Use current date for changed records
+        END AS effective_date,
         '{FAR_FUTURE_EXPIRY_DATE.isoformat()}' AS expiry_date,
         TRUE AS is_current,
         COALESCE(src.current_version, 0) + 1 AS version,
@@ -357,6 +362,8 @@ def load_dim_store_scd2(target_engine):
     """
     execute_sql(target_engine, expire_sql)
 
+    # For new records, use a very early effective date to ensure it covers all transaction dates
+    # For changed records, use the current date as the effective date
     insert_sql = f"""
     INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_store (
         store_id, store_name, location, city, state, zip_code, region, market,
@@ -365,7 +372,10 @@ def load_dim_store_scd2(target_engine):
     )
     SELECT
         src.store_id, src.store_name, src.location, src.city, src.state, src.zip_code, src.region, src.market,
-        '{TODAY_DATE.isoformat()}' AS effective_date,
+        CASE 
+            WHEN src.change_type = 'NEW' THEN '2000-01-01' -- Use a very early date for new records
+            ELSE '{TODAY_DATE.isoformat()}' -- Use current date for changed records
+        END AS effective_date,
         '{FAR_FUTURE_EXPIRY_DATE.isoformat()}' AS expiry_date,
         TRUE AS is_current,
         COALESCE(src.current_version, 0) + 1 AS version,
@@ -374,17 +384,62 @@ def load_dim_store_scd2(target_engine):
     FROM temp_store_changes src;
     """
     execute_sql(target_engine, insert_sql)
-    print("tgt_dim_store (SCD Type 2) loaded successfully.")
-
 
 # --- Fact Table Loading Functions ---
 
 def load_fact_sales(target_engine):
     """Loads data into tgt_fact_sales from stg_sales."""
     print("Loading data into tgt_fact_sales...")
-    # Fact key is auto-increment.
-    # This query joins staging fact with staging dimensions to get natural keys/dates,
-    # then joins with target dimensions to get target surrogate keys.
+    
+    # Debug information - Check if tables have data
+    with target_engine.begin() as conn:
+        # Check staging sales count
+        stg_sales_count = conn.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_sales")).scalar()
+        print(f"Staging sales table has {stg_sales_count} records")
+        
+        # Check staging date dimension count
+        stg_date_count = conn.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date")).scalar()
+        print(f"Staging date dimension has {stg_date_count} records")
+        
+        # Check target date dimension count
+        tgt_date_count = conn.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date")).scalar()
+        print(f"Target date dimension has {tgt_date_count} records")
+        
+        # Check if date keys match between staging and target
+        if stg_date_count > 0 and tgt_date_count > 0:
+            # Get sample staging date records
+            stg_date_sample = conn.execute(text(f"""
+                SELECT date_key, date_id, full_date FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date 
+                ORDER BY date_id LIMIT 5
+            """)).fetchall()
+            print(f"Sample staging date records: {stg_date_sample}")
+            
+            # Get sample target date records
+            tgt_date_sample = conn.execute(text(f"""
+                SELECT date_key, date_id, full_date FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date 
+                ORDER BY date_id LIMIT 5
+            """)).fetchall()
+            print(f"Sample target date records: {tgt_date_sample}")
+            
+            # Check if any staging date IDs exist in target
+            date_match_count = conn.execute(text(f"""
+                SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd
+                JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date td
+                ON sd.date_id = td.date_id
+            """)).scalar()
+            print(f"Number of matching date IDs between staging and target: {date_match_count}")
+            
+            # Check if any transaction dates in sales match target dates
+            trans_date_match_count = conn.execute(text(f"""
+                SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_sales s
+                JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd
+                    ON s.transaction_date_key = sd.date_key
+                JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date td
+                    ON sd.date_id = td.date_id
+            """)).scalar()
+            print(f"Number of sales records with transaction dates matching target: {trans_date_match_count}")
+    
+    # Modify the SQL to use date_id instead of date_key for joining between staging and target
     sql = f"""
     INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_fact_sales (
         sale_id, order_id, row_id,
@@ -410,12 +465,12 @@ def load_fact_sales(target_engine):
     JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_trans
         ON s.transaction_date_key = sd_trans.date_key -- s.transaction_date_key is surrogate from stg_date
     JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_trans
-        ON sd_trans.date_id = tgt_dt_trans.date_key -- sd_trans.date_id is YYYYMMDD
+        ON sd_trans.date_id = tgt_dt_trans.date_id -- Join on natural key (YYYYMMDD)
 
     LEFT JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_ship
         ON s.ship_date_key = sd_ship.date_key -- s.ship_date_key is surrogate from stg_date
     LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_ship
-        ON sd_ship.date_id = tgt_dt_ship.date_key -- sd_ship.date_id is YYYYMMDD
+        ON sd_ship.date_id = tgt_dt_ship.date_id -- Join on natural key (YYYYMMDD)
 
     JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_customer sc
         ON s.customer_key = sc.customer_key
@@ -434,12 +489,77 @@ def load_fact_sales(target_engine):
         ON sst.store_id = tgt_st.store_id -- sst.store_id is natural key
         AND sd_trans.full_date >= tgt_st.effective_date AND sd_trans.full_date <= tgt_st.expiry_date; -- SCD2 logic
     """
-    execute_sql(target_engine, sql)
-    print("tgt_fact_sales loaded successfully.")
+    
+    # Execute the SQL and get the row count
+    with target_engine.begin() as conn:
+        result = conn.execute(text(sql))
+        row_count = result.rowcount
+        print(f"Inserted {row_count} records into tgt_fact_sales")
+        
+        # Check if any records were actually inserted
+        if row_count == 0:
+            print("WARNING: No records were inserted into tgt_fact_sales!")
+            # Check if target fact table has any data
+            fact_count = conn.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_fact_sales")).scalar()
+            print(f"Target fact_sales table has {fact_count} records after insert")
+        else:
+            print("tgt_fact_sales loaded successfully.")
+    
+    return row_count
 
 def load_fact_inventory(target_engine):
     """Loads data into tgt_fact_inventory from stg_inventory."""
     print("Loading data into tgt_fact_inventory...")
+    
+    # Debug information - Check if tables have data
+    with target_engine.begin() as conn:
+        # Check staging inventory count
+        stg_inventory_count = conn.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_inventory")).scalar()
+        print(f"Staging inventory table has {stg_inventory_count} records")
+        
+        # Check staging date dimension count
+        stg_date_count = conn.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date")).scalar()
+        print(f"Staging date dimension has {stg_date_count} records")
+        
+        # Check target date dimension count
+        tgt_date_count = conn.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date")).scalar()
+        print(f"Target date dimension has {tgt_date_count} records")
+        
+        # Check if date keys match between staging and target
+        if stg_date_count > 0 and tgt_date_count > 0:
+            # Get sample staging date records
+            stg_date_sample = conn.execute(text(f"""
+                SELECT date_key, date_id, full_date FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date 
+                ORDER BY date_id LIMIT 5
+            """)).fetchall()
+            print(f"Sample staging date records: {stg_date_sample}")
+            
+            # Get sample target date records
+            tgt_date_sample = conn.execute(text(f"""
+                SELECT date_key, date_id, full_date FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date 
+                ORDER BY date_id LIMIT 5
+            """)).fetchall()
+            print(f"Sample target date records: {tgt_date_sample}")
+            
+            # Check if any staging date IDs exist in target
+            date_match_count = conn.execute(text(f"""
+                SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd
+                JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date td
+                ON sd.date_id = td.date_id
+            """)).scalar()
+            print(f"Number of matching date IDs between staging and target: {date_match_count}")
+            
+            # Check if any inventory dates match target dates
+            inv_date_match_count = conn.execute(text(f"""
+                SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_inventory i
+                JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd
+                    ON i.date_key = sd.date_key
+                JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date td
+                    ON sd.date_id = td.date_id
+            """)).scalar()
+            print(f"Number of inventory records with dates matching target: {inv_date_match_count}")
+    
+    # Modify the SQL to use date_id instead of date_key for joining between staging and target
     sql = f"""
     INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_fact_inventory (
         inventory_id, date_key, product_key, store_key,
@@ -460,12 +580,12 @@ def load_fact_inventory(target_engine):
     JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_inv
         ON i.date_key = sd_inv.date_key -- i.date_key is surrogate stg_date.date_key
     JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_inv
-        ON sd_inv.date_id = tgt_dt_inv.date_key
+        ON sd_inv.date_id = tgt_dt_inv.date_id
 
     LEFT JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_restock
         ON i.last_restock_date_key = sd_restock.date_key
     LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_restock
-        ON sd_restock.date_id = tgt_dt_restock.date_key
+        ON sd_restock.date_id = tgt_dt_restock.date_id
 
     JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_product sp
         ON i.product_key = sp.product_key
@@ -479,12 +599,71 @@ def load_fact_inventory(target_engine):
         ON sst.store_id = tgt_st.store_id
         AND sd_inv.full_date >= tgt_st.effective_date AND sd_inv.full_date <= tgt_st.expiry_date; -- SCD2 logic
     """
-    execute_sql(target_engine, sql)
-    print("tgt_fact_inventory loaded successfully.")
+    
+    # Execute the SQL and get the number of rows affected
+    with target_engine.begin() as conn:
+        result = conn.execute(text(sql))
+        rows_inserted = result.rowcount
+        print(f"Inserted {rows_inserted} records into tgt_fact_inventory")
+        
+        if rows_inserted == 0:
+            print("WARNING: No records were inserted into tgt_fact_inventory. Check the join conditions and data consistency.")
+        else:
+            print("tgt_fact_inventory loaded successfully.")
 
 def load_fact_returns(target_engine):
     """Loads data into tgt_fact_returns from stg_returns."""
     print("Loading data into tgt_fact_returns...")
+    
+    # Debug information - Check if tables have data
+    with target_engine.begin() as conn:
+        # Check staging returns count
+        stg_returns_count = conn.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_returns")).scalar()
+        print(f"Staging returns table has {stg_returns_count} records")
+        
+        # Check staging date dimension count
+        stg_date_count = conn.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date")).scalar()
+        print(f"Staging date dimension has {stg_date_count} records")
+        
+        # Check target date dimension count
+        tgt_date_count = conn.execute(text(f"SELECT COUNT(*) FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date")).scalar()
+        print(f"Target date dimension has {tgt_date_count} records")
+        
+        # Check if date keys match between staging and target
+        if stg_date_count > 0 and tgt_date_count > 0:
+            # Get sample staging date records
+            stg_date_sample = conn.execute(text(f"""
+                SELECT date_key, date_id, full_date FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date 
+                ORDER BY date_id LIMIT 5
+            """)).fetchall()
+            print(f"Sample staging date records: {stg_date_sample}")
+            
+            # Get sample target date records
+            tgt_date_sample = conn.execute(text(f"""
+                SELECT date_key, date_id, full_date FROM {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date 
+                ORDER BY date_id LIMIT 5
+            """)).fetchall()
+            print(f"Sample target date records: {tgt_date_sample}")
+            
+            # Check if any staging date IDs exist in target
+            date_match_count = conn.execute(text(f"""
+                SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd
+                JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date td
+                ON sd.date_id = td.date_id
+            """)).scalar()
+            print(f"Number of matching date IDs between staging and target: {date_match_count}")
+            
+            # Check if any return dates match target dates
+            return_date_match_count = conn.execute(text(f"""
+                SELECT COUNT(*) FROM {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_returns r
+                JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd
+                    ON r.return_date_key = sd.date_key
+                JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date td
+                    ON sd.date_id = td.date_id
+            """)).scalar()
+            print(f"Number of returns records with return dates matching target: {return_date_match_count}")
+    
+    # Modify the SQL to use date_id instead of date_key for joining between staging and target
     sql = f"""
     INSERT INTO {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_fact_returns (
         return_id, return_date_key, product_key, store_key, reason_key,
@@ -509,12 +688,12 @@ def load_fact_returns(target_engine):
     JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_return
         ON r.return_date_key = sd_return.date_key
     JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_return
-        ON sd_return.date_id = tgt_dt_return.date_key
+        ON sd_return.date_id = tgt_dt_return.date_id
 
     LEFT JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_date sd_orig_sale
         ON r.original_sale_date_key = sd_orig_sale.date_key
     LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_date tgt_dt_orig_sale
-        ON sd_orig_sale.date_id = tgt_dt_orig_sale.date_key
+        ON sd_orig_sale.date_id = tgt_dt_orig_sale.date_id
 
     JOIN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.stg_product sp
         ON r.product_key = sp.product_key
@@ -533,8 +712,17 @@ def load_fact_returns(target_engine):
     LEFT JOIN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.tgt_dim_return_reason tgt_rr
         ON s_rr.reason_code = tgt_rr.reason_code; -- s_rr.reason_code is natural key
     """
-    execute_sql(target_engine, sql)
-    print("tgt_fact_returns loaded successfully.")
+    
+    # Execute the SQL and get the number of rows affected
+    with target_engine.begin() as conn:
+        result = conn.execute(text(sql))
+        rows_inserted = result.rowcount
+        print(f"Inserted {rows_inserted} records into tgt_fact_returns")
+        
+        if rows_inserted == 0:
+            print("WARNING: No records were inserted into tgt_fact_returns. Check the join conditions and data consistency.")
+        else:
+            print("tgt_fact_returns loaded successfully.")
 
 # --- Main Execution ---
 def load_target_layer():

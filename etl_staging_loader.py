@@ -126,7 +126,11 @@ def generate_date_id(date_obj):
 
 # Dimension loading functions
 def load_staging_date_dimension(staging_engine, ods_engine):
-    """Load date dimension from ODS to staging with transformations."""
+    """Load date dimension from ODS to staging with transformations.
+    
+    This function loads dates ONLY from the ODS date dimension without generating
+    any additional future dates. This ensures consistency between ODS and staging.
+    """
     print("Loading date dimension to staging...")
     
     # Extract data from ODS
@@ -146,9 +150,26 @@ def load_staging_date_dimension(staging_engine, ods_engine):
         
     print(f"Found {len(date_records)} date records in ODS.")
     
+    # Print date range information for debugging
+    first_date = date_records[0]['full_date'] if date_records else None
+    last_date = date_records[-1]['full_date'] if date_records else None
+    print(f"Date range in ODS: {first_date} to {last_date}")
+    
+    # Print sample date IDs for debugging
+    sample_date_ids = [record['date_id'] for record in date_records[:5]]
+    print(f"Sample date IDs from ODS: {sample_date_ids}")
+    
     # No longer generating future dates - only using dates from ODS
     print(f"Total date records to process: {len(date_records)}")
-
+    
+    # Verify date_id format consistency
+    for record in date_records[:5]:
+        date_id = record['date_id']
+        full_date = record['full_date']
+        generated_date_id = generate_date_id(full_date)
+        if str(date_id) != str(generated_date_id):
+            print(f"WARNING: Date ID mismatch for {full_date}: ODS has {date_id}, generated {generated_date_id}")
+            # This is just a warning, we'll use the ODS date_id for consistency
     
     # Transform data and create surrogate keys
     staging_records = []
@@ -693,13 +714,12 @@ def load_staging_return_reason_dimension(staging_engine, ods_engine):
             # Build the mapping dictionary
             for row in result:
                 reason_map[row.reason_code] = row.reason_key
-    
-    print(f"Loaded {len(staging_records)} return reason records to staging.")
-    return reason_map
-
-# Fact table loading functions
 def load_staging_sales_fact(staging_engine, ods_engine, date_map, customer_map, product_map, store_map):
-    """Load sales fact from ODS to staging with transformations."""
+    """Load sales fact from ODS to staging with transformations.
+    
+    Ensures that sales records are only loaded for dates that exist in the
+    staging date dimension (which comes from ODS date dimension).
+    """
     print("Loading sales fact to staging...")
     
     # Extract data from ODS
@@ -719,10 +739,43 @@ def load_staging_sales_fact(staging_engine, ods_engine, date_map, customer_map, 
         return {}
     
     # Print dimension map sizes for debugging
+    print(f"Found {len(sales_records)} sales records in ODS.")
     print(f"Date map size: {len(date_map)}")
     print(f"Customer map size: {len(customer_map)}")
     print(f"Product map size: {len(product_map)}")
     print(f"Store map size: {len(store_map)}")
+    
+    # Print date range in date_map for debugging
+    if date_map:
+        date_ids = sorted(date_map.keys())
+        print(f"Date map range: {min(date_ids)} to {max(date_ids)}")
+        print(f"Sample date_map keys: {date_ids[:5]}")
+        
+        # Get a sample of transaction dates from sales records for comparison
+        sample_transaction_dates = [generate_date_id(record['transaction_date']) 
+                                  for record in sales_records[:5] 
+                                  if record['transaction_date']]
+        print(f"Sample transaction date IDs: {sample_transaction_dates}")
+        
+        # Check if any sample transaction dates are missing from date_map
+        missing_sample_trans_dates = [date_id for date_id in sample_transaction_dates if date_id not in date_map]
+        if missing_sample_trans_dates:
+            print(f"WARNING: Some sample transaction dates are missing from date_map: {missing_sample_trans_dates}")
+        else:
+            print("All sample transaction dates are present in date_map.")
+            
+        # Get a sample of ship dates from sales records for comparison
+        sample_ship_dates = [generate_date_id(record['ship_date']) 
+                            for record in sales_records[:5] 
+                            if record['ship_date']]
+        print(f"Sample ship date IDs: {sample_ship_dates}")
+        
+        # Check if any sample ship dates are missing from date_map
+        missing_sample_ship_dates = [date_id for date_id in sample_ship_dates if date_id not in date_map]
+        if missing_sample_ship_dates:
+            print(f"WARNING: Some sample ship dates are missing from date_map: {missing_sample_ship_dates}")
+        else:
+            print("All sample ship dates are present in date_map.")
     
     # Transform data and create surrogate keys
     staging_records = []
@@ -742,7 +795,12 @@ def load_staging_sales_fact(staging_engine, ods_engine, date_map, customer_map, 
             missing_date_keys += 1
             if missing_date_keys <= 5:  # Limit debug output
                 print(f"DEBUG: Missing date key for date_id {transaction_date_id}, date: {record['transaction_date']}")
+                # Print a few keys from date_map for debugging
+                if missing_date_keys == 1:
+                    print(f"Sample date_map keys: {list(date_map.keys())[:5]}")
         
+        # For ship date, use None if not found in date_map
+        # This prevents records from being skipped due to missing ship_date_key
         ship_date_id = generate_date_id(record['ship_date']) if record['ship_date'] else None
         ship_date_key = date_map.get(ship_date_id)
         
@@ -764,7 +822,8 @@ def load_staging_sales_fact(staging_engine, ods_engine, date_map, customer_map, 
             if missing_store_keys <= 5:  # Limit debug output
                 print(f"DEBUG: Missing store key for store_id {record['store_id']}")
         
-        # Skip records with missing dimension keys
+        # Skip records with missing REQUIRED dimension keys (transaction date, customer, product, store)
+        # Ship date key is optional and can be NULL
         if not all([transaction_date_key, customer_key, product_key, store_key]):
             skipped_records += 1
             if skipped_records <= 10:  # Limit output
@@ -852,7 +911,11 @@ def load_staging_sales_fact(staging_engine, ods_engine, date_map, customer_map, 
     return sales_map
 
 def load_staging_returns_fact(staging_engine, ods_engine, date_map, product_map, store_map, reason_map=None):
-    """Load returns fact from ODS to staging with transformations."""
+    """Load returns fact from ODS to staging with transformations.
+    
+    Ensures that return records are only loaded for dates that exist in the
+    staging date dimension (which comes from ODS date dimension).
+    """
     print("Loading returns fact to staging...")
     
     # Extract data from ODS
@@ -874,6 +937,38 @@ def load_staging_returns_fact(staging_engine, ods_engine, date_map, product_map,
     print(f"Date map size: {len(date_map)}")
     print(f"Product map size: {len(product_map)}")
     print(f"Store map size: {len(store_map)}")
+    
+    # Print date range in date_map for debugging
+    if date_map:
+        date_ids = sorted(date_map.keys())
+        print(f"Date map range: {min(date_ids)} to {max(date_ids)}")
+        print(f"Sample date_map keys: {date_ids[:5]}")
+        
+        # Get a sample of dates from returns records for comparison
+        sample_return_dates = [generate_date_id(record['return_date']) 
+                              for record in returns_records[:5] 
+                              if record['return_date']]
+        print(f"Sample return date IDs: {sample_return_dates}")
+        
+        # Check if any sample return dates are missing from date_map
+        missing_sample_dates = [date_id for date_id in sample_return_dates if date_id not in date_map]
+        if missing_sample_dates:
+            print(f"WARNING: Some sample return dates are missing from date_map: {missing_sample_dates}")
+        else:
+            print("All sample return dates are present in date_map.")
+            
+        # Get a sample of original sale dates from returns records for comparison
+        sample_orig_sale_dates = [generate_date_id(record['original_sale_date']) 
+                                 for record in returns_records[:5] 
+                                 if record['original_sale_date']]
+        print(f"Sample original sale date IDs: {sample_orig_sale_dates}")
+        
+        # Check if any sample original sale dates are missing from date_map
+        missing_sample_orig_dates = [date_id for date_id in sample_orig_sale_dates if date_id not in date_map]
+        if missing_sample_orig_dates:
+            print(f"WARNING: Some sample original sale dates are missing from date_map: {missing_sample_orig_dates}")
+        else:
+            print("All sample original sale dates are present in date_map.")
     
     # Get reason map if not provided
     if not reason_map:
@@ -903,7 +998,12 @@ def load_staging_returns_fact(staging_engine, ods_engine, date_map, product_map,
             missing_date_keys += 1
             if missing_date_keys <= 5:  # Limit debug output
                 print(f"DEBUG: Missing date key for return date_id {return_date_id}, date: {record['return_date']}")
+                # Print a few keys from date_map for debugging
+                if missing_date_keys == 1:
+                    print(f"Sample date_map keys: {list(date_map.keys())[:5]}")
         
+        # For original sale date, use None if not found in date_map
+        # This prevents records from being skipped due to missing original_sale_date_key
         original_sale_date_id = generate_date_id(record['original_sale_date']) if record['original_sale_date'] else None
         original_sale_date_key = date_map.get(original_sale_date_id)
         
@@ -924,8 +1024,11 @@ def load_staging_returns_fact(staging_engine, ods_engine, date_map, product_map,
             missing_reason_keys += 1
             if missing_reason_keys <= 5:  # Limit debug output
                 print(f"DEBUG: Missing reason key for reason_code {record['reason_code']}")
+                # Use default reason key if available
+                reason_key = reason_map.get('UNKNOWN')
         
-        # Skip records with missing dimension keys
+        # Skip records with missing REQUIRED dimension keys (return date, product, store)
+        # Original sale date key and reason key are optional and can be NULL
         if not all([return_date_key, product_key, store_key]):
             skipped_records += 1
             if skipped_records <= 10:  # Limit output
@@ -1008,7 +1111,11 @@ def load_staging_returns_fact(staging_engine, ods_engine, date_map, product_map,
     return returns_map
 
 def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_map, store_map):
-    """Load inventory fact from ODS to staging with transformations."""
+    """Load inventory fact from ODS to staging with transformations.
+    
+    Ensures that inventory records are only loaded for dates that exist in the
+    staging date dimension (which comes from ODS date dimension).
+    """
     print("Loading inventory fact to staging...")
     
     # Extract data from ODS
@@ -1029,6 +1136,31 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
     print(f"Date map size: {len(date_map)}")
     print(f"Product map size: {len(product_map)}")
     print(f"Store map size: {len(store_map)}")
+    
+    # Print date range in date_map for debugging
+    if date_map:
+        date_ids = sorted(date_map.keys())
+        print(f"Date map range: {min(date_ids)} to {max(date_ids)}")
+        print(f"Sample date_map keys: {date_ids[:5]}")
+        
+        # Get a sample of dates from inventory records for comparison
+        sample_inventory_dates = [generate_date_id(record['inventory_date']) 
+                                 for record in inventory_records[:5] 
+                                 if record['inventory_date']]
+        print(f"Sample inventory date IDs: {sample_inventory_dates}")
+        
+        # Check if any sample inventory dates are missing from date_map
+        missing_sample_dates = [date_id for date_id in sample_inventory_dates if date_id not in date_map]
+        if missing_sample_dates:
+            print(f"WARNING: Some sample inventory dates are missing from date_map: {missing_sample_dates}")
+        else:
+            print("All sample inventory dates are present in date_map.")
+            
+        # Verify that date_map keys match the expected format
+        for date_id in date_ids[:5]:
+            if not (isinstance(date_id, int) or (isinstance(date_id, str) and date_id.isdigit())):
+                print(f"WARNING: Unexpected date_id format in date_map: {date_id}, type: {type(date_id)}")
+                break
     
     # Transform data and create surrogate keys
     staging_records = []
@@ -1051,6 +1183,8 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
                 if missing_date_keys == 1:
                     print(f"Sample date_map keys: {list(date_map.keys())[:5]}")
         
+        # For last restock date, use None if not found in date_map
+        # This prevents records from being skipped due to missing last_restock_date_key
         last_restock_date_id = generate_date_id(record['last_restock_date']) if record['last_restock_date'] else None
         last_restock_date_key = date_map.get(last_restock_date_id)
         
@@ -1066,7 +1200,8 @@ def load_staging_inventory_fact(staging_engine, ods_engine, date_map, product_ma
             if missing_store_keys <= 5:  # Limit debug output
                 print(f"DEBUG: Missing store key for store_id {record['store_id']}")
         
-        # Skip records with missing dimension keys
+        # Skip records with missing REQUIRED dimension keys (date, product, store)
+        # Last restock date key is optional and can be NULL
         if not all([date_key, product_key, store_key]):
             skipped_records += 1
             if skipped_records <= 10:  # Limit output

@@ -126,6 +126,36 @@ except ImportError as e:
                 conn.execute(text("DROP TABLE IF EXISTS stg_supplier CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS stg_return_reason CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS stg_date CASCADE"))
+                
+                # Drop temporary tables in staging database
+                print("Dropping temporary tables in staging database...")
+                try:
+                    # Get all tables in the schema
+                    tables = conn.execute(text(f"""
+                        SHOW TABLES IN {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}
+                    """)).fetchall()
+                    
+                    # Drop specific named temporary tables
+                    named_temp_tables = [
+                        "temp_product_changes",
+                        "temp_store_changes",
+                        "temp_customer_changes",
+                        "temp_supplier_changes",
+                        "temp_return_reason_changes"
+                    ]
+                    
+                    for table_name in named_temp_tables:
+                        conn.execute(text(f"DROP TABLE IF EXISTS {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.{table_name}"))
+                        print(f"Dropped temporary table: {table_name}")
+                    
+                    # Drop dynamically named temporary tables using pattern matching
+                    for table in tables:
+                        table_name = table[1] if len(table) > 1 else table[0]  # Adjust based on actual column index
+                        if table_name.upper().startswith('TEMP_'):
+                            conn.execute(text(f"DROP TABLE IF EXISTS {SNOWFLAKE_DB_STAGING}.{SNOWFLAKE_SCHEMA}.\"{table_name}\""))
+                            print(f"Dropped dynamic temporary table: {table_name}")
+                except Exception as e:
+                    print(f"Error dropping temporary tables in staging database: {e}")
             
             # Drop ODS tables
             print("Dropping ODS tables...")
@@ -139,6 +169,36 @@ except ImportError as e:
                 conn.execute(text("DROP TABLE IF EXISTS ods_supplier CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS ods_return_reason CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS ods_date CASCADE"))
+                
+                # Drop temporary tables in ODS database
+                print("Dropping temporary tables in ODS database...")
+                try:
+                    # Get all tables in the schema
+                    tables = conn.execute(text(f"""
+                        SHOW TABLES IN {SNOWFLAKE_DB_ODS}.{SNOWFLAKE_SCHEMA}
+                    """)).fetchall()
+                    
+                    # Drop specific named temporary tables
+                    named_temp_tables = [
+                        "temp_product_changes",
+                        "temp_store_changes",
+                        "temp_customer_changes",
+                        "temp_supplier_changes",
+                        "temp_return_reason_changes"
+                    ]
+                    
+                    for table_name in named_temp_tables:
+                        conn.execute(text(f"DROP TABLE IF EXISTS {SNOWFLAKE_DB_ODS}.{SNOWFLAKE_SCHEMA}.{table_name}"))
+                        print(f"Dropped temporary table: {table_name}")
+                    
+                    # Drop dynamically named temporary tables using pattern matching
+                    for table in tables:
+                        table_name = table[1] if len(table) > 1 else table[0]  # Adjust based on actual column index
+                        if table_name.upper().startswith('TEMP_'):
+                            conn.execute(text(f"DROP TABLE IF EXISTS {SNOWFLAKE_DB_ODS}.{SNOWFLAKE_SCHEMA}.\"{table_name}\""))
+                            print(f"Dropped dynamic temporary table: {table_name}")
+                except Exception as e:
+                    print(f"Error dropping temporary tables in ODS database: {e}")
             
             # Drop target tables
             print("Dropping target tables...")
@@ -152,6 +212,36 @@ except ImportError as e:
                 conn.execute(text("DROP TABLE IF EXISTS tgt_dim_supplier CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS tgt_dim_return_reason CASCADE"))
                 conn.execute(text("DROP TABLE IF EXISTS tgt_dim_date CASCADE"))
+                
+                # Drop temporary tables in target database
+                print("Dropping temporary tables in target database...")
+                try:
+                    # Get all tables in the schema
+                    tables = conn.execute(text(f"""
+                        SHOW TABLES IN {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}
+                    """)).fetchall()
+                    
+                    # Drop specific named temporary tables
+                    named_temp_tables = [
+                        "temp_product_changes",
+                        "temp_store_changes",
+                        "temp_customer_changes",
+                        "temp_supplier_changes",
+                        "temp_return_reason_changes"
+                    ]
+                    
+                    for table_name in named_temp_tables:
+                        conn.execute(text(f"DROP TABLE IF EXISTS {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.{table_name}"))
+                        print(f"Dropped temporary table: {table_name}")
+                    
+                    # Drop dynamically named temporary tables using pattern matching
+                    for table in tables:
+                        table_name = table[1] if len(table) > 1 else table[0]  # Adjust based on actual column index
+                        if table_name.upper().startswith('TEMP_'):
+                            conn.execute(text(f"DROP TABLE IF EXISTS {SNOWFLAKE_DB_TARGET}.{SNOWFLAKE_SCHEMA}.\"{table_name}\""))
+                            print(f"Dropped dynamic temporary table: {table_name}")
+                except Exception as e:
+                    print(f"Error dropping temporary tables in target database: {e}")
             print("All tables dropped successfully!")
         except Exception as e:
             print(f"Error dropping tables in fallback function: {e}")

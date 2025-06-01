@@ -48,6 +48,16 @@ def snowflake_upsert(engine, table_name, records, key_column, update_columns=Non
     # Convert records to DataFrame
     df_to_load = pd.DataFrame(records)
     
+    # Handle potential duplicates in the source data by keeping the latest record for each key
+    # This prevents the 'Duplicate row detected during DML action' error in Snowflake
+    if key_column in df_to_load.columns:
+        # If there are duplicates, keep the last occurrence (assuming it's the most recent)
+        # Sort by load_timestamp if available to ensure we keep the most recent record
+        if 'load_timestamp' in df_to_load.columns:
+            df_to_load = df_to_load.sort_values('load_timestamp')
+        df_to_load = df_to_load.drop_duplicates(subset=[key_column], keep='last')
+        print(f"Removed duplicate keys in {key_column} for {table_name}. {len(records) - len(df_to_load)} duplicates removed.")
+    
     # Use pandas to_sql to create and load the temp table
     df_to_load.to_sql(temp_table_name, engine, index=False, if_exists='replace')
     
@@ -537,10 +547,23 @@ def load_ods_sales_fact(engine, df, customer_map, product_map, store_map):
     
     This updated version uses only customer name for customer ID generation.
     It also stores the transaction-specific location data in the fact table.
+    Only uses dates that exist in the ODS date dimension.
     """
+    # First, get all available dates from ODS date dimension
+    with engine.begin() as conn:
+        date_result = conn.execute(text("SELECT date_id, full_date FROM ods_date"))
+        available_dates = {row.full_date for row in date_result}
+    
+    if not available_dates:
+        print("No dates found in ODS date dimension. Cannot create sales records.")
+        return 0
+        
+    print(f"Found {len(available_dates)} dates in ODS date dimension.")
+    
     # Create sales records
     sales_records = []
     skipped_records = 0
+    date_not_in_dimension = 0
     
     for _, row in df.iterrows():
         # Generate IDs
@@ -552,6 +575,14 @@ def load_ods_sales_fact(engine, df, customer_map, product_map, store_map):
         
         # Skip if we don't have valid dates
         if not transaction_date or not ship_date:
+            skipped_records += 1
+            continue
+            
+        # Skip if transaction_date or ship_date is not in the ODS date dimension
+        if transaction_date not in available_dates or ship_date not in available_dates:
+            date_not_in_dimension += 1
+            if date_not_in_dimension <= 5:  # Limit debug output
+                print(f"DEBUG: Skipping sale {sale_id} - dates not in dimension: transaction_date={transaction_date}, ship_date={ship_date}")
             skipped_records += 1
             continue
         
@@ -651,9 +682,21 @@ def load_ods_returns_fact(engine, df, customer_map, product_map, store_map, reas
     """Load returns fact into ODS layer.
     
     Creates synthetic return data for the last 3 months of sales data.
+    Only generates returns for dates that exist in the ODS date dimension.
     """
     # Get all sales data since we might not have any in the last 3 months due to synthetic data
     with engine.begin() as conn:
+        # First, get all available dates from ODS date dimension
+        date_result = conn.execute(text("SELECT date_id, full_date FROM ods_date"))
+        available_dates = {row.full_date for row in date_result}
+        
+        if not available_dates:
+            print("No dates found in ODS date dimension. Cannot create return records.")
+            return 0
+            
+        print(f"Found {len(available_dates)} dates in ODS date dimension.")
+        
+        # Get sales data
         result = conn.execute(text("""
             SELECT s.sale_id, s.order_id, s.transaction_date, s.product_id, s.store_id,
                    s.customer_id, s.order_quantity, s.sales_amount
@@ -673,12 +716,27 @@ def load_ods_returns_fact(engine, df, customer_map, product_map, store_map, reas
         if random.random() > 0.1:
             continue
         
-        # Generate return date (1-14 days after transaction date)
-        return_date = sale['transaction_date'] + timedelta(days=random.randint(1, 14))
+        # Try to generate a valid return date (1-14 days after transaction date)
+        # that exists in the ODS date dimension
+        valid_return_date = None
+        for days in range(1, 15):  # Try days 1-14 after transaction
+            candidate_date = sale['transaction_date'] + timedelta(days=days)
+            
+            # Skip if return date is in the future
+            if candidate_date > datetime.now().date():
+                continue
+                
+            # Check if this date exists in our available dates
+            if candidate_date in available_dates:
+                valid_return_date = candidate_date
+                break
         
-        # Skip if return date is in the future
-        if return_date > datetime.now().date():
+        # Skip if we couldn't find a valid return date
+        if not valid_return_date:
             continue
+            
+        # Use the valid return date
+        return_date = valid_return_date
         
         # Generate return ID
         return_id = generate_return_id(sale['sale_id'], return_date.isoformat())
@@ -722,19 +780,43 @@ def load_ods_returns_fact(engine, df, customer_map, product_map, store_map, reas
 def load_ods_inventory_fact(engine, df):
     """Load inventory fact into ODS layer.
     
-    Creates synthetic daily inventory snapshots for all products and stores.
+    Creates synthetic daily inventory snapshots for all products and stores,
+    but ONLY for dates that exist in the ODS date dimension.
+    This ensures consistency between ODS date dimension and inventory fact.
     """
     # Get product and store IDs
     with engine.begin() as conn:
+        # Get product IDs
         product_result = conn.execute(text("SELECT product_id FROM ods_product"))
         product_ids = [row[0] for row in product_result]
         
+        # Get store IDs
         store_result = conn.execute(text("SELECT store_id FROM ods_store"))
         store_ids = [row[0] for row in store_result]
+        
+        # Get available dates from ODS date dimension
+        date_result = conn.execute(text("SELECT date_id, full_date FROM ods_date ORDER BY full_date DESC"))
+        available_dates = [(row[0], row[1]) for row in date_result]
     
-    # Create inventory records for the last 30 days
-    inventory_records = []
-    today = datetime.now().date()
+    if not available_dates:
+        print("No dates found in ODS date dimension. Cannot create inventory records.")
+        return 0
+    
+    print(f"Found {len(available_dates)} dates in ODS date dimension.")
+    
+    # Use only the most recent 30 dates from the date dimension (or fewer if less available)
+    max_dates = min(len(available_dates), 30)
+    selected_dates = available_dates[:max_dates]
+    print(f"Using {len(selected_dates)} dates from ODS date dimension for inventory records.")
+    print(f"Date range: {selected_dates[-1][1]} to {selected_dates[0][1]}")
+    print(f"Sample date IDs: {[date_id for date_id, _ in selected_dates[:5]]}")
+    
+    # Verify that all selected dates have valid date IDs
+    for date_id, full_date in selected_dates:
+        generated_date_id = generate_date_id(full_date)
+        if generated_date_id != date_id:
+            print(f"WARNING: Date ID mismatch for {full_date}: ODS has {date_id}, generated {generated_date_id}")
+            # This is just a warning, we'll use the ODS date_id for consistency
     
     # Limit the number of combinations to avoid excessive records
     # Select a subset of products and stores if there are too many
@@ -744,10 +826,11 @@ def load_ods_inventory_fact(engine, df):
     selected_products = random.sample(product_ids, max_products) if len(product_ids) > max_products else product_ids
     selected_stores = random.sample(store_ids, max_stores) if len(store_ids) > max_stores else store_ids
     
-    # Generate daily inventory snapshots
-    for day_offset in range(30):
-        inventory_date = today - timedelta(days=day_offset)
-        
+    # Create inventory records
+    inventory_records = []
+    
+    # Generate inventory snapshots for each available date
+    for date_id, inventory_date in selected_dates:
         for product_id in selected_products:
             for store_id in selected_stores:
                 # Generate a deterministic but varying inventory level
@@ -757,6 +840,11 @@ def load_ods_inventory_fact(engine, df):
                 
                 # Generate inventory ID
                 inventory_id = generate_inventory_id(product_id, store_id, inventory_date.isoformat())
+                
+                # For last restock date, use an earlier date from our available dates list
+                # Find a date that's earlier than the current inventory date
+                earlier_dates = [d for d in selected_dates if d[1] < inventory_date]
+                last_restock_date = earlier_dates[0][1] if earlier_dates else inventory_date
                 
                 # Create inventory record
                 record = {
@@ -768,7 +856,7 @@ def load_ods_inventory_fact(engine, df):
                     'min_stock_level': max(5, inventory_level - random.randint(5, 20)),
                     'max_stock_level': inventory_level + random.randint(20, 50),
                     'reorder_point': random.randint(5, 25),
-                    'last_restock_date': inventory_date - timedelta(days=random.randint(1, 14)),
+                    'last_restock_date': last_restock_date,
                     'source_system': 'Generated',
                     'load_timestamp': datetime.now()
                 }
