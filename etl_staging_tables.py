@@ -99,7 +99,7 @@ def create_staging_tables(metadata):
         Column('product_base_margin', Float),
         Column('margin_percentage', Float),  # Derived in staging
         Column('is_high_margin', Boolean),  # Derived in staging
-        Column('supplier_id', String(20)),  # Original ID from ODS
+        Column('supplier_id', String(20), ForeignKey('stg_supplier.supplier_id'), nullable=False),  # Original ID from ODS
         Column('supplier_name', String(100)),
         Column('etl_batch_id', String(50)),
         Column('etl_timestamp', DateTime, default=func.now())
@@ -125,7 +125,7 @@ def create_staging_tables(metadata):
     stg_supplier = Table(
         'stg_supplier', metadata,
         Column('supplier_key', Integer, primary_key=True, autoincrement=True),
-        Column('supplier_id', String(20), nullable=False),
+        Column('supplier_id', String(20), nullable=False, unique=True),
         Column('supplier_name', String(100)),
         Column('supplier_type', String(50)),  # Derived in staging
         Column('contact_name', String(100)),

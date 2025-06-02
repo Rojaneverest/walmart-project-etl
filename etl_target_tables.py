@@ -92,7 +92,7 @@ def create_target_tables(metadata):
     tgt_dim_supplier = Table(
         'tgt_dim_supplier', metadata,
         Column('supplier_key', Integer, primary_key=True, autoincrement=True),
-        Column('supplier_id', String(20), nullable=False),
+        Column('supplier_id', String(20), nullable=False, unique=True),
         Column('supplier_name', String(100), nullable=False, default='Unknown'),
         Column('supplier_type', String(50), nullable=False, default='Standard'),
         Column('contact_name', String(100), nullable=False, default='Unknown'),
@@ -129,7 +129,7 @@ def create_target_tables(metadata):
         Column('product_base_margin', Numeric(10, 2), nullable=False, default=0.00),
         Column('margin_percentage', Numeric(10, 2), nullable=False, default=0.00),
         Column('is_high_margin', Boolean, nullable=False, default=False),
-        Column('supplier_id', String(20)),
+        Column('supplier_id', String(20), ForeignKey('tgt_dim_supplier.supplier_id'), nullable=False),
         Column('supplier_name', String(100)),
         # SCD Type 2 specific columns
         Column('effective_date', Date, nullable=False),  # When this version became effective
