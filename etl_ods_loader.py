@@ -30,24 +30,19 @@ print(f"File exists: {os.path.exists(CSV_FILE)}")
 # Import table definitions
 from etl_ods_tables import get_snowflake_ods_engine, metadata, create_ods_tables
 
-# Helper function for Snowflake-compatible upserts
-def snowflake_upsert(engine, table_name, records, key_column, update_columns=None, allow_duplicate_ids=True):
+
+def snowflake_ods_insert(engine, table_name, records):
     """
-    Perform a Snowflake-compatible upsert operation using a temporary table and MERGE statement.
+    Perform a simple insert operation for ODS tables in Snowflake.
+    This function inserts all records as-is without any deduplication or upsert logic.
     
     Args:
         engine: SQLAlchemy engine connected to Snowflake
-        table_name: Target table name
-        records: List of dictionaries containing the records to insert/update
-        key_column: Primary key column name for matching
-        update_columns: List of column names to update if record exists (for UPDATE operations)
-                       If None, performs INSERT only for new records (equivalent to ON CONFLICT DO NOTHING)
-        allow_duplicate_ids: If True, allows records with the same ID but different column values to be 
-                           inserted as separate rows. This is useful for the ODS layer where we want to 
-                           capture all data as-is and handle SCD logic in later stages.
+        table_name: Target ODS table name
+        records: List of dictionaries containing the records to insert
     """
     if not records:
-        print(f"No records to upsert into {table_name}")
+        print(f"No records to insert into {table_name}")
         return 0
         
     # Create a temporary table name with random suffix to avoid conflicts
@@ -56,54 +51,24 @@ def snowflake_upsert(engine, table_name, records, key_column, update_columns=Non
     # Convert records to DataFrame
     df_to_load = pd.DataFrame(records)
     
-    # Only remove exact duplicates (all columns identical) to prevent Snowflake errors
-    # but allow rows with the same ID but different values in other columns
-    original_count = len(df_to_load)
-    df_to_load = df_to_load.drop_duplicates()
-    if len(df_to_load) < original_count:
-        print(f"Removed {original_count - len(df_to_load)} exact duplicate rows from {table_name} (all columns identical).")
+    # For ODS tables: Keep ALL records as-is, including exact duplicates
+    # This preserves the raw data integrity for the ODS layer
+    print(f"Inserting {len(df_to_load)} records into {table_name} (including any duplicates)")
     
     # Use pandas to_sql to create and load the temp table
     df_to_load.to_sql(temp_table_name, engine, index=False, if_exists='replace')
     
-    # Build the SQL statement based on the operation type
+    # Simple INSERT ALL operation - no MERGE, no deduplication
     with engine.begin() as conn:
-        if allow_duplicate_ids:
-            # For ODS layer: Insert all records directly without checking for existing IDs
-            # This allows multiple rows with the same ID but different column values
-            # We use a direct INSERT instead of MERGE to bypass key-based matching
-            columns_list = ', '.join(df_to_load.columns)
-            values_list = ', '.join([f'source.{col}' for col in df_to_load.columns])
-            
-            conn.execute(text(f"""
-                INSERT INTO {table_name} ({columns_list})
-                SELECT {values_list} FROM {temp_table_name} source
-            """))
-            print(f"Inserted all {len(df_to_load)} records into {table_name} allowing duplicate IDs.")
-            
-        elif update_columns:
-            # For upsert with updates (ON CONFLICT DO UPDATE SET)
-            update_clause = ", ".join([f"target.{col} = source.{col}" for col in update_columns])
-            conn.execute(text(f"""
-                MERGE INTO {table_name} target
-                USING {temp_table_name} source
-                ON target.{key_column} = source.{key_column}
-                WHEN MATCHED THEN
-                    UPDATE SET {update_clause}
-                WHEN NOT MATCHED THEN
-                    INSERT ({', '.join(df_to_load.columns)})
-                    VALUES ({', '.join([f'source.{col}' for col in df_to_load.columns])})
-            """))
-        else:
-            # For insert-only (ON CONFLICT DO NOTHING)
-            conn.execute(text(f"""
-                MERGE INTO {table_name} target
-                USING {temp_table_name} source
-                ON target.{key_column} = source.{key_column}
-                WHEN NOT MATCHED THEN
-                    INSERT ({', '.join(df_to_load.columns)})
-                    VALUES ({', '.join([f'source.{col}' for col in df_to_load.columns])})
-            """))
+        columns_list = ', '.join(df_to_load.columns)
+        values_list = ', '.join([f'source.{col}' for col in df_to_load.columns])
+        
+        conn.execute(text(f"""
+            INSERT INTO {table_name} ({columns_list})
+            SELECT {values_list} FROM {temp_table_name} source
+        """))
+        
+        print(f"Successfully inserted all {len(df_to_load)} records into {table_name}")
         
         # Drop the temporary table
         conn.execute(text(f"DROP TABLE IF EXISTS {temp_table_name}"))
@@ -277,12 +242,11 @@ def load_ods_date_dimension(engine, df):
         }
         date_records.append(record)
     
-    # Insert into ODS date dimension using the Snowflake-compatible upsert helper
-    records_loaded = snowflake_upsert(
+    # Insert into ODS date dimension using the ODS insert helper
+    records_loaded = snowflake_ods_insert(
         engine=engine,
         table_name='ods_date',
-        records=date_records,
-        key_column='date_id'
+        records=date_records
     )
     
     print(f"Loaded {records_loaded} records into ods_date.")
@@ -303,10 +267,11 @@ def load_ods_customer_dimension(engine, df):
         'Region': lambda x: x.value_counts().index[0],
         'Customer Age': 'first',
         'Customer Segment': 'first'
-    }).reset_index()
+    }).reset_index() #TL
     
     # Create customer records
     customer_records = []
+    #TL
     for _, row in customer_locations.iterrows():
         customer_id = generate_customer_id(row['Customer Name'])
         record = {
@@ -323,12 +288,11 @@ def load_ods_customer_dimension(engine, df):
         }
         customer_records.append(record)
     
-    # Insert into ODS customer dimension using the Snowflake-compatible upsert helper
-    records_loaded = snowflake_upsert(
+    # Insert into ODS customer dimension using the ODS insert helper
+    records_loaded = snowflake_ods_insert(
         engine=engine,
         table_name='ods_customer',
-        records=customer_records,
-        key_column='customer_id'
+        records=customer_records
     )
     
     print(f"Loaded {records_loaded} records into ods_customer with primary locations.")
@@ -420,12 +384,11 @@ def load_ods_supplier_dimension(engine, df):
         }
         supplier_records.append(record)
     
-    # Insert into ODS supplier dimension using the Snowflake-compatible upsert helper
-    records_loaded = snowflake_upsert(
+    # Insert into ODS supplier dimension using the ODS insert helper
+    records_loaded = snowflake_ods_insert(
         engine=engine,
         table_name='ods_supplier',
-        records=supplier_records,
-        key_column='supplier_id'
+        records=supplier_records
     )
     
     print(f"Loaded {records_loaded} records into ods_supplier.")
@@ -476,14 +439,11 @@ def load_ods_product_dimension(engine, df, category_supplier_map):
         }
         product_records.append(record)
     
-    # Insert into ODS product dimension using the Snowflake-compatible upsert helper
-    # This is an upsert operation that updates supplier_id and load_timestamp if the record exists
-    records_loaded = snowflake_upsert(
+    # Insert into ODS product dimension using the ODS insert helper
+    records_loaded = snowflake_ods_insert(
         engine=engine,
         table_name='ods_product',
-        records=product_records,
-        key_column='product_id',
-        update_columns=['supplier_id', 'load_timestamp']
+        records=product_records
     )
     
     print(f"Loaded {records_loaded} records into ods_product.")
@@ -510,12 +470,11 @@ def load_ods_store_dimension(engine, df):
         }
         store_records.append(record)
     
-    # Insert into ODS store dimension using the Snowflake-compatible upsert helper
-    records_loaded = snowflake_upsert(
+    # Insert into ODS store dimension using the ODS insert helper
+    records_loaded = snowflake_ods_insert(
         engine=engine,
         table_name='ods_store',
-        records=store_records,
-        key_column='store_id'
+        records=store_records
     )
     
     print(f"Loaded {records_loaded} records into ods_store.")
@@ -644,12 +603,11 @@ def load_ods_sales_fact(engine, df, customer_map, product_map, store_map):
         }
         sales_records.append(record)
     
-    # Insert into ODS sales fact using the Snowflake-compatible upsert helper
-    records_loaded = snowflake_upsert(
+    # Insert into ODS sales fact using the ODS insert helper
+    records_loaded = snowflake_ods_insert(
         engine=engine,
         table_name='ods_sales',
-        records=sales_records,
-        key_column='sale_id'
+        records=sales_records
     )
     
     print(f"Loaded {records_loaded} records into ods_sales.")
@@ -688,12 +646,11 @@ def load_ods_return_reason_dimension(engine):
         }
         reason_records.append(record)
     
-    # Insert into ODS return reason dimension using the Snowflake-compatible upsert helper
-    records_loaded = snowflake_upsert(
+    # Insert into ODS return reason dimension using the ODS insert helper
+    records_loaded = snowflake_ods_insert(
         engine=engine,
         table_name='ods_return_reason',
-        records=reason_records,
-        key_column='reason_code'
+        records=reason_records
     )
     
     print(f"Loaded {records_loaded} records into ods_return_reason.")
@@ -789,12 +746,11 @@ def load_ods_returns_fact(engine, df, customer_map, product_map, store_map, reas
         return_records.append(record)
         return_count += 1
     
-    # Insert into ODS returns fact using the Snowflake-compatible upsert helper
-    records_loaded = snowflake_upsert(
+    # Insert into ODS returns fact using the ODS insert helper
+    records_loaded = snowflake_ods_insert(
         engine=engine,
         table_name='ods_returns',
-        records=return_records,
-        key_column='return_id'
+        records=return_records
     )
     
     print(f"Loaded {records_loaded} records into ods_returns.")
@@ -886,23 +842,21 @@ def load_ods_inventory_fact(engine, df):
                 
                 # Batch insert to avoid memory issues
                 if len(inventory_records) >= 10000:
-                    # Use Snowflake-compatible upsert helper for batch inserts
-                    records_loaded = snowflake_upsert(
+                    # Use ODS insert helper for batch inserts
+                    records_loaded = snowflake_ods_insert(
                         engine=engine,
                         table_name='ods_inventory',
-                        records=inventory_records,
-                        key_column='inventory_id'
+                        records=inventory_records
                     )
                     print(f"Loaded {records_loaded} records into ods_inventory.")
                     inventory_records = []
     
-    # Insert any remaining inventory records using the Snowflake-compatible upsert helper
+    # Insert any remaining inventory records using the ODS insert helper
     if inventory_records:
-        records_loaded = snowflake_upsert(
+        records_loaded = snowflake_ods_insert(
             engine=engine,
             table_name='ods_inventory',
-            records=inventory_records,
-            key_column='inventory_id'
+            records=inventory_records
         )
         print(f"Loaded {records_loaded} records into ods_inventory.")
 
